@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { RelavoLogo } from "@/components/RelavoLogo";
 
 /**
- * De juridiske sidene finnes ennå bare som statiske filer i prototypen.
- * Til de er portet peker lenkene på ruter som skal bygges — se README.
+ * Bunnraden. De juridiske dokumentene ligger samlet på /juridisk med
+ * ankere, slik prototypen hadde dem.
  */
 export function LandingFooter() {
   return (
@@ -19,8 +20,10 @@ export function LandingFooter() {
           <div className="foot-l">
             <a href="#plattform">Plattform</a>
             <a href="#priser">Priser</a>
-            <a href="#faq">Spørsmål</a>
-            <a href="#regelverk">Regelverk</a>
+            <Link href="/juridisk#vilkar">Vilkår</Link>
+            <Link href="/juridisk#personvern">Personvern</Link>
+            <Link href="/juridisk#cookies">Cookies</Link>
+            <Link href="/juridisk#kontakt">Kontakt</Link>
           </div>
         </div>
       </div>

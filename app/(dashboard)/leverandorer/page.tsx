@@ -1,32 +1,15 @@
-import { createClient } from "@/lib/supabase/server";
+import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
-import { redirect } from "next/navigation";
 
 /**
- * Erstatter prototypens hardkodede SUPPLIERS-array i p3.html med et ekte
- * spørring mot Postgres. Row Level Security i 0001_init.sql sørger for at
- * denne spørringen bare kan returnere rader som hører til brukerens egen
- * organisasjon — det trengs ingen "where organisasjon_id = ..." her, det
- * håndheves i databasen uansett hva koden gjør.
+ * Erstatter prototypens hardkodede SUPPLIERS-array med et ekte spørring mot
+ * Postgres. Row Level Security i 0001_init.sql sørger for at spørringen bare
+ * kan returnere rader som hører til brukerens egen organisasjon — det trengs
+ * ingen "where organisasjon_id = ..." her, det håndheves i databasen uansett
+ * hva koden gjør.
  */
 export default async function LeverandorerSide() {
-  const supabase = createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/logg-inn");
-
-  // Uten en rad i profiler hører brukeren ikke til noen organisasjon, og da
-  // slipper RLS ingenting gjennom. Nye kunder — og nye Microsoft-innlogginger
-  // — havner her først, og sendes videre til å opprette selskapet sitt.
-  const { data: profil } = await supabase
-    .from("profiler")
-    .select("organisasjon_id")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (!profil) redirect("/betaling");
+  const { supabase, profil } = await krevProfil();
 
   const { data: leverandorer, error } = await supabase
     .from("leverandorer")
@@ -45,7 +28,7 @@ export default async function LeverandorerSide() {
   };
 
   return (
-    <DashboardShell aktivtSteg="Leverandører">
+    <DashboardShell aktivtSteg="Leverandører" ansatt={profil.ansatt}>
       <div className="px-8 py-6">
         <h1 className="text-2xl font-semibold tracking-tight mb-1">Leverandører</h1>
         <p className="text-sm text-dim mb-6">
