@@ -1,6 +1,7 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
-import { UnderArbeid } from "@/components/UnderArbeid";
+import { Sidehode, Kort, Tabell, Merke } from "@/components/ui";
+import { ANSKAFFELSER } from "@/lib/demo/app";
 
 export default async function AnskaffelserSide() {
   const { profil } = await krevProfil();
@@ -8,16 +9,23 @@ export default async function AnskaffelserSide() {
   return (
     <DashboardShell aktivtSteg="Anskaffelser" ansatt={profil.ansatt}>
       <div className="px-8 py-6">
-        <h1 className="text-2xl font-semibold tracking-tight mb-1">Anskaffelser</h1>
-        <p className="text-sm text-dim mb-6">Avtalene kontrollene henger på.</p>
-        <UnderArbeid
-          kilde="relavo-app.html"
-          punkter={[
-            "Anskaffelse, type, avtaleverdi og avtaleperiode",
-            "Hvilke kontroller som er kjørt på hver avtale",
-            "Leverandørene knyttet til hver anskaffelse",
-          ]}
+        <Sidehode
+          tittel="Anskaffelser"
+          tekst="Avtalene kontrollene henger på. Saksnummeret her er det samme du fører i anskaffelsesprotokollen."
         />
+        <Kort note="fra prototypens demodata">
+          <Tabell
+            kolonner={["Saksnummer", "Anskaffelse", "Konkurranseform", "Avtaleverdi", "Periode", "Kontroller"]}
+            rader={ANSKAFFELSER.map((a) => [
+              <span key="i" className="font-mono text-[12px] text-accent">{a.id}</span>,
+              <span key="n" className="font-semibold">{a.navn}</span>,
+              <span key="t" className="text-dim">{a.type}</span>,
+              <span key="v" className="tabular-nums whitespace-nowrap">{a.verdi}</span>,
+              <span key="p" className="text-dim whitespace-nowrap">{a.periode}</span>,
+              <Merke key="k" tone="aksent">{a.kontroller}</Merke>,
+            ])}
+          />
+        </Kort>
       </div>
     </DashboardShell>
   );
