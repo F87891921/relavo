@@ -17,6 +17,37 @@ export default async function LeverandorerSide() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/logg-inn");
 
+  // Uten en rad i profiler hører brukeren ikke til noen organisasjon, og da
+  // slipper RLS ingenting gjennom. Det skjer for nye Microsoft-innlogginger
+  // som ennå ikke er koblet til et selskap — uten denne sjekken ser de en
+  // tom liste som feilaktig sier at de bare mangler sin første kontroll.
+  const { data: profil } = await supabase
+    .from("profiler")
+    .select("organisasjon_id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!profil) {
+    return (
+      <DashboardShell aktivtSteg="Leverandører">
+        <div className="px-8 py-6">
+          <h1 className="text-2xl font-semibold tracking-tight mb-1">Leverandører</h1>
+          <div className="bg-surface rounded-card shadow-card px-6 py-8 mt-6 max-w-[520px]">
+            <h2 className="text-base font-semibold mb-2">
+              Kontoen er ikke koblet til en organisasjon
+            </h2>
+            <p className="text-sm text-dim leading-relaxed">
+              Du er logget inn som <b>{user.email}</b>, men kontoen hører ennå
+              ikke til et selskap i Relavo. Ta kontakt med den hos dere som
+              administrerer Relavo, så kobler de kontoen til riktig
+              organisasjon.
+            </p>
+          </div>
+        </div>
+      </DashboardShell>
+    );
+  }
+
   const { data: leverandorer, error } = await supabase
     .from("leverandorer")
     .select("id, navn, org_nr, bransje, risiko, sist_kontrollert")
