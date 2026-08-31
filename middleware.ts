@@ -32,9 +32,13 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // /velkommen krever innlogging, men ikke en organisasjon — det er der
+  // organisasjonen opprettes. Resten krever begge deler; selve
+  // organisasjonssjekken gjøres i sidene, som kan slå opp i profiler.
   const beskyttet = request.nextUrl.pathname.startsWith("/oversikt") ||
     request.nextUrl.pathname.startsWith("/leverandorer") ||
-    request.nextUrl.pathname.startsWith("/ny-kontroll");
+    request.nextUrl.pathname.startsWith("/ny-kontroll") ||
+    request.nextUrl.pathname.startsWith("/velkommen");
 
   if (beskyttet && !user) {
     const url = request.nextUrl.clone();
