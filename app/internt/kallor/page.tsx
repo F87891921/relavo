@@ -2,9 +2,16 @@ import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
 import { Sidehode, Kort, Tabell, Merke, Tall, Rad } from "@/components/ui";
 import { KALLOR, LARM, NYCKLAR } from "@/lib/demo/staff";
+import { SynkRenhold } from "@/components/internt/SynkRenhold";
 
 export default async function InterntKallorSide() {
-  await krevAnsatt();
+  const { supabase } = await krevAnsatt();
+
+  const { data: synk } = await supabase
+    .from("registersynk")
+    .select("sist_hentet, antall")
+    .eq("register", "renhold")
+    .maybeSingle();
 
   const aktivaLarm = LARM.filter((l) => l.status === "aktivt");
 
@@ -14,6 +21,11 @@ export default async function InterntKallorSide() {
         <Sidehode
           tittel="Källhälsa"
           tekst="Svarstider, felfrekvens och kostnad per register. Ligger en källa nere ska kundens rapport säga det, inte tiga om det."
+        />
+
+        <SynkRenhold
+          sistHentet={synk?.sist_hentet ?? null}
+          antall={synk?.antall ?? 0}
         />
 
         <Rad>

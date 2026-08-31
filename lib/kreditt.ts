@@ -29,7 +29,7 @@ export type Kredittsvar =
 export async function kredittvurder(orgnr: string): Promise<Kredittsvar> {
   const oppslag = await slaOppEnhet(orgnr);
   if (oppslag.status === "ikke-funnet")
-    return { ok: false, feil: "Fant ingen enhet med dette nummeret." };
+    return { ok: false, feil: "Hittade inget bolag med det numret." };
   if (oppslag.status === "feil") return { ok: false, feil: oppslag.melding };
 
   const enhet = oppslag.enhet;
@@ -42,15 +42,15 @@ export async function kredittvurder(orgnr: string): Promise<Kredittsvar> {
   const konkursaktig =
     enhet.konkurs || enhet.underTvangsavvikling || enhet.underAvvikling;
   b.push({
-    punkt: "Selskapsstatus",
+    punkt: "Bolagsstatus",
     status: konkursaktig ? "brudd" : "ok",
     tekst: enhet.konkurs
-      ? "Registrert konkurs"
+      ? "Registrerad konkurs"
       : enhet.underTvangsavvikling
-        ? "Under tvangsavvikling"
+        ? "Under tvångsavveckling"
         : enhet.underAvvikling
-          ? "Under avvikling"
-          : "Aktivt, ingen konkurs eller avvikling registrert",
+          ? "Under avveckling"
+          : "Aktivt, ingen konkurs eller avveckling registrerad",
   });
 
   // ---- Alder ----
@@ -58,21 +58,21 @@ export async function kredittvurder(orgnr: string): Promise<Kredittsvar> {
     ? (Date.now() - new Date(enhet.registrert).getTime()) / 31_557_600_000
     : null;
   b.push({
-    punkt: "Alder",
+    punkt: "Ålder",
     status: aar === null ? "ukjent" : aar < 2 ? "advarsel" : "ok",
     tekst:
       aar === null
-        ? "Registreringsdato mangler"
-        : `Registrert ${enhet.registrert}, ${Math.floor(aar)} år`,
+        ? "Registreringsdatum saknas"
+        : `Registrerat ${enhet.registrert}, ${Math.floor(aar)} år`,
   });
 
   // ---- Regnskap ----
   if (!siste) {
     b.push({
-      punkt: "Årsregnskap",
+      punkt: "Årsredovisning",
       status: "ukjent",
       tekst:
-        "Ingen regnskap i Regnskapsregisteret. Vanlig for enkeltpersonforetak, kommuner og nystiftede selskaper.",
+        "Ingen årsredovisning i Regnskapsregisteret. Vanligt för enkeltpersonforetak, kommuner och nystartade bolag.",
     });
   } else {
     const ekAndel =
@@ -81,7 +81,7 @@ export async function kredittvurder(orgnr: string): Promise<Kredittsvar> {
         : null;
 
     b.push({
-      punkt: "Egenkapitalandel",
+      punkt: "Soliditet",
       status:
         ekAndel === null
           ? "ukjent"
@@ -92,10 +92,10 @@ export async function kredittvurder(orgnr: string): Promise<Kredittsvar> {
               : "ok",
       tekst:
         ekAndel === null
-          ? "Kunne ikke regnes ut"
+          ? "Gick inte att räkna ut"
           : ekAndel < 0
-            ? `Negativ egenkapital (${Math.round(ekAndel * 100)} %) i ${siste.aar}`
-            : `${Math.round(ekAndel * 100)} % i ${siste.aar}`,
+            ? `Negativt eget kapital (${Math.round(ekAndel * 100)} %) ${siste.aar}`
+            : `${Math.round(ekAndel * 100)} % ${siste.aar}`,
     });
 
     b.push({
@@ -108,31 +108,31 @@ export async function kredittvurder(orgnr: string): Promise<Kredittsvar> {
             : "ok",
       tekst:
         siste.aarsresultat === null
-          ? "Mangler i regnskapet"
-          : `${new Intl.NumberFormat("nb-NO").format(siste.aarsresultat)} ${siste.valuta} i ${siste.aar}`,
+          ? "Saknas i redovisningen"
+          : `${new Intl.NumberFormat("nb-NO").format(siste.aarsresultat)} ${siste.valuta} ${siste.aar}`,
     });
 
     const ferskt = new Date().getFullYear() - siste.aar <= 2;
     b.push({
-      punkt: "Ferskhet",
+      punkt: "Färskhet",
       status: ferskt ? "ok" : "advarsel",
       tekst: ferskt
-        ? `Siste regnskap er fra ${siste.aar}`
-        : `Siste regnskap er fra ${siste.aar} — eldre enn to år`,
+        ? `Senaste redovisning är från ${siste.aar}`
+        : `Senaste redovisning är från ${siste.aar} — äldre än två år`,
     });
   }
 
   // ---- Det vi ikke vet ----
   b.push({
-    punkt: "Betalingsanmerkninger",
+    punkt: "Betalningsanmärkningar",
     status: "ukjent",
     tekst:
-      "Krever avtale med Creditsafe. Ikke hentet — står som ikke kontrollert, ikke som fravær av anmerkninger.",
+      "Kräver avtal med Creditsafe. Ej hämtad — står som ej kontrollerad, inte som frånvaro av anmärkningar.",
   });
   b.push({
-    punkt: "Skatterestanser",
+    punkt: "Skatteskulder",
     status: "ukjent",
-    tekst: "Krever avtale med Skatteetaten. Ikke hentet.",
+    tekst: "Kräver avtal med Skatteetaten via Maskinporten. Ej hämtad.",
   });
 
   const brudd = b.filter((p) => p.status === "brudd").length;

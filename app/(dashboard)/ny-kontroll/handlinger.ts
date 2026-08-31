@@ -6,6 +6,7 @@ import { validerOrgnr } from "@/lib/orgnr";
 import { slaOppEnhet, type Enhet } from "@/lib/brreg";
 import { HMS_PUNKTER, type Svar, type Resultat } from "@/lib/kontroll";
 import { finnJav } from "@/lib/jav";
+import { erRenholdsbransje, tolkStatus } from "@/lib/renhold";
 
 /**
  * Kjører kontrollen og lagrer den. Oppslaget gjøres på nytt her, på
@@ -30,7 +31,20 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
   }
   const enhet = oppslag.enhet;
 
-  const { krav, kilder, risiko } = vurder(enhet, svar);
+  // Renholdsregisteret slås opp før vurderingen, så resultatet kan inngå i
+  // kravlista. Bare for renholdsselskaper — for andre bransjer er registeret
+  // ikke relevant, og en linje om det ville bare vært støy.
+  let renhold: { status: string; godkjent: boolean } | null = null;
+  if (erRenholdsbransje(enhet.bransje)) {
+    const { data } = await supabase
+      .from("renholdsvirksomheter")
+      .select("status, godkjent")
+      .eq("org_nr", enhet.orgnr)
+      .maybeSingle();
+    renhold = data ?? { status: "Ikke i registeret", godkjent: false };
+  }
+
+  const { krav, kilder, risiko } = vurder(enhet, svar, renhold);
 
   // Leverandøren må finnes før kontrollen kan peke på den. Er selskapet
   // kontrollert før, gjenbrukes raden — ellers legges den inn nå.
@@ -127,7 +141,11 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
  * hva som er krysset av. Punktene brukeren ikke har bekreftet blir stående
  * som «ikke kontrollert» — de blir aldri stilltiende godkjent.
  */
-function vurder(enhet: Enhet, svar: Svar) {
+function vurder(
+  enhet: Enhet,
+  svar: Svar,
+  renhold: { status: string; godkjent: boolean } | null,
+) {
   const krav: { ref: string; status: "ok" | "no" | "na"; tekst: string }[] = [];
 
   krav.push({
@@ -145,6 +163,25 @@ function vurder(enhet: Enhet, svar: Svar) {
       ref: "§ 24-2",
       status: "no",
       tekst: "Selskapet er under avvikling",
+    });
+  }
+
+  // Renhold: § 4 i renholdsforskriften. Å kjøpe renhold fra et selskap som
+  // ikke er godkjent har vært ulovlig siden 2012, så dette er et brudd og
+  // ikke en advarsel.
+  if (renhold) {
+    krav.push({
+      ref: "Renhold",
+      status: renhold.godkjent
+        ? "ok"
+        : tolkStatus(renhold.status) === "under_behandling"
+          ? "na"
+          : "no",
+      tekst: renhold.godkjent
+        ? `Godkjent i Arbeidstilsynets renholdsregister (${renhold.status})`
+        : tolkStatus(renhold.status) === "under_behandling"
+          ? `Søknad til renholdsregisteret er under behandling (${renhold.status})`
+          : `Ikke godkjent i Arbeidstilsynets renholdsregister (${renhold.status})`,
     });
   }
 
@@ -182,7 +219,11 @@ function vurder(enhet: Enhet, svar: Svar) {
     // sine er verre enn ingen rapport, så de står oppført som ikke hentet.
     { navn: "Skatteetaten", status: "ikke" as const, tidspunkt: null },
     { navn: "Creditsafe", status: "ikke" as const, tidspunkt: null },
-    { navn: "Arbeidstilsynet", status: "ikke" as const, tidspunkt: null },
+    {
+      navn: "Arbeidstilsynet",
+      status: renhold ? ("svar" as const) : ("ikke" as const),
+      tidspunkt: renhold ? new Date().toISOString() : null,
+    },
     { navn: "StartBANK", status: "ikke" as const, tidspunkt: null },
   ];
 
