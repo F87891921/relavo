@@ -91,8 +91,8 @@ export default function LoggInnSide() {
   }
 
   return (
-    <div className="min-h-screen flex items-start justify-center bg-black/20 pt-[11vh] px-4">
-      <div className="w-full max-w-[392px] bg-surface rounded-2xl shadow-xl overflow-hidden">
+    <div className="min-h-screen flex items-start justify-center bg-surface pt-[11vh] px-4">
+      <div className="w-full max-w-[392px] bg-surface rounded-2xl shadow-lift overflow-hidden">
         <div className="px-6 pt-6 pb-1 text-center">
           <RelavoMark className="w-14 h-auto mx-auto mb-3 text-accent" />
           <h1 className="text-[17px] font-semibold">Logg inn</h1>

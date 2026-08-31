@@ -32,6 +32,9 @@ module.exports = {
       },
       boxShadow: {
         card: "0 1px 2px rgba(40,31,42,0.05), 0 2px 10px rgba(40,31,42,0.05)",
+        // Løfter et kort tydelig fra hvit bakgrunn, uten å legge en flate bak
+        // det. Samme skygge som innloggingsmodalen hadde i prototypen.
+        lift: "0 1px 2px rgba(40,31,42,0.05), 0 24px 60px rgba(40,31,42,0.18)",
       },
     },
   },

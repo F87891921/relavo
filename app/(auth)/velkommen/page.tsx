@@ -60,8 +60,8 @@ export default function VelkommenSide() {
   }
 
   return (
-    <div className="min-h-screen flex items-start justify-center bg-canvas pt-[9vh] px-4">
-      <div className="w-full max-w-[440px] bg-surface rounded-2xl shadow-card overflow-hidden">
+    <div className="min-h-screen flex items-start justify-center bg-surface pt-[9vh] px-4">
+      <div className="w-full max-w-[440px] bg-surface rounded-2xl shadow-lift overflow-hidden">
         <div className="px-7 pt-7 pb-1 text-center">
           <RelavoMark className="w-12 h-auto mx-auto mb-3 text-accent" />
           <h1 className="text-[19px] font-semibold tracking-tight">
