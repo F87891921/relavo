@@ -32,7 +32,7 @@ export default async function TilbudSide() {
   const lave = rader.filter((r) => r.lav);
 
   return (
-    <DashboardShell aktivtSteg="Unormalt lave tilbud" ansatt={profil.ansatt}>
+    <DashboardShell aktivtSteg="Unormalt lave tilbud">
       <div className="px-8 py-6">
         <Sidehode
           tittel="Unormalt lave tilbud"

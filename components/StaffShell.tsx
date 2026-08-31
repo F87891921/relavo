@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { RelavoMark } from "./RelavoMark";
+import { RelavoLogo } from "./RelavoLogo";
 
 /**
  * Sidemenyen for kontopanelet. Punktene følger relavo-staff.html, som er
@@ -30,18 +30,15 @@ export function StaffShell({
 }) {
   return (
     <div className="min-h-screen flex">
-      <aside className="w-[230px] shrink-0 border-r border-border bg-ink px-4 py-5 flex flex-col">
-        <Link href="/internt" className="flex items-center gap-2 px-1 mb-2">
-          <RelavoMark className="w-6 h-auto text-white" />
-          <span className="font-extrabold text-[15px] tracking-tight text-white">
-            Relavo
-          </span>
+      <aside className="w-[230px] shrink-0 border-r border-border bg-ink px-4 py-5 flex flex-col sticky top-0 h-screen">
+        <Link href="/internt" className="block px-1 mb-2" aria-label="Relavo internt">
+          <RelavoLogo className="w-[86px] h-auto text-white" />
         </Link>
         <div className="px-1 mb-7 text-[10.5px] font-bold tracking-[0.09em] uppercase text-white/40">
           Internt
         </div>
 
-        <nav className="flex flex-col gap-0.5">
+        <nav className="flex flex-col gap-0.5 overflow-y-auto min-h-0 flex-1">
           {ANSATTMENY.map((s) => (
             <Link
               key={s.href}
@@ -58,7 +55,7 @@ export function StaffShell({
           ))}
         </nav>
 
-        <div className="mt-auto pt-5 border-t border-white/15">
+        <div className="shrink-0 pt-4 border-t border-white/15">
           <Link
             href="/oversikt"
             className="text-[13px] px-3 py-2 rounded-lg text-white/60 hover:bg-white/10 hover:text-white transition block"

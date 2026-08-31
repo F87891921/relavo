@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { RelavoMark } from "./RelavoMark";
+import { RelavoLogo } from "./RelavoLogo";
+import { LoggUt } from "./LoggUt";
+import { krevProfil } from "@/lib/tilgang";
 
 /**
  * Sidemenyen for kundedelen. Punktene og rekkefølgen er de samme som i
- * relavo-app.html, slik at prototypen og appen kan sammenlignes direkte
- * mens resten av skjermbildene portes.
+ * relavo-app.html, slik at prototypen og appen kan sammenlignes direkte.
  */
 export const KUNDEMENY = [
   { navn: "Oversikt", href: "/oversikt" },
@@ -20,24 +21,54 @@ export const KUNDEMENY = [
   { navn: "Diagnostikk", href: "/diagnostikk" },
 ];
 
-export function DashboardShell({
+/**
+ * Henter sine egne opplysninger i stedet for å få dem som props. Ellers
+ * måtte hver eneste side sende inn organisasjon, navn og e-post — tolv
+ * steder å glemme det samme.
+ */
+export async function DashboardShell({
   aktivtSteg,
-  ansatt = false,
   children,
 }: {
   aktivtSteg: string;
-  ansatt?: boolean;
   children: React.ReactNode;
 }) {
+  const { supabase, user, profil } = await krevProfil();
+
+  const { data: org } = await supabase
+    .from("organisasjoner")
+    .select("navn")
+    .eq("id", profil.organisasjon_id)
+    .maybeSingle();
+
+  const ansatt = profil.ansatt;
+  const organisasjon = org?.navn ?? null;
+  const brukernavn = profil.navn ?? null;
+  const epost = user.email ?? null;
+
+  const initialer = (brukernavn ?? epost ?? "?")
+    .split(/[\s@.]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((d: string) => d[0]?.toUpperCase())
+    .join("");
+
   return (
     <div className="min-h-screen flex">
-      <aside className="w-[220px] shrink-0 border-r border-border bg-surface px-4 py-5 flex flex-col">
-        <Link href="/oversikt" className="flex items-center gap-2 px-1 mb-7">
-          <RelavoMark className="w-6 h-auto text-accent" />
-          <span className="font-extrabold text-[15px] tracking-tight">Relavo</span>
+      <aside className="w-[228px] shrink-0 border-r border-border bg-surface px-4 py-5 flex flex-col sticky top-0 h-screen">
+        <Link href="/oversikt" className="block px-1 mb-1" aria-label="Relavo">
+          <RelavoLogo className="w-[86px] h-auto text-ink" />
         </Link>
 
-        <nav className="flex flex-col gap-0.5">
+        {/* Hvilken organisasjon man ser data for. Uten dette er det umulig å
+            vite om man ser på Bergen eller Askøy før man leser tabellen. */}
+        {organisasjon && (
+          <div className="px-1 mb-6 text-[11.5px] text-dim truncate" title={organisasjon}>
+            {organisasjon}
+          </div>
+        )}
+
+        <nav className="flex flex-col gap-0.5 overflow-y-auto min-h-0 flex-1">
           {KUNDEMENY.map((s) => (
             <Link
               key={s.href}
@@ -54,16 +85,41 @@ export function DashboardShell({
           ))}
         </nav>
 
-        {ansatt && (
-          <div className="mt-auto pt-5 border-t border-border">
+        <div className="shrink-0 pt-4 space-y-1">
+          {ansatt && (
             <Link
               href="/internt"
               className="text-[13px] px-3 py-2 rounded-lg text-dim hover:bg-canvas hover:text-ink transition block"
             >
               Relavo internt →
             </Link>
+          )}
+
+          <div className="border-t border-border pt-2">
+            <Link
+              href="/konto"
+              aria-current={aktivtSteg === "Konto" ? "page" : undefined}
+              className={`flex items-center gap-2.5 px-2 py-2 rounded-lg transition ${
+                aktivtSteg === "Konto"
+                  ? "bg-surface2"
+                  : "hover:bg-canvas"
+              }`}
+            >
+              <span className="w-7 h-7 rounded-lg bg-surface2 text-accent text-[10.5px] font-bold flex items-center justify-center shrink-0">
+                {initialer}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[12.5px] font-semibold truncate">
+                  {brukernavn ?? "Kontoen din"}
+                </span>
+                <span className="block text-[10.5px] text-faint truncate">
+                  {epost}
+                </span>
+              </span>
+            </Link>
+            <LoggUt />
           </div>
-        )}
+        </div>
       </aside>
       <main className="flex-1 min-w-0">{children}</main>
     </div>

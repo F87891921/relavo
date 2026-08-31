@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
 
   // next lar oss sende folk tilbake dit de faktisk skulle.
-  const next = searchParams.get("next") ?? "/leverandorer";
+  const next = searchParams.get("next") ?? "/oversikt";
 
   // Avbrutt eller avvist innlogging kommer tilbake med ?error=, ikke ?code=.
   const feil = searchParams.get("error_description") ?? searchParams.get("error");

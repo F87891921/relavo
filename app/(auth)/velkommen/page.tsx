@@ -55,7 +55,7 @@ export default function VelkommenSide() {
       return;
     }
 
-    router.push("/leverandorer");
+    router.push("/oversikt");
     router.refresh();
   }
 

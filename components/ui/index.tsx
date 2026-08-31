@@ -49,8 +49,10 @@ export function Tabell({
       <table className="w-full text-sm">
         <thead>
           <tr className="text-left text-[11px] uppercase tracking-wide text-faint border-b border-border">
-            {kolonner.map((k) => (
-              <th key={k} className="px-5 py-3 font-semibold whitespace-nowrap">
+            {/* Indeks som nøkkel, ikke teksten: flere tabeller har to tomme
+                kolonneoverskrifter, og da kolliderer nøklene. */}
+            {kolonner.map((k, i) => (
+              <th key={i} className="px-5 py-3 font-semibold whitespace-nowrap">
                 {k}
               </th>
             ))}

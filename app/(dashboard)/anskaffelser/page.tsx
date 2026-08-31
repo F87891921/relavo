@@ -7,7 +7,7 @@ export default async function AnskaffelserSide() {
   const { profil } = await krevProfil();
 
   return (
-    <DashboardShell aktivtSteg="Anskaffelser" ansatt={profil.ansatt}>
+    <DashboardShell aktivtSteg="Anskaffelser">
       <div className="px-8 py-6">
         <Sidehode
           tittel="Anskaffelser"

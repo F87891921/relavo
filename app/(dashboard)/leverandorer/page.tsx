@@ -28,7 +28,7 @@ export default async function LeverandorerSide() {
   };
 
   return (
-    <DashboardShell aktivtSteg="Leverandører" ansatt={profil.ansatt}>
+    <DashboardShell aktivtSteg="Leverandører">
       <div className="px-8 py-6">
         <h1 className="text-2xl font-semibold tracking-tight mb-1">Leverandører</h1>
         <p className="text-sm text-dim mb-6">

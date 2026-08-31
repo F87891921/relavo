@@ -13,7 +13,7 @@ export default async function SupportSide() {
   const { profil } = await krevProfil();
 
   return (
-    <DashboardShell aktivtSteg="Brukerstøtte" ansatt={profil.ansatt}>
+    <DashboardShell aktivtSteg="Brukerstøtte">
       <div className="px-8 py-6">
         <Sidehode
           tittel="Brukerstøtte"

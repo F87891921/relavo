@@ -20,7 +20,7 @@ export default async function DiagnostikkSide() {
     .maybeSingle();
 
   return (
-    <DashboardShell aktivtSteg="Diagnostikk" ansatt={profil.ansatt}>
+    <DashboardShell aktivtSteg="Diagnostikk">
       <div className="px-8 py-6">
         <Sidehode
           tittel="Diagnostikk"

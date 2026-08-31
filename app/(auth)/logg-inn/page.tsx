@@ -52,7 +52,7 @@ export default function LoggInnSide() {
       setFeil("Feil e-post eller passord.");
       return;
     }
-    router.push("/leverandorer");
+    router.push("/oversikt");
     router.refresh();
   }
 

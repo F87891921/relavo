@@ -37,7 +37,9 @@ export function Skjema({
       ) : (
         <form
           className="bg-surface rounded-card shadow-card p-6"
-          action={(fd) =>
+          onSubmit={(e) => {
+            e.preventDefault();
+            const fd = new FormData(e.currentTarget);
             start(async () => {
               const res = await handling(fd);
               if (res.ok) {
@@ -46,8 +48,8 @@ export function Skjema({
               } else {
                 setFeil(res.feil);
               }
-            })
-          }
+            });
+          }}
         >
           <h2 className="text-[15px] font-semibold mb-4">{tittel}</h2>
           <div className="grid sm:grid-cols-2 gap-x-4">{children}</div>

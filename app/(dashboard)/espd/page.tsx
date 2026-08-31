@@ -17,7 +17,7 @@ export default async function EspdSide() {
   const { profil } = await krevProfil();
 
   return (
-    <DashboardShell aktivtSteg="ESPD" ansatt={profil.ansatt}>
+    <DashboardShell aktivtSteg="ESPD">
       <div className="px-8 py-6">
         <Sidehode
           tittel="ESPD og egenerklæringer"

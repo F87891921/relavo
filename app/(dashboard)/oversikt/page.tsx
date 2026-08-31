@@ -30,7 +30,7 @@ export default async function OversiktSide() {
   const andel = totalt ? Math.round((kontrollert / totalt) * 100) : 0;
 
   return (
-    <DashboardShell aktivtSteg="Oversikt" ansatt={profil.ansatt}>
+    <DashboardShell aktivtSteg="Oversikt">
       <div className="px-8 py-6">
         <Sidehode
           tittel="Oversikt"

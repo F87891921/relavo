@@ -7,7 +7,7 @@ export default async function BulkSide() {
   const { profil } = await krevProfil();
 
   return (
-    <DashboardShell aktivtSteg="Bulkkontroll" ansatt={profil.ansatt}>
+    <DashboardShell aktivtSteg="Bulkkontroll">
       <div className="px-8 py-6 max-w-[760px]">
         <Sidehode
           tittel="Bulkkontroll"

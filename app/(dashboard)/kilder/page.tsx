@@ -18,7 +18,7 @@ export default async function KilderSide() {
   const { profil } = await krevProfil();
 
   return (
-    <DashboardShell aktivtSteg="Datakilder" ansatt={profil.ansatt}>
+    <DashboardShell aktivtSteg="Datakilder">
       <div className="px-8 py-6">
         <Sidehode
           tittel="Datakilder"
