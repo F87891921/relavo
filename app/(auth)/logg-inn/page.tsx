@@ -14,6 +14,14 @@ import { MicrosoftLogo } from "@/components/MicrosoftLogo";
  * To veier inn: e-post og passord, eller Microsoft-konto. Kommunene har
  * stort sett Entra ID fra før, så de slipper enda et passord å forvalte.
  */
+/**
+ * Skrus på med NEXT_PUBLIC_MICROSOFT_INNLOGGING=på i Vercel når
+ * Azure-provideren er satt opp i Supabase. Til da viser knappen at den
+ * ikke er klar, i stedet for å sende folk ut av appen.
+ */
+const MICROSOFT_PA =
+  process.env.NEXT_PUBLIC_MICROSOFT_INNLOGGING === "på";
+
 export default function LoggInnSide() {
   const router = useRouter();
   const [epost, setEpost] = useState("");
@@ -50,8 +58,20 @@ export default function LoggInnSide() {
 
   async function loggInnMedMicrosoft() {
     setFeil("");
-    setMsLaster(true);
 
+    // signInWithOAuth melder ikke fra hvis provideren mangler — den sender
+    // nettleseren rett til Supabase, som svarer med rå JSON («provider is
+    // not enabled»). Kunden ville altså landet på en naken feilside hos
+    // supabase.co. Derfor stopper vi her i stedet, helt til Azure er satt
+    // opp og flagget skrus på.
+    if (!MICROSOFT_PA) {
+      setFeil(
+        "Innlogging med Microsoft er ikke slått på ennå. Bruk e-post og passord så lenge.",
+      );
+      return;
+    }
+
+    setMsLaster(true);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "azure",
@@ -86,10 +106,15 @@ export default function LoggInnSide() {
             type="button"
             onClick={loggInnMedMicrosoft}
             disabled={msLaster || laster}
-            className="w-full flex items-center justify-center gap-2.5 border border-border-strong hover:bg-surface2 active:scale-[0.97] transition text-sm font-semibold py-2.5 rounded-xl disabled:opacity-60"
+            className={`w-full flex items-center justify-center gap-2.5 border border-border-strong transition text-sm font-semibold py-2.5 rounded-xl disabled:opacity-60 ${
+              MICROSOFT_PA ? "hover:bg-surface2 active:scale-[0.97]" : "opacity-70"
+            }`}
           >
             <MicrosoftLogo className="w-[17px] h-[17px]" />
             {msLaster ? "Sender deg til Microsoft …" : "Logg inn med Microsoft"}
+            {!MICROSOFT_PA && (
+              <span className="text-[11px] font-medium text-faint">kommer</span>
+            )}
           </button>
         </div>
 

@@ -26,7 +26,7 @@ export default async function LeverandorerSide() {
     .eq("id", user.id)
     .maybeSingle();
 
-  if (!profil) redirect("/velkommen");
+  if (!profil) redirect("/betaling");
 
   const { data: leverandorer, error } = await supabase
     .from("leverandorer")

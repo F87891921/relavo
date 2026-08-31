@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { RelavoMark } from "@/components/RelavoMark";
@@ -28,6 +28,13 @@ export default function VelkommenSide() {
   const [plan, setPlan] = useState("standard");
   const [feil, setFeil] = useState("");
   const [laster, setLaster] = useState(false);
+
+  // Planen velges i betalingssteget og følger med hit, så folk slipper å
+  // ta det samme valget to ganger.
+  useEffect(() => {
+    const fra = new URLSearchParams(window.location.search).get("plan");
+    if (fra && ["engangs", "standard", "enterprise"].includes(fra)) setPlan(fra);
+  }, []);
 
   async function opprett(e: React.FormEvent) {
     e.preventDefault();
