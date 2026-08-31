@@ -25,6 +25,10 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Stien videresendes som header. Uten den vet ikke krevProfil hvor den
+  // står, og ville sendt folk til /konto fra /konto — en evig runddans.
+  request.headers.set("x-sti", sti);
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -56,7 +60,7 @@ export async function middleware(request: NextRequest) {
   // /port må stå her. Uten den regnes sperresiden som beskyttet, sendes til
   // /logg-inn, som portvakten over fanger og sender tilbake til /port — en
   // evig runddans.
-  const APNE = ["/", "/port", "/logg-inn", "/juridisk", "/auth/callback"];
+  const APNE = ["/", "/port", "/logg-inn", "/tofaktor", "/kontakt", "/juridisk", "/auth/callback"];
   const apen = APNE.some((p) => sti === p || sti.startsWith(`${p}/`));
   const beskyttet = !apen;
 

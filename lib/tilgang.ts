@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -28,6 +29,23 @@ export const krevProfil = cache(async () => {
     .maybeSingle();
 
   if (!profil) redirect("/betaling");
+
+  const sti = headers().get("x-sti") ?? "";
+
+  // Tofaktor. aal1 betyr passord bekreftet, engangskode ikke. Har kontoen
+  // en faktor, skal den brukes — ellers er den bare pynt.
+  const { data: niva } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (
+    niva?.nextLevel === "aal2" &&
+    niva.nextLevel !== niva.currentLevel &&
+    sti !== "/tofaktor"
+  )
+    redirect("/tofaktor");
+
+  // Ansatte ser flere kunders data. For dem er tofaktor ikke valgfritt.
+  // Kontosiden er unntatt — det er der man setter det opp.
+  if (profil.ansatt && niva?.currentLevel !== "aal2" && sti !== "/konto")
+    redirect("/konto?mfa=kreves");
 
   const org = profil.organisasjoner as unknown as { navn: string } | null;
 
