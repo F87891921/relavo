@@ -5,6 +5,7 @@ import { krevProfil } from "@/lib/tilgang";
 import { validerOrgnr } from "@/lib/orgnr";
 import { slaOppEnhet, type Enhet } from "@/lib/brreg";
 import { HMS_PUNKTER, type Svar, type Resultat } from "@/lib/kontroll";
+import { finnJav } from "@/lib/jav";
 
 /**
  * Kjører kontrollen og lagrer den. Oppslaget gjøres på nytt her, på
@@ -66,6 +67,11 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
       .eq("id", leverandorId);
   }
 
+  // Etter grenen over er den alltid satt, men det ser ikke typene. Sjekken
+  // er ekte nok: uten leverandør er det ingenting å knytte kontrollen til.
+  if (!leverandorId)
+    return { ok: false, feil: "Kunne ikke knytte kontrollen til en leverandør." };
+
   const { data: kontroll, error } = await supabase
     .from("kontroller")
     .insert({
@@ -81,8 +87,36 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
 
   if (error) return { ok: false, feil: error.message };
 
+  // Jav-kontrollen kjøres etter at kontrollen er lagret, og får ikke velte
+  // den. Feiler oppslaget mot rolleregisteret, er kontrollen fortsatt gyldig
+  // — jav-delen står da bare som ikke utført.
+  try {
+    const jav = await finnJav(supabase, {
+      organisasjonId: profil.organisasjon_id,
+      leverandorId: leverandorId,
+      orgnr: enhet.orgnr,
+    });
+
+    if (jav.treff.length) {
+      await supabase.from("jav_treff").insert(
+        jav.treff.map((t) => ({
+          organisasjon_id: profil.organisasjon_id,
+          kontroll_id: kontroll.id,
+          deltaker_id: t.deltaker_id,
+          leverandor_id: t.leverandor_id,
+          type_kobling: t.type_kobling,
+          detaljer: t.detaljer,
+        })),
+      );
+    }
+  } catch {
+    // Bevisst stille: kontrollen er allerede lagret og skal ikke rulles
+    // tilbake fordi en tilleggssjekk ikke gikk gjennom.
+  }
+
   revalidatePath("/leverandorer");
   revalidatePath("/oversikt");
+  revalidatePath("/jav");
 
   return { ok: true, kontrollId: kontroll.id, risiko };
 }

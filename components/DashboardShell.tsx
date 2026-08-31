@@ -15,6 +15,7 @@ export const KUNDEMENY = [
   { navn: "Unormalt lave tilbud", href: "/tilbud" },
   { navn: "Anskaffelser", href: "/anskaffelser" },
   { navn: "Leverandører", href: "/leverandorer" },
+  { navn: "Interessekonflikt", href: "/jav" },
   { navn: "ESPD", href: "/espd" },
   { navn: "Datakilder", href: "/kilder" },
   { navn: "Brukerstøtte", href: "/support" },
