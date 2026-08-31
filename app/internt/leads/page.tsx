@@ -1,7 +1,17 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
 import { Sidehode, Kort, Tabell, Merke, Tall, Rad, type Tone } from "@/components/ui";
-import { LEADS, STATUSTEXT } from "@/lib/demo/staff";
+import { Skjema, Felt, StatusVelger } from "@/components/internt/Skjema";
+import { nyttLead, settLeadStatus } from "@/app/internt/handlinger";
+
+const STATUS = [
+  { verdi: "ny", tekst: "Ny" },
+  { verdi: "kontaktad", tekst: "Kontaktad" },
+  { verdi: "demo", tekst: "Demo" },
+  { verdi: "offert", tekst: "Offert" },
+  { verdi: "vunnen", tekst: "Vunnen" },
+  { verdi: "forlorad", tekst: "Förlorad" },
+];
 
 const TONE: Record<string, Tone> = {
   ny: "aksent",
@@ -13,11 +23,16 @@ const TONE: Record<string, Tone> = {
 };
 
 export default async function InterntLeadsSide() {
-  await krevAnsatt();
+  const { supabase } = await krevAnsatt();
 
-  const vunna = LEADS.filter((l) => l.status === "vunnen").length;
-  const forlorade = LEADS.filter((l) => l.status === "forlorad").length;
-  const oppna = LEADS.length - vunna - forlorade;
+  const { data: leads, error } = await supabase
+    .from("leads")
+    .select("id, bolag, kontakt, epost, kalla, status, nasta, notis, opprettet")
+    .order("opprettet", { ascending: false });
+
+  const alle = leads ?? [];
+  const vunna = alle.filter((l) => l.status === "vunnen").length;
+  const forlorade = alle.filter((l) => l.status === "forlorad").length;
 
   return (
     <StaffShell aktivtSteg="Leads">
@@ -28,32 +43,72 @@ export default async function InterntLeadsSide() {
         />
 
         <Rad>
-          <Tall verdi={String(LEADS.length)} merke="leads totalt" />
-          <Tall verdi={String(oppna)} merke="öppna" />
+          <Tall verdi={String(alle.length)} merke="leads totalt" />
+          <Tall verdi={String(alle.length - vunna - forlorade)} merke="öppna" />
           <Tall verdi={String(vunna)} merke="vunna" />
           <Tall
-            verdi={`${Math.round((vunna / Math.max(1, vunna + forlorade)) * 100)} %`}
+            verdi={
+              vunna + forlorade
+                ? `${Math.round((vunna / (vunna + forlorade)) * 100)} %`
+                : "—"
+            }
             merke="vinstandel av avgjorda"
           />
         </Rad>
 
-        <Kort note="demodata från relavo-staff.html">
+        <Skjema knapp="+ Nytt lead" tittel="Nytt lead" handling={nyttLead}>
+          <Felt navn="bolag" merke="Bolag" krav plassholder="Stavanger kommune" />
+          <Felt navn="kontakt" merke="Kontaktperson" plassholder="Ingvild Berge" />
+          <Felt navn="epost" merke="E-post" type="email" plassholder="namn@kommune.no" />
+          <Felt
+            navn="kalla"
+            merke="Källa"
+            val={[
+              { verdi: "", tekst: "Välj …" },
+              { verdi: "Landningssida", tekst: "Landningssida" },
+              { verdi: "Mässa", tekst: "Mässa" },
+              { verdi: "Rekommendation", tekst: "Rekommendation" },
+              { verdi: "Utgående kontakt", tekst: "Utgående kontakt" },
+            ]}
+          />
+          <Felt navn="status" merke="Status" val={STATUS} standard="ny" />
+          <Felt navn="nasta" merke="Nästa steg" type="date" />
+          <Felt navn="notis" merke="Notis" plassholder="Väntar på svar från innkjøpssjef" />
+        </Skjema>
+
+        {error && (
+          <div className="text-sm text-bad bg-bad-bg rounded-xl px-4 py-3 mb-4">
+            Kunde inte hämta leads: {error.message}
+          </div>
+        )}
+
+        <Kort>
           <Tabell
-            kolonner={["Ref", "Bolag", "Kontakt", "Källa", "Skapad", "Nästa steg", "Notis", "Status"]}
-            rader={LEADS.map((l) => [
-              <span key="i" className="font-mono text-[12px] text-accent">{l.id}</span>,
+            kolonner={["Bolag", "Kontakt", "Källa", "Skapad", "Nästa steg", "Notis", "Status"]}
+            tom="Inga leads ännu. Skapa det första med knappen ovan."
+            rader={alle.map((l) => [
               <span key="b" className="font-semibold whitespace-nowrap">{l.bolag}</span>,
               <div key="k">
-                <div className="whitespace-nowrap">{l.kontakt}</div>
-                <div className="text-[11.5px] text-faint">{l.epost}</div>
+                <div className="whitespace-nowrap">{l.kontakt ?? "—"}</div>
+                {l.epost && <div className="text-[11.5px] text-faint">{l.epost}</div>}
               </div>,
-              <span key="ka" className="text-dim whitespace-nowrap">{l.kalla}</span>,
-              <span key="s" className="text-dim whitespace-nowrap">{l.skapad}</span>,
-              <span key="n" className="text-dim whitespace-nowrap">{l.nasta || "—"}</span>,
-              <span key="no" className="text-dim max-w-[34ch] inline-block">{l.notis}</span>,
-              <Merke key="st" tone={TONE[l.status] ?? "noytral"}>
-                {STATUSTEXT[l.status as keyof typeof STATUSTEXT] ?? l.status}
-              </Merke>,
+              <span key="ka" className="text-dim whitespace-nowrap">{l.kalla ?? "—"}</span>,
+              <span key="s" className="text-dim whitespace-nowrap">
+                {new Date(l.opprettet).toLocaleDateString("sv-SE")}
+              </span>,
+              <span key="n" className="text-dim whitespace-nowrap">{l.nasta ?? "—"}</span>,
+              <span key="no" className="text-dim max-w-[30ch] inline-block">{l.notis ?? "—"}</span>,
+              <div key="st" className="flex items-center gap-2">
+                <Merke tone={TONE[l.status] ?? "noytral"}>
+                  {STATUS.find((s) => s.verdi === l.status)?.tekst ?? l.status}
+                </Merke>
+                <StatusVelger
+                  id={l.id}
+                  status={l.status}
+                  val={STATUS}
+                  handling={settLeadStatus}
+                />
+              </div>,
             ])}
           />
         </Kort>

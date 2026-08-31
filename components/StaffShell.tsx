@@ -9,6 +9,7 @@ import { RelavoMark } from "./RelavoMark";
 export const ANSATTMENY = [
   { navn: "Konton", href: "/internt" },
   { navn: "Marginal", href: "/internt/marginal" },
+  { navn: "Kreditkontroll", href: "/internt/kreditt" },
   { navn: "Källhälsa", href: "/internt/kallor" },
   { navn: "Att göra", href: "/internt/attgora" },
   { navn: "Leads", href: "/internt/leads" },

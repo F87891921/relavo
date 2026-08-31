@@ -1,35 +1,52 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
 import { Sidehode, Kort, Tabell, Merke, Tall, Rad, NOK, type Tone } from "@/components/ui";
-import { FAKTUROR, FAKT_STATUS, KONTON } from "@/lib/demo/staff";
+import { Skjema, Felt, StatusVelger } from "@/components/internt/Skjema";
+import { nyFaktura, settFakturaStatus } from "@/app/internt/handlinger";
+
+const STATUS = [
+  { verdi: "obetald", tekst: "Obetald" },
+  { verdi: "betald", tekst: "Betald" },
+  { verdi: "forfallen", tekst: "Förfallen" },
+  { verdi: "kreditnota", tekst: "Kreditnota" },
+];
 
 const TONE: Record<string, Tone> = {
   obetald: "advarsel",
-  forfallen: "brudd",
   betald: "god",
+  forfallen: "brudd",
   kreditnota: "noytral",
 };
 
-const kontoNamn = (id: string) => KONTON.find((k) => k.id === id)?.namn ?? id;
-
 export default async function InterntFaktureringSide() {
-  await krevAnsatt();
+  const { supabase } = await krevAnsatt();
 
-  const utestaende = FAKTUROR.filter(
+  const { data: fakturaer } = await supabase
+    .from("fakturaer")
+    .select("id, nummer, kunde_navn, belopp, forfall, status, organisasjon_id")
+    .order("forfall", { ascending: false });
+
+  const { data: organisasjoner } = await supabase
+    .from("organisasjoner")
+    .select("id, navn")
+    .order("navn");
+
+  const alle = fakturaer ?? [];
+  const utestaende = alle.filter(
     (f) => f.status === "obetald" || f.status === "forfallen",
   );
-  const forfallna = FAKTUROR.filter((f) => f.status === "forfallen");
+  const forfallna = alle.filter((f) => f.status === "forfallen");
 
   return (
     <StaffShell aktivtSteg="Fakturering">
       <div className="px-8 py-6">
         <Sidehode
           tittel="Fakturering"
-          tekst="Fakturor per konto, med förfallodatum och status. Förfallna står rött och hamnar också under Att göra."
+          tekst="Fakturor per konto, med förfallodatum och status. Fakturanumret sätts automatiskt som löpnummer per år."
         />
 
         <Rad>
-          <Tall verdi={String(FAKTUROR.length)} merke="fakturor" />
+          <Tall verdi={String(alle.length)} merke="fakturor" />
           <Tall
             verdi={`${NOK(utestaende.reduce((s, f) => s + f.belopp, 0))} kr`}
             merke="utestående"
@@ -40,17 +57,33 @@ export default async function InterntFaktureringSide() {
             tone={forfallna.length ? "brudd" : undefined}
           />
           <Tall
-            verdi={`${NOK(FAKTUROR.filter((f) => f.status === "betald").reduce((s, f) => s + f.belopp, 0))} kr`}
+            verdi={`${NOK(alle.filter((f) => f.status === "betald").reduce((s, f) => s + f.belopp, 0))} kr`}
             merke="betalt"
           />
         </Rad>
 
-        <Kort note="demodata från relavo-staff.html">
+        <Skjema knapp="+ Ny faktura" tittel="Ny faktura" handling={nyFaktura}>
+          <Felt navn="kunde_navn" merke="Kund" krav plassholder="Bergen kommune" />
+          <Felt
+            navn="organisasjon_id"
+            merke="Koppla till konto"
+            val={[
+              { verdi: "", tekst: "Inget konto" },
+              ...(organisasjoner ?? []).map((o) => ({ verdi: o.id, tekst: o.navn })),
+            ]}
+          />
+          <Felt navn="belopp" merke="Belopp i kr" krav type="number" plassholder="12900" />
+          <Felt navn="forfall" merke="Förfaller" krav type="date" />
+          <Felt navn="status" merke="Status" val={STATUS} standard="obetald" />
+        </Skjema>
+
+        <Kort>
           <Tabell
-            kolonner={["Fakturanr", "Konto", "Belopp", "Förfaller", "Status"]}
-            rader={FAKTUROR.map((f) => [
-              <span key="n" className="font-mono text-[12px] text-accent">{f.nr}</span>,
-              <span key="k" className="font-semibold whitespace-nowrap">{kontoNamn(f.konto)}</span>,
+            kolonner={["Fakturanr", "Kund", "Belopp", "Förfaller", "Status"]}
+            tom="Inga fakturor ännu."
+            rader={alle.map((f) => [
+              <span key="n" className="font-mono text-[12px] text-accent">{f.nummer}</span>,
+              <span key="k" className="font-semibold whitespace-nowrap">{f.kunde_navn}</span>,
               <span key="b" className="tabular-nums whitespace-nowrap">{NOK(f.belopp)} kr</span>,
               <span
                 key="f"
@@ -58,9 +91,12 @@ export default async function InterntFaktureringSide() {
               >
                 {f.forfall}
               </span>,
-              <Merke key="s" tone={TONE[f.status] ?? "noytral"}>
-                {FAKT_STATUS[f.status as keyof typeof FAKT_STATUS] ?? f.status}
-              </Merke>,
+              <div key="s" className="flex items-center gap-2">
+                <Merke tone={TONE[f.status] ?? "noytral"}>
+                  {STATUS.find((s) => s.verdi === f.status)?.tekst ?? f.status}
+                </Merke>
+                <StatusVelger id={f.id} status={f.status} val={STATUS} handling={settFakturaStatus} />
+              </div>,
             ])}
           />
         </Kort>

@@ -1,19 +1,38 @@
 import Link from "next/link";
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Sidehode, Kort, Tabell, Merke } from "@/components/ui";
-import { ARENDEN, LARM, LEADS, FAKTUROR, KONTON } from "@/lib/demo/staff";
-
-const kontoNamn = (id: string) => KONTON.find((k) => k.id === id)?.namn ?? id;
+import { Sidehode, Kort, Tabell, Merke, NOK } from "@/components/ui";
+import { LARM } from "@/lib/demo/staff";
 
 /**
- * Samlar det som faktiskt kräver en människa i dag, från de andra vyerna.
- * Poängen är att slippa gå igenom sju flikar för att se om något brinner.
+ * Samlar det som faktiskt kräver en människa i dag, från de riktiga
+ * tabellerna. Poängen är att slippa gå igenom sju flikar för att se om
+ * något brinner. Källhälsolarmen är ännu demodata — de har ingen tabell.
  */
 export default async function InterntAttgoraSide() {
-  await krevAnsatt();
+  const { supabase } = await krevAnsatt();
 
-  const idag = new Date("2026-08-31");
+  const idag = new Date().toISOString().slice(0, 10);
+
+  const [{ data: fakturaer }, { data: leads }, { data: offerter }] =
+    await Promise.all([
+      supabase
+        .from("fakturaer")
+        .select("id, nummer, kunde_navn, belopp, forfall, status")
+        .in("status", ["obetald", "forfallen"]),
+      supabase
+        .from("leads")
+        .select("id, bolag, nasta, notis, status")
+        .not("status", "in", '("vunnen","forlorad")')
+        .not("nasta", "is", null)
+        .lte("nasta", idag),
+      supabase
+        .from("offerter")
+        .select("id, kund, giltig_til, status")
+        .eq("status", "skickad")
+        .not("giltig_til", "is", null)
+        .lte("giltig_til", idag),
+    ]);
 
   const poster: {
     hastar: boolean;
@@ -23,13 +42,34 @@ export default async function InterntAttgoraSide() {
     lank: string;
   }[] = [];
 
-  for (const a of ARENDEN.filter((x) => x.status === "obesvarad")) {
+  for (const f of fakturaer ?? []) {
+    const forfallen = f.status === "forfallen" || f.forfall < idag;
     poster.push({
-      hastar: a.vantat > 2,
-      vad: `Obesvarat ärende ${a.id}`,
-      detalj: a.emne,
-      var: `${kontoNamn(a.konto)} · väntat ${a.vantat} d`,
-      lank: "/internt/support",
+      hastar: forfallen,
+      vad: `${forfallen ? "Förfallen" : "Obetald"} faktura ${f.nummer}`,
+      detalj: `${NOK(f.belopp)} kr`,
+      var: `${f.kunde_navn} · förfaller ${f.forfall}`,
+      lank: "/internt/fakturering",
+    });
+  }
+
+  for (const o of offerter ?? []) {
+    poster.push({
+      hastar: true,
+      vad: `Offert till ${o.kund} har gått ut`,
+      detalj: "Skickad, men giltighetstiden är passerad",
+      var: `gick ut ${o.giltig_til}`,
+      lank: "/internt/offerter",
+    });
+  }
+
+  for (const l of leads ?? []) {
+    poster.push({
+      hastar: false,
+      vad: `Följ upp ${l.bolag}`,
+      detalj: l.notis ?? "Nästa steg är passerat",
+      var: `skulle följts upp ${l.nasta}`,
+      lank: "/internt/leads",
     });
   }
 
@@ -38,28 +78,8 @@ export default async function InterntAttgoraSide() {
       hastar: true,
       vad: `Larm: ${l.kalla}`,
       detalj: l.regel,
-      var: `aktivt sedan ${l.sedan}`,
+      var: `aktivt sedan ${l.sedan} · demodata`,
       lank: "/internt/kallor",
-    });
-  }
-
-  for (const f of FAKTUROR.filter((x) => x.status === "forfallen")) {
-    poster.push({
-      hastar: true,
-      vad: `Förfallen faktura ${f.nr}`,
-      detalj: `${f.belopp} kr`,
-      var: `${kontoNamn(f.konto)} · förföll ${f.forfall}`,
-      lank: "/internt/fakturering",
-    });
-  }
-
-  for (const l of LEADS.filter((x) => x.nasta && new Date(x.nasta) <= idag)) {
-    poster.push({
-      hastar: false,
-      vad: `Följ upp ${l.bolag}`,
-      detalj: l.notis,
-      var: `nästa steg ${l.nasta}`,
-      lank: "/internt/leads",
     });
   }
 
@@ -70,7 +90,7 @@ export default async function InterntAttgoraSide() {
       <div className="px-8 py-6">
         <Sidehode
           tittel="Att göra"
-          tekst="Det som kräver en människa i dag, hämtat från ärenden, larm, fakturor och leads. Rött hastar."
+          tekst="Det som kräver en människa i dag, hämtat från fakturor, offerter, leads och källhälsa. Rött hastar."
         />
         <Kort note={`${poster.length} poster`}>
           <Tabell
