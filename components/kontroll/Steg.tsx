@@ -96,11 +96,14 @@ export function Felt({
   id,
   merke,
   hint,
+  feil = false,
   children,
 }: {
   id: string;
   merke: string;
   hint?: string;
+  /** Farger hinten rød. Brukes når hinten forklarer hva som er galt. */
+  feil?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -109,7 +112,11 @@ export function Felt({
         {merke}
       </label>
       {children}
-      {hint && <div className="text-[11.5px] text-faint mt-1.5">{hint}</div>}
+      {hint && (
+        <div className={`text-[11.5px] mt-1.5 ${feil ? "text-bad" : "text-faint"}`}>
+          {hint}
+        </div>
+      )}
     </div>
   );
 }

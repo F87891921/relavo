@@ -53,7 +53,12 @@ export function NyKontrollVeiviser() {
   const [kjorer, setKjorer] = useState(false);
   const [kjorFeil, setKjorFeil] = useState("");
 
+  // Bare sifrene teller. Alle norske organisasjonsnumre er ni siffer —
+  // AS, ASA, ENK og kommune bruker samme format, så det finnes ingen
+  // selskapsform å skille på her. Formen kommer først av oppslaget.
+  const sifre = orgnrTekst.replace(/\D/g, "");
   const validering = validerOrgnr(orgnrTekst);
+  const fullLengde = sifre.length === 9;
 
   async function slaOpp() {
     setOppslagFeil("");
@@ -96,6 +101,19 @@ export function NyKontrollVeiviser() {
     router.refresh();
   }
 
+  /**
+   * Teller sifrene mens man skriver. Poenget er at feilen skal oppdages i
+   * feltet, ikke etter et bomtur til registeret.
+   */
+  function hint() {
+    if (sifre.length === 0)
+      return "Ni siffer. Kontrollsifferet valideres med modulus 11 før oppslag.";
+    if (!fullLengde)
+      return `${sifre.length} av 9 siffer — ${9 - sifre.length} igjen.`;
+    if (!validering.ok) return validering.feil;
+    return "Ni siffer, kontrollsifferet stemmer. Klar for oppslag.";
+  }
+
   return (
     <>
       <Steg na={steg} />
@@ -106,28 +124,43 @@ export function NyKontrollVeiviser() {
             <Felt
               id="orgnr"
               merke="Organisasjonsnummer"
-              hint="Ni siffer. Kontrollsifferet valideres med modulus 11 før oppslag."
+              hint={hint()}
+              feil={fullLengde && !validering.ok}
             >
               <input
                 id="orgnr"
                 inputMode="numeric"
-                maxLength={11}
                 autoComplete="off"
                 placeholder="000 000 000"
                 value={orgnrTekst}
                 onChange={(e) => {
-                  setOrgnrTekst(e.target.value);
+                  // Grupperer i treere mens man skriver, slik Brønnøysund
+                  // selv skriver dem. Overskytende siffer forkastes heller
+                  // enn å bli stående usynlig utenfor feltet.
+                  const rene = e.target.value.replace(/\D/g, "").slice(0, 9);
+                  setOrgnrTekst(formaterOrgnr(rene));
                   setEnhet(null);
                   setOppslagFeil("");
                 }}
-                className={`${INPUT} font-mono tracking-wide`}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && fullLengde && validering.ok) {
+                    e.preventDefault();
+                    slaOpp();
+                  }
+                }}
+                aria-invalid={fullLengde && !validering.ok}
+                className={`${INPUT} font-mono tracking-wide ${
+                  fullLengde && !validering.ok
+                    ? "border-bad focus:border-bad focus:ring-bad-bg"
+                    : ""
+                }`}
               />
             </Felt>
 
             <button
               type="button"
               onClick={slaOpp}
-              disabled={slaarOpp}
+              disabled={slaarOpp || !validering.ok}
               className="text-sm font-semibold px-4 py-2.5 rounded-xl bg-surface shadow-card hover:bg-surface2 active:scale-[0.97] transition disabled:opacity-60"
             >
               {slaarOpp ? "Slår opp …" : "Slå opp i Enhetsregisteret"}
