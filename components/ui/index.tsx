@@ -1,5 +1,26 @@
 import type { ReactNode } from "react";
 
+/**
+ * Ytterrammen på hver side. Bredden lå før på fire ulike verdier — tre
+ * egne maks-bredder og ti sider uten noen — så sidene sprang i bredden når
+ * man byttet mellom dem.
+ *
+ * smal={true} for skjemasider, der linjer på 1100 piksler blir tunge å lese.
+ */
+export function Side({
+  smal = false,
+  children,
+}: {
+  smal?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div className={`px-8 py-6 ${smal ? "max-w-[880px]" : "max-w-[1180px]"}`}>
+      {children}
+    </div>
+  );
+}
+
 /** Sidetittel med undertekst. Samme oppsett på alle skjermbilder. */
 export function Sidehode({ tittel, tekst }: { tittel: string; tekst: string }) {
   return (

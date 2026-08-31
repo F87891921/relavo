@@ -1,6 +1,6 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Sidehode, Kort, Tabell, Merke, Tall, Rad, type Tone } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, type Tone } from "@/components/ui";
 import { Skjema, Felt, StatusVelger } from "@/components/internt/Skjema";
 import { nyttLead, settLeadStatus } from "@/app/internt/handlinger";
 
@@ -36,7 +36,7 @@ export default async function InterntLeadsSide() {
 
   return (
     <StaffShell aktivtSteg="Leads">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Leads"
           tekst="Intresserade som ännu inte är kunder. Kolumnen nästa steg är den som avgör om något faller mellan stolarna."
@@ -112,7 +112,7 @@ export default async function InterntLeadsSide() {
             ])}
           />
         </Kort>
-      </div>
+      </Side>
     </StaffShell>
   );
 }

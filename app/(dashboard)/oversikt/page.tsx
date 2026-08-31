@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
-import { Sidehode, Kort, Tabell, Merke, Tall, Rad, Stripe } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, Stripe } from "@/components/ui";
 import { HANDLING, KJORINGER, SUPPLIERS } from "@/lib/demo/app";
 
 const navnFor = (org: string) =>
@@ -31,7 +31,7 @@ export default async function OversiktSide() {
 
   return (
     <DashboardShell aktivtSteg="Oversikt">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Oversikt"
           tekst="Status på kontrollplikten, og det som krever noe av deg i dag."
@@ -96,7 +96,7 @@ export default async function OversiktSide() {
             />
           </Kort>
         </div>
-      </div>
+      </Side>
     </DashboardShell>
   );
 }

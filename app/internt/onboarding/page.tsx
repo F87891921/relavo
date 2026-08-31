@@ -1,6 +1,6 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Sidehode, Kort, Tabell, Merke, Stripe } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, Stripe } from "@/components/ui";
 import { KONTON, PLANER } from "@/lib/demo/staff";
 
 /**
@@ -24,7 +24,7 @@ export default async function InterntOnboardingSide() {
 
   return (
     <StaffShell aktivtSteg="Onboarding">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Onboarding"
           tekst="Var i uppstarten varje kund står. Ett konto räknas som igång först när det kört sin första kontroll, inte när avtalet är påskrivet."
@@ -58,7 +58,7 @@ export default async function InterntOnboardingSide() {
             ])}
           />
         </Kort>
-      </div>
+      </Side>
     </StaffShell>
   );
 }

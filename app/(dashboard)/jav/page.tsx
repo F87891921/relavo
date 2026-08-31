@@ -1,6 +1,6 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
-import { Sidehode, Kort, Tabell, Merke, Tall, Rad, type Tone } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, type Tone } from "@/components/ui";
 
 const KOBLING: Record<string, { tekst: string; tone: Tone }> = {
   styre: { tekst: "Styre", tone: "brudd" },
@@ -48,7 +48,7 @@ export default async function JavSide() {
 
   return (
     <DashboardShell aktivtSteg="Interessekonflikt">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Interessekonflikt"
           tekst="Styret og daglig leder hos leverandøren krysset mot dem dere har registrert som deltakere i anskaffelsen. Et treff er ikke en avgjørelse — inhabilitet etter forvaltningsloven § 6 må vurderes av en person."
@@ -153,7 +153,7 @@ export default async function JavSide() {
             })}
           />
         </Kort>
-      </div>
+      </Side>
     </DashboardShell>
   );
 }

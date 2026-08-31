@@ -1,6 +1,6 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Sidehode, Kort, Tabell, Merke, Tall, Rad } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad } from "@/components/ui";
 import { KALLOR, LARM, NYCKLAR } from "@/lib/demo/staff";
 import { SynkRenhold } from "@/components/internt/SynkRenhold";
 
@@ -17,7 +17,7 @@ export default async function InterntKallorSide() {
 
   return (
     <StaffShell aktivtSteg="Källhälsa">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Källhälsa"
           tekst="Svarstider, felfrekvens och kostnad per register. Ligger en källa nere ska kundens rapport säga det, inte tiga om det."
@@ -95,7 +95,7 @@ export default async function InterntKallorSide() {
             ])}
           />
         </Kort>
-      </div>
+      </Side>
     </StaffShell>
   );
 }

@@ -1,6 +1,6 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Sidehode, Kort, Tabell, Merke, Tall, Rad, type Tone } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, type Tone } from "@/components/ui";
 import { ARENDEN, ARENDE_STATUS, KONTON } from "@/lib/demo/staff";
 
 const TONE: Record<string, Tone> = {
@@ -19,7 +19,7 @@ export default async function InterntSupportSide() {
 
   return (
     <StaffShell aktivtSteg="Support">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Support"
           tekst="Ärenden från alla konton. Kolumnen väntat räknar dagar sedan kunden senast hörde något från oss."
@@ -68,7 +68,7 @@ export default async function InterntSupportSide() {
             ])}
           />
         </Kort>
-      </div>
+      </Side>
     </StaffShell>
   );
 }

@@ -1,6 +1,6 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
-import { Sidehode } from "@/components/ui";
+import { Side, Sidehode } from "@/components/ui";
 import { KjedeListe, type Kjede } from "@/components/kjede/KjedeListe";
 import { SUPPLIERS } from "@/lib/demo/app";
 import { formaterOrgnr } from "@/lib/orgnr";
@@ -23,13 +23,13 @@ export default async function KjedeSide() {
 
   return (
     <DashboardShell aktivtSteg="Leverandørkjede">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Leverandørkjede"
           tekst="§ 5k tillater høyst to ledd underleverandører i bygg, anlegg og renhold. Overskridelser flagges — og de to lovlige utveiene er å kutte leddet eller søke dispensasjon hos oppdragsgiver."
         />
         <KjedeListe kjeder={kjeder} />
-      </div>
+      </Side>
     </DashboardShell>
   );
 }

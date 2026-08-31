@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Sidehode, Kort, Tabell, Merke, NOK } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, NOK } from "@/components/ui";
 import { LARM } from "@/lib/demo/staff";
 
 /**
@@ -87,7 +87,7 @@ export default async function InterntAttgoraSide() {
 
   return (
     <StaffShell aktivtSteg="Att göra">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Att göra"
           tekst="Det som kräver en människa i dag, hämtat från fakturor, offerter, leads och källhälsa. Rött hastar."
@@ -111,7 +111,7 @@ export default async function InterntAttgoraSide() {
             ])}
           />
         </Kort>
-      </div>
+      </Side>
     </StaffShell>
   );
 }

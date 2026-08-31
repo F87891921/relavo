@@ -1,6 +1,6 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Sidehode, Kort, Tabell, Merke } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke } from "@/components/ui";
 import { TEAM, REVISION } from "@/lib/demo/staff";
 
 export default async function InterntTeamSide() {
@@ -8,7 +8,7 @@ export default async function InterntTeamSide() {
 
   return (
     <StaffShell aktivtSteg="Team och behörighet">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Team och behörighet"
           tekst="Vilka vi är och vad var och en får se. Behörighet att läsa kunddata är skild från behörighet att ändra inställningar — den ena följer inte av den andra."
@@ -58,7 +58,7 @@ export default async function InterntTeamSide() {
             ])}
           />
         </Kort>
-      </div>
+      </Side>
     </StaffShell>
   );
 }

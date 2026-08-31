@@ -1,6 +1,6 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
-import { Sidehode, Kort, Tabell, Merke, Stripe } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, Stripe } from "@/components/ui";
 import { planFor } from "@/lib/plan";
 import { MIN_LENGDE } from "@/lib/passord";
 import {
@@ -14,7 +14,7 @@ import {
 export default async function KontoSide() {
   const { supabase, user, profil } = await krevProfil();
 
-  const [{ data: org }, { data: kolleger }] = await Promise.all([
+  const [{ data: org }, { data: kolleger }, { count: antallLeverandorer }, { count: antallKontroller }] = await Promise.all([
     supabase
       .from("organisasjoner")
       .select("navn, org_nr, plan, opprettet")
@@ -25,6 +25,8 @@ export default async function KontoSide() {
       .select("id, navn, rolle, opprettet")
       .eq("organisasjon_id", profil.organisasjon_id)
       .order("opprettet"),
+    supabase.from("leverandorer").select("id", { count: "exact", head: true }),
+    supabase.from("kontroller").select("id", { count: "exact", head: true }),
   ]);
 
   const plan = planFor(org?.plan);
@@ -34,7 +36,7 @@ export default async function KontoSide() {
 
   return (
     <DashboardShell aktivtSteg="Konto">
-      <div className="px-8 py-6 max-w-[860px]">
+      <Side smal>
         <Sidehode
           tittel="Kontoinnstillinger"
           tekst="Dine egne opplysninger, organisasjonen du hører til, og hvem som har tilgang."
@@ -156,7 +158,38 @@ export default async function KontoSide() {
             ])}
           />
         </Kort>
-      </div>
+
+        {/* Lå før på en egen side som het Diagnostikk. Det er kontoopplysninger,
+            ikke et eget verktøy — og «Diagnostikk» i kundens meny så ut som noe
+            var i stykker. */}
+        <Kort tittel="Teknisk" note="oppgi disse ved kontakt med brukerstøtte" className="mt-4">
+          <Tabell
+            kolonner={["Opplysning", "Verdi"]}
+            rader={[
+              ["Leverandører lagret", String(antallLeverandorer ?? 0)],
+              ["Kontroller lagret", String(antallKontroller ?? 0)],
+              [
+                "Organisasjons-id",
+                <span key="o" className="font-mono text-[11.5px]">
+                  {profil.organisasjon_id}
+                </span>,
+              ],
+              [
+                "Din bruker-id",
+                <span key="u" className="font-mono text-[11.5px]">
+                  {user.id}
+                </span>,
+              ],
+              [
+                "Opprettet",
+                org?.opprettet
+                  ? new Date(org.opprettet).toLocaleDateString("nb-NO")
+                  : "—",
+              ],
+            ]}
+          />
+        </Kort>
+      </Side>
     </DashboardShell>
   );
 }

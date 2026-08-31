@@ -1,6 +1,6 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Sidehode, Kort, Tabell, Merke } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke } from "@/components/ui";
 import { LOGG } from "@/lib/demo/staff";
 
 export default async function InterntLoggSide() {
@@ -8,7 +8,7 @@ export default async function InterntLoggSide() {
 
   return (
     <StaffShell aktivtSteg="Åtkomstlogg">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Åtkomstlogg"
           tekst="Vem hos oss har öppnat vilken kunds data, och varför. Loggen ska kunna visas upp för kunden utan att vi först måste städa i den."
@@ -38,7 +38,7 @@ export default async function InterntLoggSide() {
             ])}
           />
         </Kort>
-      </div>
+      </Side>
     </StaffShell>
   );
 }

@@ -1,6 +1,6 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Sidehode, Kort, Tabell, Merke, Tall, Rad, NOK, type Tone } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, NOK, type Tone } from "@/components/ui";
 import { Skjema, Felt, StatusVelger } from "@/components/internt/Skjema";
 import { nyFaktura, settFakturaStatus } from "@/app/internt/handlinger";
 
@@ -39,7 +39,7 @@ export default async function InterntFaktureringSide() {
 
   return (
     <StaffShell aktivtSteg="Fakturering">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Fakturering"
           tekst="Fakturor per konto, med förfallodatum och status. Fakturanumret sätts automatiskt som löpnummer per år."
@@ -100,7 +100,7 @@ export default async function InterntFaktureringSide() {
             ])}
           />
         </Kort>
-      </div>
+      </Side>
     </StaffShell>
   );
 }

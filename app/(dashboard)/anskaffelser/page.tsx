@@ -1,6 +1,6 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
-import { Sidehode, Kort, Tabell, Merke } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke } from "@/components/ui";
 import { ANSKAFFELSER } from "@/lib/demo/app";
 
 export default async function AnskaffelserSide() {
@@ -8,7 +8,7 @@ export default async function AnskaffelserSide() {
 
   return (
     <DashboardShell aktivtSteg="Anskaffelser">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Anskaffelser"
           tekst="Avtalene kontrollene henger på. Saksnummeret her er det samme du fører i anskaffelsesprotokollen."
@@ -26,7 +26,7 @@ export default async function AnskaffelserSide() {
             ])}
           />
         </Kort>
-      </div>
+      </Side>
     </DashboardShell>
   );
 }

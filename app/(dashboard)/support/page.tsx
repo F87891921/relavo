@@ -1,6 +1,6 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
-import { Sidehode, Kort, Tabell, Merke, type Tone } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, type Tone } from "@/components/ui";
 import { SAKER, SAK_STATUS } from "@/lib/demo/app";
 
 const TONE: Record<string, Tone> = {
@@ -14,7 +14,7 @@ export default async function SupportSide() {
 
   return (
     <DashboardShell aktivtSteg="Brukerstøtte">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Brukerstøtte"
           tekst="Saker dere har meldt inn. Saker merket med innsyn betyr at dere har gitt Relavo lov til å se dataene saken gjelder."
@@ -46,7 +46,7 @@ export default async function SupportSide() {
             ])}
           />
         </Kort>
-      </div>
+      </Side>
     </DashboardShell>
   );
 }

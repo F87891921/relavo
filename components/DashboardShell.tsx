@@ -19,7 +19,6 @@ export const KUNDEMENY = [
   { navn: "ESPD", href: "/espd" },
   { navn: "Datakilder", href: "/kilder" },
   { navn: "Brukerstøtte", href: "/support" },
-  { navn: "Diagnostikk", href: "/diagnostikk" },
 ];
 
 /**
@@ -34,16 +33,12 @@ export async function DashboardShell({
   aktivtSteg: string;
   children: React.ReactNode;
 }) {
-  const { supabase, user, profil } = await krevProfil();
-
-  const { data: org } = await supabase
-    .from("organisasjoner")
-    .select("navn")
-    .eq("id", profil.organisasjon_id)
-    .maybeSingle();
+  // krevProfil er cachet per forespørsel, så dette koster ingenting ekstra
+  // selv om siden allerede har kalt den.
+  const { user, profil, organisasjonNavn } = await krevProfil();
 
   const ansatt = profil.ansatt;
-  const organisasjon = org?.navn ?? null;
+  const organisasjon = organisasjonNavn;
   const brukernavn = profil.navn ?? null;
   const epost = user.email ?? null;
 

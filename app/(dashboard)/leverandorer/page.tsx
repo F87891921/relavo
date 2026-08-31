@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
+import { Side } from "@/components/ui";
 
 /**
  * Erstatter prototypens hardkodede SUPPLIERS-array med et ekte spørring mot
@@ -43,7 +44,7 @@ export default async function LeverandorerSide() {
 
   return (
     <DashboardShell aktivtSteg="Leverandører">
-      <div className="px-8 py-6">
+      <Side>
         <h1 className="text-2xl font-semibold tracking-tight mb-1">Leverandører</h1>
         <p className="text-sm text-dim mb-6">
           Alle selskaper knyttet til aktive kontrakter.
@@ -120,7 +121,7 @@ export default async function LeverandorerSide() {
             </tbody>
           </table>
         </div>
-      </div>
+      </Side>
     </DashboardShell>
   );
 }

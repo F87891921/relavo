@@ -1,6 +1,6 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
-import { Sidehode, Kort, Tabell, Merke, type Tone } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, type Tone } from "@/components/ui";
 import { KILDER } from "@/lib/demo/app";
 
 /**
@@ -19,7 +19,7 @@ export default async function KilderSide() {
 
   return (
     <DashboardShell aktivtSteg="Datakilder">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Datakilder"
           tekst="Hvilke registre som svarer, og hvor ferske svarene er. En kilde som ikke svarer står oppført som ikke kontrollert i rapporten — den utelates aldri."
@@ -44,7 +44,7 @@ export default async function KilderSide() {
             ])}
           />
         </Kort>
-      </div>
+      </Side>
     </DashboardShell>
   );
 }

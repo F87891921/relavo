@@ -1,6 +1,6 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Sidehode, Kort, Tabell, Merke, Tall, Rad, NOK, type Tone } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, NOK, type Tone } from "@/components/ui";
 import { Skjema, Felt, StatusVelger } from "@/components/internt/Skjema";
 import { nyOfferte, settOffertStatus } from "@/app/internt/handlinger";
 
@@ -48,7 +48,7 @@ export default async function InterntOfferterSide() {
 
   return (
     <StaffShell aktivtSteg="Offerter">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Offerter"
           tekst="Skickade offerter, vad de är värda och när de går ut. Kontraktsvärdet är årspriset efter rabatt gånger antal år."
@@ -118,7 +118,7 @@ export default async function InterntOfferterSide() {
             ])}
           />
         </Kort>
-      </div>
+      </Side>
     </StaffShell>
   );
 }

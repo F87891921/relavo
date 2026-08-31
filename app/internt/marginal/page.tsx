@@ -1,6 +1,6 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Sidehode, Kort, Tabell, Merke, Tall, Rad, NOK } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, NOK } from "@/components/ui";
 import { KONTON, PLANER, KALLOR } from "@/lib/demo/staff";
 
 /**
@@ -28,7 +28,7 @@ export default async function InterntMarginalSide() {
 
   return (
     <StaffShell aktivtSteg="Marginal">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Marginal"
           tekst="Vad varje konto ger mot vad registeruppslagen kostar oss. Konton som går med förlust står rött."
@@ -67,7 +67,7 @@ export default async function InterntMarginalSide() {
             ])}
           />
         </Kort>
-      </div>
+      </Side>
     </StaffShell>
   );
 }

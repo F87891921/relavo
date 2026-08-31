@@ -1,6 +1,6 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
-import { Sidehode, Kort, Tabell, Merke, Stripe } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, Stripe } from "@/components/ui";
 import { ANSKAFFELSER } from "@/lib/demo/app";
 
 /**
@@ -33,7 +33,7 @@ export default async function TilbudSide() {
 
   return (
     <DashboardShell aktivtSteg="Unormalt lave tilbud">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Unormalt lave tilbud"
           tekst="Avviket regnes mot medianen av de øvrige tilbudene. Er et tilbud unormalt lavt, plikter oppdragsgiver etter § 24-9 å be tilbyderen redegjøre før tilbudet eventuelt avvises."
@@ -97,7 +97,7 @@ Frist for svar er ti virkedager fra dette brevet.`}
             </div>
           </Kort>
         )}
-      </div>
+      </Side>
     </DashboardShell>
   );
 }

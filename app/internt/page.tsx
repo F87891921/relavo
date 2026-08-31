@@ -1,6 +1,6 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Sidehode, Kort, Tabell, Merke, Tall, Rad, Stripe, NOK } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, Stripe, NOK } from "@/components/ui";
 import { KONTON, PLANER } from "@/lib/demo/staff";
 
 export default async function InterntKontonSide() {
@@ -13,7 +13,7 @@ export default async function InterntKontonSide() {
 
   return (
     <StaffShell aktivtSteg="Konton">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Konton"
           tekst="Alla kundkonton, vilken plan de ligger på och hur mycket av kvoten de använt."
@@ -62,7 +62,7 @@ export default async function InterntKontonSide() {
             })}
           />
         </Kort>
-      </div>
+      </Side>
     </StaffShell>
   );
 }

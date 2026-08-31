@@ -1,6 +1,6 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Sidehode, Kort, Merke, Tall, Rad, type Tone } from "@/components/ui";
+import { Side, Sidehode, Kort, Merke, Tall, Rad, type Tone } from "@/components/ui";
 import { Kredittsjekk } from "@/components/internt/Kredittsjekk";
 import { formaterOrgnr } from "@/lib/orgnr";
 
@@ -29,7 +29,7 @@ export default async function InterntKredittSide() {
 
   return (
     <StaffShell aktivtSteg="Kreditkontroll">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="Kreditkontroll"
           tekst="Kontroll av kunder och blivande kunder innan vi fakturerar. Varje körning sparas oförändrad med tidpunkt, så den kan hämtas fram i efterhand."
@@ -95,7 +95,7 @@ export default async function InterntKredittSide() {
             </Kort>
           ))}
         </div>
-      </div>
+      </Side>
     </StaffShell>
   );
 }

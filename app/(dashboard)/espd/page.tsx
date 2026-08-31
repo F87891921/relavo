@@ -1,6 +1,6 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
-import { Sidehode, Kort, Tabell, Merke, type Tone } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Merke, type Tone } from "@/components/ui";
 import { ESPD, ESPD_STATUS, ESPD_FASE, SUPPLIERS } from "@/lib/demo/app";
 
 const TONE: Record<string, Tone> = {
@@ -18,7 +18,7 @@ export default async function EspdSide() {
 
   return (
     <DashboardShell aktivtSteg="ESPD">
-      <div className="px-8 py-6">
+      <Side>
         <Sidehode
           tittel="ESPD og egenerklæringer"
           tekst="Egenerklæringene dekker den delen av kvalifikasjonsvurderingen registrene ikke kan svare på. Motstrid mot registrene er en avvisningsgrunn etter § 24-2 tredje ledd."
@@ -42,7 +42,7 @@ export default async function EspdSide() {
             ])}
           />
         </Kort>
-      </div>
+      </Side>
     </DashboardShell>
   );
 }
