@@ -23,7 +23,7 @@ export function LandingFooter() {
             <Link href="/juridisk#vilkar">Vilkår</Link>
             <Link href="/juridisk#personvern">Personvern</Link>
             <Link href="/juridisk#cookies">Cookies</Link>
-            <Link href="/juridisk#kontakt">Kontakt</Link>
+            <Link href="/kontakt">Kontakt</Link>
           </div>
         </div>
       </div>

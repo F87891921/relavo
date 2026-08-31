@@ -12,9 +12,9 @@ export function Close() {
           <Link href="/logg-inn" className="btn btn-primary btn-lg">
             Kom i gang
           </Link>
-          <a className="btn btn-ghost btn-lg" href="#priser">
-            Se priser
-          </a>
+          <Link href="/kontakt?om=demo" className="btn btn-ghost btn-lg">
+            Snakk med oss
+          </Link>
         </div>
       </div>
     </section>

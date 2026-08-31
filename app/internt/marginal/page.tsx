@@ -1,4 +1,4 @@
-import { krevAnsatt } from "@/lib/tilgang-ansatt";
+import { krevSuperadmin } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
 import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, NOK } from "@/components/ui";
 import { KONTON, PLANER, KALLOR } from "@/lib/demo/staff";
@@ -12,7 +12,7 @@ const KOSTNAD_PER_UPPSLAG =
   KALLOR.reduce((s, k) => s + k.kostnad, 0) / Math.max(1, KALLOR.length);
 
 export default async function InterntMarginalSide() {
-  await krevAnsatt();
+  await krevSuperadmin();
 
   const rader = KONTON.map((k) => {
     const plan = PLANER[k.plan as keyof typeof PLANER];

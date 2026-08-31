@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { RelavoLogo } from "./RelavoLogo";
 
 /**
@@ -6,28 +7,34 @@ import { RelavoLogo } from "./RelavoLogo";
  * skrevet på svensk — det er Relavos eget interne verktøy, mens kundedelen
  * er på norsk. Den forskjellen er bevisst og beholdes.
  */
+/** bara=true betyder att punkten kräver superadmin. */
 export const ANSATTMENY = [
   { navn: "Konton", href: "/internt" },
-  { navn: "Marginal", href: "/internt/marginal" },
-  { navn: "Kreditkontroll", href: "/internt/kreditt" },
-  { navn: "Källhälsa", href: "/internt/kallor" },
   { navn: "Att göra", href: "/internt/attgora" },
+  { navn: "Support", href: "/internt/support" },
+  { navn: "Kontakt", href: "/internt/kontakt" },
   { navn: "Leads", href: "/internt/leads" },
   { navn: "Offerter", href: "/internt/offerter" },
   { navn: "Fakturering", href: "/internt/fakturering" },
   { navn: "Onboarding", href: "/internt/onboarding" },
-  { navn: "Support", href: "/internt/support" },
-  { navn: "Åtkomstlogg", href: "/internt/logg" },
-  { navn: "Team och behörighet", href: "/internt/team" },
+  { navn: "Kreditkontroll", href: "/internt/kreditt" },
+  { navn: "Källhälsa", href: "/internt/kallor" },
+  { navn: "Marginal", href: "/internt/marginal", bara: "superadmin" },
+  { navn: "Åtkomstlogg", href: "/internt/logg", bara: "superadmin" },
+  { navn: "Team och behörighet", href: "/internt/team", bara: "superadmin" },
 ];
 
-export function StaffShell({
+export async function StaffShell({
   aktivtSteg,
   children,
 }: {
   aktivtSteg: string;
   children: React.ReactNode;
 }) {
+  const { profil, user } = await krevAnsatt();
+  const superadmin = profil.ansatt_rolle === "superadmin";
+  const meny = ANSATTMENY.filter((s) => !s.bara || superadmin);
+
   return (
     <div className="min-h-screen flex">
       <aside className="w-[230px] shrink-0 border-r border-border bg-ink px-4 py-5 flex flex-col sticky top-0 h-screen">
@@ -39,7 +46,7 @@ export function StaffShell({
         </div>
 
         <nav className="flex flex-col gap-0.5 overflow-y-auto min-h-0 flex-1">
-          {ANSATTMENY.map((s) => (
+          {meny.map((s) => (
             <Link
               key={s.href}
               href={s.href}
@@ -56,11 +63,19 @@ export function StaffShell({
         </nav>
 
         <div className="shrink-0 pt-4 border-t border-white/15">
+          <div className="px-3 py-2">
+            <div className="text-[12.5px] font-semibold text-white truncate">
+              {profil.navn ?? user.email}
+            </div>
+            <div className="text-[10.5px] text-white/45">
+              {superadmin ? "Superadmin" : "Personal"}
+            </div>
+          </div>
           <Link
             href="/oversikt"
             className="text-[13px] px-3 py-2 rounded-lg text-white/60 hover:bg-white/10 hover:text-white transition block"
           >
-            ← Tilbake til kundevisning
+            ← Tillbaka till kundvyn
           </Link>
         </div>
       </aside>

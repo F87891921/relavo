@@ -1,10 +1,10 @@
-import { krevAnsatt } from "@/lib/tilgang-ansatt";
+import { krevSuperadmin } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
 import { Side, Sidehode, Kort, Tabell, Merke } from "@/components/ui";
 import { LOGG } from "@/lib/demo/staff";
 
 export default async function InterntLoggSide() {
-  await krevAnsatt();
+  await krevSuperadmin();
 
   return (
     <StaffShell aktivtSteg="Åtkomstlogg">

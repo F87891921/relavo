@@ -1,16 +1,28 @@
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { krevProfil } from "@/lib/tilgang";
 
 /**
- * Døren inn til kontopanelet. Krever ansatt-flagget i profiler, ikke
- * rolle = 'administrator' — det siste betyr administrator hos kunden, og
- * skal ikke gi innsyn i marginer, fakturering eller andre kunders data.
+ * To nivåer innad i Relavo.
  *
- * Flagget kan bare settes direkte i databasen. Det finnes ingen vei til å
- * skru det på gjennom appen.
+ * personal   — det daglige: support, leads, tilbud, fakturering, onboarding,
+ *              kredittkontroll, kildehelse.
+ * superadmin — i tillegg marginer per kunde, hvem som har åpnet hvilken
+ *              kundes data, og hvem som har hvilken tilgang.
+ *
+ * Skillet er ikke ansiennitet, men hva som er nødvendig å se for å gjøre
+ * jobben. En som svarer på support trenger ikke vite hva hver kunde koster
+ * oss, og en åtkomstlogg som alle kan lese er ikke en åtkomstlogg.
  */
-export async function krevAnsatt() {
+export const krevAnsatt = cache(async () => {
   const kontekst = await krevProfil();
   if (!kontekst.profil.ansatt) redirect("/oversikt");
   return kontekst;
-}
+});
+
+/** For sidene bare superadmin skal se. */
+export const krevSuperadmin = cache(async () => {
+  const kontekst = await krevAnsatt();
+  if (kontekst.profil.ansatt_rolle !== "superadmin") redirect("/internt");
+  return kontekst;
+});

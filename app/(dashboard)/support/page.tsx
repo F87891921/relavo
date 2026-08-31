@@ -1,51 +1,59 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
-import { Side, Sidehode, Kort, Tabell, Merke, type Tone } from "@/components/ui";
-import { SAKER, SAK_STATUS } from "@/lib/demo/app";
-
-const TONE: Record<string, Tone> = {
-  apen: "aksent",
-  venter: "advarsel",
-  lukket: "noytral",
-};
+import { Side, Sidehode, Tall, Rad } from "@/components/ui";
+import { NySak, SakKort, type Sak } from "@/components/sak/SakTrad";
 
 export default async function SupportSide() {
-  const { profil } = await krevProfil();
+  const { supabase } = await krevProfil();
+
+  const { data: saker } = await supabase
+    .from("saker")
+    .select(
+      "id, kategori, emne, status, varsle_epost, opprettet, oppdatert, sak_svar(id, fra_relavo, forfatter_navn, tekst, opprettet)",
+    )
+    .order("oppdatert", { ascending: false });
+
+  const alle = (saker ?? []) as unknown as Sak[];
+  // Nyeste melding nederst i hver tråd, uansett hva basen returnerte.
+  for (const s of alle)
+    s.sak_svar?.sort((a, b) => a.opprettet.localeCompare(b.opprettet));
+
+  const apne = alle.filter((s) => s.status !== "lukket");
 
   return (
     <DashboardShell aktivtSteg="Brukerstøtte">
-      <Side>
+      <Side smal>
         <Sidehode
           tittel="Brukerstøtte"
-          tekst="Saker dere har meldt inn. Saker merket med innsyn betyr at dere har gitt Relavo lov til å se dataene saken gjelder."
+          tekst="Meld inn en sak og følg svaret her. Velger du varsling, får du e-post når saken får svar eller endrer status."
         />
-        <Kort note="fra prototypens demodata">
-          <Tabell
-            kolonner={["Sak", "Emne", "Kategori", "Innsyn", "Opprettet", "Sist oppdatert", "Status"]}
-            rader={SAKER.map((s) => [
-              <span key="i" className="font-mono text-[12px] text-accent">{s.id}</span>,
-              <div key="e">
-                <div className="font-semibold">{s.emne}</div>
-                {s.svar?.length ? (
-                  <div className="text-[11.5px] text-faint mt-0.5">
-                    {s.svar.length} meldinger
-                  </div>
-                ) : null}
-              </div>,
-              <span key="k" className="text-dim">{s.kategori}</span>,
-              s.innsyn ? (
-                <Merke key="in" tone="aksent">Gitt</Merke>
-              ) : (
-                <span key="in" className="text-faint">Ikke gitt</span>
-              ),
-              <span key="o" className="text-dim whitespace-nowrap">{s.opprettet}</span>,
-              <span key="u" className="text-dim whitespace-nowrap">{s.oppdatert}</span>,
-              <Merke key="s" tone={TONE[s.status] ?? "noytral"}>
-                {SAK_STATUS[s.status as keyof typeof SAK_STATUS] ?? s.status}
-              </Merke>,
-            ])}
+
+        <Rad>
+          <Tall verdi={String(alle.length)} merke="saker totalt" />
+          <Tall verdi={String(apne.length)} merke="åpne" />
+          <Tall
+            verdi={String(alle.filter((s) => s.status === "venter_oss").length)}
+            merke="venter på oss"
           />
-        </Kort>
+          <Tall
+            verdi={String(alle.filter((s) => s.status === "venter_kunde").length)}
+            merke="venter på deg"
+            tone={alle.some((s) => s.status === "venter_kunde") ? "advarsel" : undefined}
+          />
+        </Rad>
+
+        <NySak />
+
+        <div className="space-y-3">
+          {alle.length === 0 && (
+            <div className="bg-surface rounded-card border border-border shadow-card px-5 py-10 text-center text-dim text-sm">
+              Ingen saker ennå. Meld inn en med knappen over.
+            </div>
+          )}
+          {alle.map((s) => (
+            <SakKort key={s.id} sak={s} />
+          ))}
+        </div>
       </Side>
     </DashboardShell>
   );

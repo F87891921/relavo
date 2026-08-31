@@ -23,7 +23,7 @@ export const krevProfil = cache(async () => {
 
   const { data: profil } = await supabase
     .from("profiler")
-    .select("organisasjon_id, navn, rolle, ansatt, organisasjoner(navn)")
+    .select("organisasjon_id, navn, rolle, ansatt, ansatt_rolle, organisasjoner(navn)")
     .eq("id", user.id)
     .maybeSingle();
 

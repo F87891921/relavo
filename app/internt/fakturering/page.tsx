@@ -2,6 +2,7 @@ import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
 import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, NOK, type Tone } from "@/components/ui";
 import { Skjema, Felt, StatusVelger } from "@/components/internt/Skjema";
+import { KundeSok } from "@/components/internt/KundeSok";
 import { nyFaktura, settFakturaStatus } from "@/app/internt/handlinger";
 
 const STATUS = [
@@ -23,7 +24,7 @@ export default async function InterntFaktureringSide() {
 
   const { data: fakturaer } = await supabase
     .from("fakturaer")
-    .select("id, nummer, kunde_navn, belopp, forfall, status, organisasjon_id")
+    .select("id, nummer, kunde_navn, org_nr, referanse, belopp, forfall, status, organisasjon_id")
     .order("forfall", { ascending: false });
 
   const { data: organisasjoner } = await supabase
@@ -63,7 +64,10 @@ export default async function InterntFaktureringSide() {
         </Rad>
 
         <Skjema knapp="+ Ny faktura" tittel="Ny faktura" handling={nyFaktura}>
-          <Felt navn="kunde_navn" merke="Kund" krav plassholder="Bergen kommune" />
+          <KundeSok navn="kunde_navn" merke="Kund" />
+          <Felt navn="org_nr" merke="Organisationsnummer" plassholder="964 338 531" />
+          <Felt navn="fakturaadresse" merke="Fakturaadress" plassholder="Postboks 7700, 5020 Bergen" />
+          <Felt navn="referanse" merke="Er referens" plassholder="K-2026-118" />
           <Felt
             navn="organisasjon_id"
             merke="Koppla till konto"
@@ -83,7 +87,15 @@ export default async function InterntFaktureringSide() {
             tom="Inga fakturor ännu."
             rader={alle.map((f) => [
               <span key="n" className="font-mono text-[12px] text-accent">{f.nummer}</span>,
-              <span key="k" className="font-semibold whitespace-nowrap">{f.kunde_navn}</span>,
+              <div key="k">
+                <div className="font-semibold whitespace-nowrap">{f.kunde_navn}</div>
+                {f.org_nr && (
+                  <div className="text-[11.5px] text-faint font-mono">{f.org_nr}</div>
+                )}
+                {f.referanse && (
+                  <div className="text-[11.5px] text-faint">Ref: {f.referanse}</div>
+                )}
+              </div>,
               <span key="b" className="tabular-nums whitespace-nowrap">{NOK(f.belopp)} kr</span>,
               <span
                 key="f"
