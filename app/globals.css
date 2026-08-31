@@ -3,7 +3,9 @@
 @tailwind utilities;
 
 @layer base {
+  /* Hvit flate. Det som skal skille seg ut er feltene og kortene, ikke
+     bakgrunnen — en grå flate med hvite kort gjør det motsatte. */
   body {
-    @apply bg-canvas text-ink antialiased;
+    @apply bg-surface text-ink antialiased;
   }
 }

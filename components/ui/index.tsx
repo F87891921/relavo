@@ -22,7 +22,7 @@ export function Kort({
   className?: string;
 }) {
   return (
-    <div className={`bg-surface rounded-card shadow-card overflow-hidden ${className}`}>
+    <div className={`bg-surface rounded-card border border-border shadow-card overflow-hidden ${className}`}>
       {tittel && (
         <div className="flex items-baseline justify-between gap-4 px-5 py-3.5 border-b border-border">
           <span className="text-[13.5px] font-semibold">{tittel}</span>
@@ -116,7 +116,7 @@ export function Tall({
   tone?: Tone;
 }) {
   return (
-    <div className="bg-surface rounded-card shadow-card px-5 py-4">
+    <div className="bg-surface rounded-card border border-border shadow-card px-5 py-4">
       <div
         className={`text-[26px] font-bold tracking-tight leading-none ${
           tone === "brudd" ? "text-bad" : tone === "advarsel" ? "text-warn" : ""

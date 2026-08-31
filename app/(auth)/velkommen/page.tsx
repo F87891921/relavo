@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { RelavoMark } from "@/components/RelavoMark";
+import { FELT_FULL } from "@/components/ui/felt";
 
 /**
  * Første skjerm etter at en ny kunde har logget inn. Kontoen finnes i
@@ -84,7 +85,7 @@ export default function VelkommenSide() {
               value={navn}
               onChange={(e) => setNavn(e.target.value)}
               placeholder="Bergen kommune"
-              className="w-full text-[13.5px] px-3 py-2.5 rounded-xl border border-border-strong bg-surface focus:outline-none focus:ring-[3px] focus:ring-accent-light focus:border-accent"
+              className={FELT_FULL}
             />
           </div>
 
@@ -98,7 +99,7 @@ export default function VelkommenSide() {
               value={orgNr}
               onChange={(e) => setOrgNr(e.target.value)}
               placeholder="964 338 531"
-              className="w-full text-[13.5px] px-3 py-2.5 rounded-xl border border-border-strong bg-surface focus:outline-none focus:ring-[3px] focus:ring-accent-light focus:border-accent"
+              className={FELT_FULL}
             />
           </div>
 
@@ -112,7 +113,7 @@ export default function VelkommenSide() {
               value={brukernavn}
               onChange={(e) => setBrukernavn(e.target.value)}
               placeholder="Marit Aasen"
-              className="w-full text-[13.5px] px-3 py-2.5 rounded-xl border border-border-strong bg-surface focus:outline-none focus:ring-[3px] focus:ring-accent-light focus:border-accent"
+              className={FELT_FULL}
             />
           </div>
 
@@ -124,7 +125,7 @@ export default function VelkommenSide() {
               id="plan"
               value={plan}
               onChange={(e) => setPlan(e.target.value)}
-              className="w-full text-[13.5px] px-3 py-2.5 rounded-xl border border-border-strong bg-surface focus:outline-none focus:ring-[3px] focus:ring-accent-light focus:border-accent"
+              className={FELT_FULL}
             >
               {PLANER.map((p) => (
                 <option key={p.verdi} value={p.verdi}>

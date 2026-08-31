@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { RelavoMark } from "@/components/RelavoMark";
 import { MicrosoftLogo } from "@/components/MicrosoftLogo";
+import { FELT_FULL } from "@/components/ui/felt";
 
 /**
  * Erstatter prototypens KONTOER-objekt (et hardkodet passord-i-klartekst
@@ -137,7 +138,7 @@ export default function LoggInnSide() {
               value={epost}
               onChange={(e) => setEpost(e.target.value)}
               placeholder="navn@kommune.no"
-              className="w-full text-[13.5px] px-3 py-2.5 rounded-xl border border-border-strong bg-surface focus:outline-none focus:ring-[3px] focus:ring-accent-light focus:border-accent"
+              className={FELT_FULL}
             />
           </div>
           <div className="mb-3">
@@ -152,7 +153,7 @@ export default function LoggInnSide() {
               value={passord}
               onChange={(e) => setPassord(e.target.value)}
               placeholder="••••••••"
-              className="w-full text-[13.5px] px-3 py-2.5 rounded-xl border border-border-strong bg-surface focus:outline-none focus:ring-[3px] focus:ring-accent-light focus:border-accent"
+              className={FELT_FULL}
             />
           </div>
           {feil && <div className="text-xs text-bad mb-2.5">{feil}</div>}

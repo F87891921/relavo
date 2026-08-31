@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { RelavoMark } from "@/components/RelavoMark";
 import { KAPSEL, avtrykk } from "@/lib/portvakt";
+import { FELT_FULL } from "@/components/ui/felt";
 
 /**
  * Sperresiden. Ligger utenfor (auth)-gruppen fordi den må kunne nås uten
@@ -61,7 +62,7 @@ export default function PortSide({
             required
             autoFocus
             autoComplete="current-password"
-            className="w-full text-[13.5px] px-3 py-2.5 rounded-xl border border-border-strong bg-surface focus:outline-none focus:ring-[3px] focus:ring-accent-light focus:border-accent"
+            className={FELT_FULL}
           />
           {searchParams.feil && (
             <div className="text-xs text-bad mt-2.5">Feil passord.</div>

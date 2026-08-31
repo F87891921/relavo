@@ -1,3 +1,5 @@
+import { FELT_FULL as INPUT } from "@/components/ui/felt";
+export { FELT_FULL as INPUT } from "@/components/ui/felt";
 export const STEGNAVN = [
   "Selskap",
   "Anskaffelse",
@@ -121,5 +123,3 @@ export function Felt({
   );
 }
 
-export const INPUT =
-  "w-full text-[13.5px] px-3 py-2.5 rounded-xl border border-border-strong bg-surface focus:outline-none focus:ring-[3px] focus:ring-accent-light focus:border-accent";

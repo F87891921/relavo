@@ -44,7 +44,7 @@ export default function BetalingSide() {
   const plan = PLANER.find((p) => p.verdi === valgt)!;
 
   return (
-    <div className="min-h-screen bg-canvas px-4 py-[7vh]">
+    <div className="min-h-screen bg-surface px-4 py-[7vh]">
       <div className="w-full max-w-[720px] mx-auto">
         <div className="text-center mb-7">
           <RelavoMark className="w-12 h-auto mx-auto mb-3 text-accent" />
