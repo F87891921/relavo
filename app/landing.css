@@ -1,0 +1,322 @@
+/* Landingssidens egne stiler, portet fra relavo-landing.html.
+   Alt er scopet under .landing slik at dashbordet beholder sitt eget uttrykk.
+   Paletten finnes også i tailwind.config.js — endres den ene, følg med i den andre. */
+
+/* ==========================================================================
+   Landingsside, Attio-idiom.
+   Lånt struktur: kunngjøringspille over overskriften, kort overskrift med
+   én setning under, dobbel CTA, stort produktbilde, stripe med logoer,
+   seksjoner med liten etikett + stor påstand, tallbånd, gjentatt CTA nederst.
+
+   Ikke lånt: farger og typografi. Paletten er Relavos egen.
+   Logostripen er byttet mot datakilder — vi har ingen kundelogoer ennå,
+   og en falsk logovegg er verre enn ingen.
+   ========================================================================== */
+:root{
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --surface:#fff; --surface-2:#f1ecf3; --canvas:#f8f7f9;
+  --border:rgba(40,31,42,0.08); --border-strong:rgba(40,31,42,0.16);
+  --text:#1d1d1f; --text-dim:#86868b; --text-faint:rgba(29,29,31,0.42);
+  --accent:#654b70; --accent-hover:#563f60; --accent-light:rgba(101,75,112,0.08);
+  --green:#1f8a5b; --green-bg:rgba(31,138,91,0.10);
+  --yellow:#b96b1f; --yellow-bg:rgba(185,107,31,0.10);
+  --red:#c43b3b; --red-bg:rgba(196,59,59,0.10);
+  --font-sans:var(--font-inter),-apple-system,BlinkMacSystemFont,sans-serif;
+  --font-mono:var(--font-plex-mono),ui-monospace,monospace;
+}
+html{scroll-behavior:smooth}
+.landing{font-family:var(--font-sans);background:var(--surface);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.landing h1,.landing h2,.landing h3,.landing h4{margin:0;font-weight:600;letter-spacing:-0.03em;line-height:1.1}
+.landing p{margin:0}
+.landing a{color:inherit;text-decoration:none}
+.landing button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
+::selection{background:var(--accent-light)}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.wrap{max-width:1120px;margin:0 auto;padding:0 26px}
+
+/* ---------- Knapper ---------- */
+.btn{border:0;border-radius:10px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap;
+  transition:background 150ms var(--ease-out),transform 110ms var(--ease-out),border-color 150ms var(--ease-out),color 150ms var(--ease-out),box-shadow 150ms var(--ease-out)}
+.btn:active{transform:scale(0.97)}
+.btn-primary{background:var(--accent);color:#fff;padding:10px 18px}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-ghost{background:var(--surface);color:var(--text);padding:10px 17px;box-shadow:0 1px 2px rgba(40,31,42,0.06),0 2px 8px rgba(40,31,42,0.06)}
+.btn-ghost:hover{background:var(--surface-2);box-shadow:0 1px 2px rgba(40,31,42,0.07),0 4px 14px rgba(40,31,42,0.09)}
+.btn-quiet{background:transparent;color:var(--text-dim);padding:9px 12px}
+.btn-quiet:hover{color:var(--text)}
+.btn-lg{font-size:14.5px;padding:13px 24px;border-radius:11px}
+
+/* ---------- Nav ---------- */
+.nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.82);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid var(--border)}
+.nav-in{max-width:1120px;margin:0 auto;padding:13px 26px;display:flex;align-items:center;gap:30px}
+.nav svg{width:96px;display:block}
+.nav-links{display:flex;gap:24px;font-size:13.5px;color:var(--text-dim);font-weight:500}
+.nav-links a{transition:color 140ms var(--ease-out)}
+.nav-links a:hover{color:var(--text)}
+.nav-act{margin-left:auto;display:flex;gap:7px;align-items:center}
+@media(max-width:820px){.nav-links{display:none}}
+
+/* ---------- Hero ---------- */
+.hero{padding:64px 0 0;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-180px;left:50%;transform:translateX(-50%);width:900px;height:540px;
+  background:radial-gradient(ellipse at center, rgba(101,75,112,0.11), rgba(101,75,112,0) 66%);pointer-events:none}
+.pill{position:relative;display:inline-flex;align-items:center;gap:9px;padding:6px 7px 6px 14px;
+  border-radius:100px;background:var(--surface);font-size:12.5px;color:var(--text-dim);margin-bottom:28px;
+  box-shadow:0 1px 2px rgba(40,31,42,0.06),0 3px 12px rgba(40,31,42,0.07);
+  transition:box-shadow 200ms var(--ease-out),transform 130ms var(--ease-out)}
+.pill:hover{box-shadow:0 1px 2px rgba(40,31,42,0.07),0 8px 22px rgba(40,31,42,0.11);transform:translateY(-1px)}
+.pill:active{transform:scale(0.98)}
+.pill b{color:var(--text);font-weight:600}
+.pill em{font-style:normal;background:var(--surface-2);color:var(--accent);font-weight:600;font-size:11.5px;padding:3px 9px;border-radius:100px}
+.hero h1{position:relative;font-size:60px;letter-spacing:-0.045em;line-height:1.04;max-width:15ch;margin:0 auto;font-weight:700}
+.hero .lead{position:relative;font-size:17.5px;color:var(--text-dim);line-height:1.6;max-width:60ch;margin:22px auto 0}
+.hero-cta{position:relative;display:flex;gap:10px;justify-content:center;margin-top:32px;flex-wrap:wrap}
+.hero-note{position:relative;font-size:12.5px;color:var(--text-faint);margin-top:16px}
+
+/* Produktbildet — samme mockup som før, bare ny innramming */
+.shot{position:relative;max-width:1000px;margin:52px auto 0;padding:0 26px}
+.shot-frame{border-radius:16px 16px 0 0;background:var(--surface);overflow:hidden;
+  box-shadow:0 1px 2px rgba(40,31,42,0.04),0 4px 16px rgba(40,31,42,0.06),0 28px 68px rgba(40,31,42,0.12);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 56%,rgba(0,0,0,0.35) 84%,rgba(0,0,0,0) 100%);
+          mask-image:linear-gradient(180deg,#000 0%,#000 56%,rgba(0,0,0,0.35) 84%,rgba(0,0,0,0) 100%)}
+.shot-frame svg{width:100%;height:auto;display:block}
+
+/* ---------- Kildestripe ---------- */
+.sources{padding:26px 0 0;margin-top:34px}
+.sources-l{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;align-items:baseline;
+  font-size:11.5px;color:var(--text-faint);line-height:1.9;opacity:0.8}
+.sources-l b{font-weight:400}
+.sources-l i{font-style:normal;opacity:0.45}
+@media(max-width:700px){.sources-l{font-size:11px;padding:0 22px}}
+
+/* ---------- Seksjoner ---------- */
+.sec{padding:88px 0}
+.sec-alt{background:var(--canvas);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.eyebrow{font-size:12px;font-weight:600;color:var(--accent);letter-spacing:0.02em;margin-bottom:16px}
+.statement{font-size:34px;letter-spacing:-0.035em;line-height:1.14;max-width:22ch}
+.statement span{color:var(--text-dim);font-weight:500}
+.sec-head{margin-bottom:38px}
+.sec-head.center{text-align:center}
+.sec-head.center .statement{margin:0 auto}
+
+/* Funksjonsrutene viser ekte UI-fragment, ikke ikoner */
+.feats{display:grid;grid-template-columns:1.15fr 1fr;gap:14px}
+.feat{background:var(--surface);border-radius:16px;padding:24px;display:flex;flex-direction:column;
+  box-shadow:0 1px 2px rgba(40,31,42,0.04),0 3px 12px rgba(40,31,42,0.05);
+  transition:box-shadow 220ms var(--ease-out),transform 220ms var(--ease-out)}
+.feat:hover{box-shadow:0 1px 2px rgba(40,31,42,0.05),0 10px 28px rgba(40,31,42,0.09);transform:translateY(-2px)}
+.feat-t{font-size:17px;letter-spacing:-0.025em;font-weight:600}
+.feat-d{font-size:13.5px;color:var(--text-dim);line-height:1.6;margin-top:8px;max-width:46ch}
+.feat-ui{margin-top:20px;flex:1;display:flex;align-items:flex-end}
+.feats-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:56px}
+/* Etiketten over de tre små rutene er ikke et kort — den låner bare
+   plassen til ett, så rutene under står på rad. */
+.feat-label{grid-column:1/-1;padding:0;background:transparent;box-shadow:none;margin-bottom:-6px}
+.feat-label:hover{box-shadow:none;transform:none}
+.feat-label .eyebrow{margin-bottom:0}
+.rcpt-dato{font-size:10.5px;color:var(--text-faint)}
+@media(max-width:900px){.feats,.feats-3{grid-template-columns:1fr}}
+
+/* Kjedefragment */
+.chain{display:flex;width:100%;align-items:stretch;padding-top:36px;position:relative}
+.chain-n{flex:1;min-width:0;display:flex;align-items:center}
+.chain-n>*{width:100%}
+.chain-box{border-radius:10px;padding:10px 8px;text-align:center;background:var(--surface);
+  border:1.5px dashed transparent;
+  box-shadow:0 1px 2px rgba(40,31,42,0.05),0 2px 9px rgba(40,31,42,0.06);
+  transition:border-color 320ms var(--ease-out),background 320ms var(--ease-out),box-shadow 320ms var(--ease-out)}
+.chain-box.self{box-shadow:0 0 0 1.5px var(--accent),0 2px 9px rgba(101,75,112,0.13)}
+/* Den eneste konturen på hele siden. Bruddet er det som er innrammet. */
+/* Bruddet skjer først når leseren faktisk ser kjeden. Fram til da er den hel. */
+.chain.brutt .chain-box.over{background:rgba(196,59,59,0.035);border-color:var(--red);box-shadow:none}
+/* Basregel — gjelder hele tiden, ikke bare etter bruddet.
+   Ingen orddeling midt i «Hovedleverandør»: teksten krympes til den får plass. */
+.chain-l{font-size:7.5px;font-weight:700;letter-spacing:0.03em;text-transform:uppercase;color:var(--text-faint);
+  line-height:1.3;min-height:2.6em;display:flex;align-items:center;justify-content:center;
+  transition:color 320ms var(--ease-out)}
+.chain.brutt .chain-box.over .chain-l{color:var(--red)}
+@media(max-width:600px){
+  /* «Hovedleverandør» får ikke plass på én linje her. Bindestrek på stavelse,
+     ikke midt i ordet — derfor &shy; i markupen og ingen overflow-wrap. */
+  .chain-l{font-size:6.5px;letter-spacing:0.01em;hyphens:manual;min-height:3.4em}
+  .chain-c{font-size:9.5px}.chain-box{padding:8px 5px}
+}
+.chain-box.self .chain-l{color:var(--accent)}
+.chain-c{font-size:10.5px;font-weight:600;margin-top:4px;line-height:1.3}
+/* Leddet er en faktisk lenke — og den siste er revet av */
+.chain-k{width:20px;height:1.5px;background:var(--border-strong);flex-shrink:0;border-radius:2px;align-self:center}
+/* Strekket er strukket i full høyde, så etiketten ligger alltid like langt
+   over nodens overkant uansett hvor høy noden blir. */
+.chain-k.rev{width:32px;height:auto;background:transparent;position:relative;align-self:stretch;display:block}
+/* To halvdeler som til sammen er én hel strek. De trekkes fra hverandre med
+   scaleX fra ytterkanten — bare transform, aldri fra null. */
+.chain-k.rev::before,.chain-k.rev::after{content:'';position:absolute;top:50%;
+  width:16px;height:1.5px;background:var(--border-strong);border-radius:2px;
+  transition:transform 420ms var(--ease-out),background 420ms var(--ease-out)}
+.chain-k.rev::before{left:0;transform:translateY(-50%) scaleX(1);transform-origin:left center}
+.chain-k.rev::after{right:0;transform:translateY(-50%) scaleX(1);transform-origin:right center}
+.chain.brutt .chain-k.rev::before{transform:translateY(-50%) scaleX(0.55);background:var(--red)}
+.chain.brutt .chain-k.rev::after{transform:translateY(-50%) scaleX(0.55);background:var(--red)}
+.chain-k.rev span{position:absolute;left:50%;top:-20px;font-size:8.5px;font-weight:700;
+  color:var(--red);white-space:nowrap;letter-spacing:0.03em;line-height:1;
+  opacity:0;transform:translateX(-50%) translateY(4px);
+  transition:opacity 320ms var(--ease-out) 240ms,transform 320ms var(--ease-out) 240ms}
+.chain.brutt .chain-k.rev span{opacity:1;transform:translateX(-50%)}
+@media (prefers-reduced-motion:reduce){
+  .chain-k.rev span{opacity:1;transform:translateX(-50%)}
+  .chain.brutt .chain-k.rev::before,.chain.brutt .chain-k.rev::after{transform:translateY(-50%) scaleX(0.55)}
+}
+
+/* Lovkravfragment */
+.laws{width:100%;border-radius:11px;overflow:hidden;background:var(--surface);box-shadow:0 1px 2px rgba(40,31,42,0.05),0 2px 10px rgba(40,31,42,0.05)}
+.law{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border);font-size:12.5px}
+.law:last-child{border-bottom:0}
+.law.fail{border-left:3px solid var(--red);padding-left:9px}
+.law-ref{font-family:var(--font-mono);font-size:10.5px;color:var(--accent);width:34px;flex-shrink:0}
+.law-t{flex:1;min-width:0}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:100px;font-size:10.5px;font-weight:600;white-space:nowrap}
+.badge.ok{background:var(--green-bg);color:var(--green)}
+.badge.no{background:var(--red-bg);color:var(--red)}
+.badge.n{background:var(--surface-2);color:var(--accent)}
+.badge i{width:4px;height:4px;border-radius:50%;background:currentColor}
+
+/* Tilbudsfragment */
+.bud{width:100%;border-radius:11px;background:var(--surface);overflow:hidden;
+  box-shadow:0 1px 2px rgba(40,31,42,0.05),0 2px 10px rgba(40,31,42,0.05)}
+.bud-r{display:flex;align-items:center;gap:9px;padding:8px 12px;border-bottom:1px solid var(--border);font-size:11.5px}
+.bud-r:last-child{border-bottom:0}
+.bud-r.lav{border-left:2.5px solid var(--red);padding-left:9.5px}
+.bud-n{flex:1;min-width:0;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bud-r.lav .bud-n{color:var(--text);font-weight:600}
+.bud-s{font-variant-numeric:tabular-nums;color:var(--text)}
+.bud-a{width:40px;text-align:right;font-weight:700;color:var(--red);font-size:11px}
+
+/* Tidslinjefragment */
+.tidslinje{width:100%;border-radius:11px;background:var(--surface);padding:6px 13px 8px;
+  box-shadow:0 1px 2px rgba(40,31,42,0.05),0 2px 10px rgba(40,31,42,0.05)}
+.tl-r{display:flex;align-items:center;gap:11px;padding:8px 0;font-size:11.5px;position:relative}
+.tl-r::before{content:'';position:absolute;left:3.5px;top:0;bottom:0;width:1px;background:var(--border)}
+.tl-r:first-child::before{top:50%}
+.tl-r:last-child::before{bottom:50%}
+.tl-d{width:8px;height:8px;border-radius:50%;background:var(--surface);flex-shrink:0;z-index:1;
+  box-shadow:0 0 0 1.5px var(--border-strong)}
+.tl-r.na .tl-d{box-shadow:0 0 0 1.5px var(--red);background:var(--red)}
+.tl-t{flex:1;min-width:0;color:var(--text-dim)}
+.tl-r.na .tl-t{color:var(--text);font-weight:600}
+.tl-n{color:var(--text-faint);font-size:10.5px;white-space:nowrap}
+.tl-r.na .tl-n{color:var(--red);font-weight:600}
+
+/* Kvitteringsfragment */
+.rcpt{width:100%;border-radius:11px;background:var(--surface);padding:13px 15px;box-shadow:0 1px 2px rgba(40,31,42,0.05),0 2px 10px rgba(40,31,42,0.05)}
+.rcpt-h{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--border);padding-bottom:9px;margin-bottom:9px}
+.rcpt-h b{font-size:12.5px}
+.rcpt-r{display:flex;justify-content:space-between;font-size:11.5px;padding:4px 0;color:var(--text-dim)}
+.rcpt-r span:last-child{color:var(--text);font-weight:600}
+
+/* ---------- Tallbånd ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat{padding:4px 0}
+.stat-v{font-size:40px;font-weight:700;letter-spacing:-0.045em;line-height:1}
+.stat-v em{font-style:normal;font-size:19px;font-weight:600;color:var(--text-dim);letter-spacing:-0.01em}
+.stat-l{font-size:13px;color:var(--text-dim);margin-top:9px;line-height:1.5;max-width:24ch}
+@media(max-width:820px){.stats{grid-template-columns:1fr 1fr;gap:26px}.stat-v{font-size:31px}}
+
+/* ---------- Priser ---------- */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px}
+.plan{border-radius:16px;padding:26px 24px;background:var(--surface);display:flex;flex-direction:column;position:relative;
+  box-shadow:0 1px 2px rgba(40,31,42,0.04),0 3px 12px rgba(40,31,42,0.05);
+  transition:box-shadow 260ms var(--ease-out),transform 260ms var(--ease-out)}
+/* Aksentflaten gliddes inn ovenfra, den skaleres ikke fra null */
+.plan::after{content:'';position:absolute;left:0;right:0;top:0;height:120px;pointer-events:none;
+  border-radius:16px 16px 0 0;
+  background:linear-gradient(180deg,rgba(101,75,112,0.07),rgba(101,75,112,0));
+  opacity:0;transform:translateY(-14px);
+  transition:opacity 260ms var(--ease-out),transform 260ms var(--ease-out)}
+.plan:hover{box-shadow:0 1px 2px rgba(40,31,42,0.05),0 14px 36px rgba(40,31,42,0.11);transform:translateY(-4px)}
+.plan:hover::after{opacity:1;transform:none}
+.plan-p{transition:color 260ms var(--ease-out)}
+.plan:hover .plan-p{color:var(--accent)}
+.plan li{transition:color 260ms var(--ease-out)}
+.plan:hover li{color:var(--text)}
+.plan>*{position:relative;z-index:1}
+.plan.rec{box-shadow:0 0 0 1.5px var(--accent),0 2px 6px rgba(101,75,112,0.10),0 14px 36px rgba(101,75,112,0.14)}
+.plan.rec:hover{box-shadow:0 0 0 1.5px var(--accent),0 3px 8px rgba(101,75,112,0.12),0 20px 46px rgba(101,75,112,0.20)}
+.plan-tag{position:absolute;top:-10px;left:24px;z-index:2;background:var(--accent);color:#fff;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:0.03em}
+.plan-n{font-size:13.5px;font-weight:600;color:var(--text-dim)}
+.plan-p{font-size:34px;font-weight:700;letter-spacing:-0.04em;margin-top:12px;transition:color 260ms var(--ease-out)}
+.plan-p em{font-style:normal;font-size:13.5px;font-weight:500;color:var(--text-dim);letter-spacing:0}
+.plan-d{font-size:13px;color:var(--text-dim);margin-top:9px;line-height:1.55;min-height:42px}
+.plan ul{list-style:none;padding:0;margin:20px 0 24px;display:grid;gap:9px}
+.plan li{font-size:13px;color:var(--text-dim);padding-left:21px;position:relative;line-height:1.5}
+.plan li::before{content:'';position:absolute;left:0;top:6px;width:12px;height:7px;border-left:1.6px solid var(--accent);border-bottom:1.6px solid var(--accent);transform:rotate(-45deg)}
+.plan .btn{width:100%;margin-top:auto}
+@media(max-width:900px){.plans{grid-template-columns:1fr}}
+
+/* ---------- FAQ ---------- */
+.faq{max-width:760px;margin:0 auto;border-top:1px solid var(--border)}
+.faq-i{border-bottom:1px solid var(--border)}
+.faq-q{width:100%;background:transparent;border:0;text-align:left;padding:19px 0;display:flex;align-items:center;gap:16px;font-size:15px;font-weight:600;letter-spacing:-0.015em;color:var(--text)}
+.faq-q svg{margin-left:auto;flex-shrink:0;color:var(--text-faint);transition:transform 240ms var(--ease-out)}
+.faq-i.on .faq-q svg{transform:rotate(180deg)}
+.faq-a{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows 280ms var(--ease-out),opacity 200ms var(--ease-out)}
+.faq-i.on .faq-a{grid-template-rows:1fr;opacity:1}
+.faq-a>div{overflow:hidden}
+.faq-a p{font-size:14px;color:var(--text-dim);line-height:1.68;padding-bottom:20px;max-width:64ch}
+
+/* ---------- Avslutning ---------- */
+.close{text-align:center;padding:96px 0;position:relative;overflow:hidden}
+.close::before{content:'';position:absolute;bottom:-260px;left:50%;transform:translateX(-50%);width:900px;height:520px;
+  background:radial-gradient(ellipse at center, rgba(101,75,112,0.13), rgba(101,75,112,0) 66%);pointer-events:none}
+.close h2{position:relative;font-size:40px;letter-spacing:-0.04em;max-width:18ch;margin:0 auto}
+.close p{position:relative;font-size:16px;color:var(--text-dim);margin-top:18px;max-width:52ch;margin-left:auto;margin-right:auto;line-height:1.6}
+.close .hero-cta{margin-top:30px}
+
+.foot{border-top:1px solid var(--border);padding:34px 0 46px}
+.foot-in{display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap}
+.foot svg{width:88px;display:block}
+.foot p{font-size:12.5px;color:var(--text-faint);line-height:1.65;max-width:56ch}
+.foot-l{margin-left:auto;display:flex;flex-wrap:wrap;gap:10px 20px;font-size:13px;color:var(--text-dim)}
+@media(max-width:820px){
+  .hero h1{font-size:38px}.hero .lead{font-size:15.5px}
+  .statement{font-size:26px}.close h2{font-size:29px}
+  .sec{padding:60px 0}.foot-l{margin-left:0}
+}
+
+/* ---------- Innlogging ---------- */
+.li-wrap{position:fixed;inset:0;z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:11vh 18px 18px;
+  background:rgba(29,29,31,0.26);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity 200ms var(--ease-out)}
+.li-wrap.open{opacity:1;pointer-events:auto}
+.li{position:relative;width:100%;max-width:392px;background:var(--surface);border-radius:16px;
+  box-shadow:0 1px 2px rgba(40,31,42,0.05),0 24px 60px rgba(40,31,42,0.18);transform:scale(0.95) translateY(-6px);opacity:0;overflow:hidden;
+  transition:transform 240ms var(--ease-out),opacity 180ms var(--ease-out)}
+.li-wrap.open .li{transform:none;opacity:1}
+.li-head{padding:24px 22px 4px;text-align:center}
+.li-head svg{width:104px;height:auto;margin:0 auto 14px;display:block}
+.li-head h3{font-size:17px}
+.li-head p{font-size:12.5px;color:var(--text-dim);margin-top:6px}
+.li-body{padding:18px 22px 6px}
+.li-f{margin-bottom:12px}
+.li-f label{display:block;font-size:12px;font-weight:600;margin-bottom:6px}
+.li-f input{width:100%;font-family:var(--font-sans);font-size:13.5px;padding:10px 12px;border:1px solid var(--border-strong);border-radius:10px;background:var(--surface);color:var(--text);
+  transition:border-color 140ms var(--ease-out),box-shadow 140ms var(--ease-out)}
+.li-f input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+.li-err{font-size:12px;color:var(--red);margin-bottom:10px;display:none}
+.li-err.on{display:block}
+.li-foot{padding:14px 22px 18px}
+.li-foot .btn{width:100%}
+.li-demo{border-top:1px solid var(--border);background:var(--canvas);padding:14px 22px 18px}
+.li-demo-t{font-size:10.5px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--text-faint);margin-bottom:9px}
+.li-pick{display:flex;align-items:center;gap:10px;width:100%;text-align:left;margin-bottom:7px;padding:9px 11px;border:1px solid var(--border);border-radius:10px;background:var(--surface);
+  transition:border-color 140ms var(--ease-out),transform 100ms var(--ease-out)}
+.li-pick:last-child{margin-bottom:0}
+.li-pick:hover{border-color:var(--accent)}
+.li-pick:active{transform:scale(0.97)}
+.li-pick-m{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:var(--surface-2);color:var(--accent)}
+.li-pick-n{display:block;font-size:12.5px;font-weight:600}
+.li-pick-d{display:block;font-size:11px;color:var(--text-dim);margin-top:1px}
+.li-close{position:absolute;top:14px;right:14px;border:0;background:transparent;color:var(--text-faint);width:28px;height:28px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;transition:background 130ms var(--ease-out),color 130ms var(--ease-out)}
+.li-close:hover{background:var(--surface-2);color:var(--text)}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:1ms !important}html{scroll-behavior:auto}}

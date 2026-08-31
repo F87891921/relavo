@@ -8,4 +8,5 @@ npm-debug.log*
 *.tsbuildinfo
 supabase/.temp/
 .vercel
-.env*
+.env
+.claude/
