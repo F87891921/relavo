@@ -2,10 +2,13 @@ import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode, Kort, Tabell, Merke, Stripe } from "@/components/ui";
 import { ANSKAFFELSER } from "@/lib/demo/app";
+import { redegjorelseBrev, virkedagerFram, somDato } from "@/lib/brev";
+import { NyRedegjorelse } from "@/components/brev/NyRedegjorelse";
+import { RedegjorelseKort, type Redegjorelse } from "@/components/brev/Redegjorelse";
 
 /**
  * Tilbudene fra prototypen. Avviket regnes mot medianen av de øvrige
- * tilbudene — det er den sammenligningen § 24-9 legger opp til, ikke mot
+ * tilbudene — det er sammenligningen § 24-9 legger opp til, ikke mot
  * oppdragsgivers eget estimat.
  */
 const TILBUD = [
@@ -15,14 +18,21 @@ const TILBUD = [
   { navn: "Fjordservice AS", sum: 36_900_000 },
 ];
 
-const TERSKEL = -20; // prosent under medianen før undersøkelsesplikten slår inn
+const TERSKEL = -20;
 
 export default async function TilbudSide() {
-  const { profil } = await krevProfil();
+  const { supabase } = await krevProfil();
+
+  const { data: lagrede } = await supabase
+    .from("redegjorelser")
+    .select(
+      "id, leverandor_navn, leverandor_epost, anskaffelse_ref, anskaffelse_navn, avvik_prosent, utkast, frist, sendt, svar, svar_mottatt, vurdering, vurdering_begrunnelse",
+    )
+    .order("opprettet", { ascending: false });
 
   const sortert = [...TILBUD].sort((a, b) => a.sum - b.sum);
-  const ovrige = sortert.slice(1).map((t) => t.sum);
-  const median = ovrige.sort((a, b) => a - b)[Math.floor(ovrige.length / 2)];
+  const ovrige = sortert.slice(1).map((t) => t.sum).sort((a, b) => a - b);
+  const median = ovrige[Math.floor(ovrige.length / 2)];
 
   const rader = sortert.map((t) => {
     const avvik = Math.round(((t.sum - median) / median) * 100);
@@ -30,18 +40,20 @@ export default async function TilbudSide() {
   });
 
   const lave = rader.filter((r) => r.lav);
+  const ansk = ANSKAFFELSER[0];
+  const frist = somDato(virkedagerFram(10));
 
   return (
     <DashboardShell aktivtSteg="Unormalt lave tilbud">
       <Side>
         <Sidehode
           tittel="Unormalt lave tilbud"
-          tekst="Avviket regnes mot medianen av de øvrige tilbudene. Er et tilbud unormalt lavt, plikter oppdragsgiver etter § 24-9 å be tilbyderen redegjøre før tilbudet eventuelt avvises."
+          tekst="Avviket regnes mot medianen av de øvrige tilbudene. Er et tilbud unormalt lavt, plikter dere etter § 24-9 å be tilbyderen redegjøre skriftlig før tilbudet eventuelt avvises."
         />
 
         <Kort
-          tittel={ANSKAFFELSER[0].navn}
-          note={`${ANSKAFFELSER[0].id} · median ${new Intl.NumberFormat("nb-NO").format(median)} NOK`}
+          tittel={ansk.navn}
+          note={`${ansk.id} · median ${new Intl.NumberFormat("nb-NO").format(median)} NOK`}
           className="mb-5"
         >
           <Tabell
@@ -75,27 +87,41 @@ export default async function TilbudSide() {
           />
         </Kort>
 
-        {lave.length > 0 && (
-          <Kort tittel="Utkast til redegjørelseskrav" note="§ 24-9">
-            <div className="px-5 py-5">
-              <p className="text-[13px] text-dim leading-relaxed mb-3">
-                Sendes til <b className="text-ink">{lave[0].navn}</b>. Kravet må
-                være konkret om hva som skal forklares — et generelt spørsmål om
-                prisen er ikke nok til å oppfylle plikten.
-              </p>
-              <div className="bg-canvas rounded-xl px-4 py-3.5 text-[12.5px] leading-relaxed text-dim whitespace-pre-line">
-{`Vi viser til deres tilbud i ${ANSKAFFELSER[0].id} — ${ANSKAFFELSER[0].navn}.
+        {lave.map((l) => {
+          const alt = (lagrede ?? []).find(
+            (r) => r.leverandor_navn === l.navn && r.anskaffelse_ref === ansk.id,
+          );
+          if (alt) return null;
+          return (
+            <NyRedegjorelse
+              key={l.navn}
+              leverandor={l.navn}
+              anskaffelseRef={ansk.id}
+              anskaffelseNavn={ansk.navn}
+              tilbudssum={l.sum}
+              median={median}
+              avvik={l.avvik}
+              frist={frist}
+              utkast={redegjorelseBrev({
+                leverandor: l.navn,
+                anskaffelseRef: ansk.id,
+                anskaffelseNavn: ansk.navn,
+                avvikProsent: l.avvik,
+                frist,
+              })}
+            />
+          );
+        })}
 
-Tilbudssummen ligger ${Math.abs(lave[0].avvik)} % under medianen av de øvrige tilbudene. Før vi tar stilling til tilbudet ber vi om en redegjørelse etter anskaffelsesforskriften § 24-9, særlig om:
-
-  – hvordan lønns- og arbeidsvilkår er kalkulert
-  – hvilke underleverandører som inngår, og i hvor mange ledd
-  – om det er lagt til grunn offentlig støtte
-
-Frist for svar er ti virkedager fra dette brevet.`}
-              </div>
+        {(lagrede ?? []).length > 0 && (
+          <div className="space-y-3 mt-5">
+            <div className="text-[12px] font-semibold text-dim">
+              Krav om redegjørelse
             </div>
-          </Kort>
+            {(lagrede as unknown as Redegjorelse[]).map((r) => (
+              <RedegjorelseKort key={r.id} r={r} />
+            ))}
+          </div>
         )}
       </Side>
     </DashboardShell>

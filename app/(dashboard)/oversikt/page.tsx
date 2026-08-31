@@ -25,6 +25,21 @@ export default async function OversiktSide() {
     .select("id")
     .eq("risiko", "hoy");
 
+  // Frister som løper ut. Dette er det eneste på oversikten som krever noe
+  // av dem i dag, så det står øverst og ikke nede i en tabell.
+  const idag = new Date().toISOString().slice(0, 10);
+  const { data: forfalteEspd } = await supabase
+    .from("espd_erklaringer")
+    .select("id")
+    .eq("status", "sendt")
+    .lt("frist", idag);
+
+  const { data: apneKrav } = await supabase
+    .from("redegjorelser")
+    .select("id")
+    .is("vurdering", null)
+    .not("sendt", "is", null);
+
   const totalt = antallLeverandorer ?? 0;
   const kontrollert = antallKontroller ?? 0;
   const andel = totalt ? Math.round((kontrollert / totalt) * 100) : 0;
@@ -47,6 +62,31 @@ export default async function OversiktSide() {
           />
           <Tall verdi={`${andel} %`} merke="dokumentert etter § 5i" />
         </Rad>
+
+        {(forfalteEspd?.length || apneKrav?.length) ? (
+          <div className="bg-bad-bg text-bad rounded-xl px-4 py-3.5 mb-5 text-[12.5px] leading-relaxed">
+            <b>Frister som løper.</b>{" "}
+            {forfalteEspd?.length ? (
+              <>
+                {forfalteEspd.length} ESPD-erklæring
+                {forfalteEspd.length === 1 ? " er" : "er er"} over fristen.{" "}
+                <Link href="/espd" className="underline">
+                  Se dem
+                </Link>
+                .{" "}
+              </>
+            ) : null}
+            {apneKrav?.length ? (
+              <>
+                {apneKrav.length} krav om redegjørelse venter på vurdering.{" "}
+                <Link href="/tilbud" className="underline">
+                  Se dem
+                </Link>
+                .
+              </>
+            ) : null}
+          </div>
+        ) : null}
 
         <Kort
           tittel="Kontrollplikt § 5i"

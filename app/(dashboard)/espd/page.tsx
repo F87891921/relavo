@@ -1,47 +1,87 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
-import { Side, Sidehode, Kort, Tabell, Merke, type Tone } from "@/components/ui";
-import { ESPD, ESPD_STATUS, ESPD_FASE, SUPPLIERS } from "@/lib/demo/app";
-
-const TONE: Record<string, Tone> = {
-  mottatt: "god",
-  motstrid: "brudd",
-  mangler: "brudd",
-  sendt: "advarsel",
-  utlopt: "brudd",
-};
-
-const navnFor = (org: string) => SUPPLIERS.find((s) => s.org === org)?.name ?? org;
+import { Side, Sidehode, Tall, Rad } from "@/components/ui";
+import { EspdRad, type Espd } from "@/components/brev/EspdRad";
+import { dagerIgjen } from "@/lib/brev";
 
 export default async function EspdSide() {
-  const { profil } = await krevProfil();
+  const { supabase } = await krevProfil();
+
+  const { data: erklaringer } = await supabase
+    .from("espd_erklaringer")
+    .select(
+      "id, status, fase, anskaffelse_ref, frist, etterspurt, mottaker_navn, mottaker_epost, leverandorer(navn, org_nr)",
+    )
+    .order("frist", { ascending: true, nullsFirst: false });
+
+  const alle = (erklaringer ?? []) as unknown as Espd[];
+
+  const venter = alle.filter((e) => e.status === "sendt");
+  const forfalt = venter.filter((e) => {
+    const d = dagerIgjen(e.frist);
+    return d !== null && d < 0;
+  });
+  const snart = venter.filter((e) => {
+    const d = dagerIgjen(e.frist);
+    return d !== null && d >= 0 && d <= 3;
+  });
 
   return (
     <DashboardShell aktivtSteg="ESPD">
       <Side>
         <Sidehode
           tittel="ESPD og egenerklæringer"
-          tekst="Egenerklæringene dekker den delen av kvalifikasjonsvurderingen registrene ikke kan svare på. Motstrid mot registrene er en avvisningsgrunn etter § 24-2 tredje ledd."
+          tekst="Egenerklæringene dekker den delen av kvalifikasjonsvurderingen registrene ikke kan svare på. Mangler en, kan den kreves ettersendt etter § 23-5 — og fristen følges opp her."
         />
-        <Kort note="fra prototypens demodata">
-          <Tabell
-            kolonner={["Ref", "Tilbyder", "Anskaffelse", "Fase", "Levert via", "Mottatt", "Tilbudssum", "Status"]}
-            rader={ESPD.map((e) => [
-              <span key="i" className="font-mono text-[12px] text-accent">{e.id}</span>,
-              <span key="n" className="font-semibold">{navnFor(e.org)}</span>,
-              <span key="a" className="font-mono text-[12px] text-dim">{e.ansk}</span>,
-              <span key="f" className="text-dim whitespace-nowrap">
-                {ESPD_FASE[e.fase as keyof typeof ESPD_FASE] ?? e.fase}
-              </span>,
-              <span key="p" className="text-dim">{e.plattform || "—"}</span>,
-              <span key="m" className="text-dim whitespace-nowrap">{e.mottatt || "—"}</span>,
-              <span key="s" className="tabular-nums whitespace-nowrap">{e.tilbudssum || "—"}</span>,
-              <Merke key="st" tone={TONE[e.status] ?? "noytral"}>
-                {ESPD_STATUS[e.status as keyof typeof ESPD_STATUS] ?? e.status}
-              </Merke>,
-            ])}
+
+        <Rad>
+          <Tall verdi={String(alle.length)} merke="erklæringer" />
+          <Tall verdi={String(venter.length)} merke="venter på svar" />
+          <Tall
+            verdi={String(snart.length)}
+            merke="frist innen tre dager"
+            tone={snart.length ? "advarsel" : undefined}
           />
-        </Kort>
+          <Tall
+            verdi={String(forfalt.length)}
+            merke="over fristen"
+            tone={forfalt.length ? "brudd" : undefined}
+          />
+        </Rad>
+
+        {forfalt.length > 0 && (
+          <div className="bg-bad-bg text-bad rounded-xl px-4 py-3 mb-5 text-[12.5px] leading-relaxed">
+            <b>
+              {forfalt.length}{" "}
+              {forfalt.length === 1 ? "erklæring er" : "erklæringer er"} over
+              fristen.
+            </b>{" "}
+            Fristen etter § 23-5 er ute. Tas tilbudet videre uten erklæringen,
+            bør det begrunnes i anskaffelsesprotokollen.
+          </div>
+        )}
+
+        {snart.length > 0 && (
+          <div className="bg-warn-bg text-warn rounded-xl px-4 py-3 mb-5 text-[12.5px] leading-relaxed">
+            <b>
+              {snart.length} {snart.length === 1 ? "frist" : "frister"} løper ut
+              innen tre dager.
+            </b>{" "}
+            Har dere ikke hørt noe, er det nå en påminnelse hører hjemme.
+          </div>
+        )}
+
+        <div className="space-y-3">
+          {alle.length === 0 && (
+            <div className="bg-surface rounded-card border border-border shadow-card px-5 py-10 text-center text-dim text-sm">
+              Ingen egenerklæringer registrert ennå. De opprettes når en
+              kontroll knyttes til en anskaffelse.
+            </div>
+          )}
+          {alle.map((e) => (
+            <EspdRad key={e.id} e={e} />
+          ))}
+        </div>
       </Side>
     </DashboardShell>
   );
