@@ -419,7 +419,7 @@ function Treff({ enhet }: { enhet: Enhet }) {
         {formaterOrgnr(enhet.orgnr)}
       </div>
 
-      <dl className="grid grid-cols-2 gap-x-5 gap-y-2.5 mt-4 text-[13px]">
+      <dl className="grid sm:grid-cols-2 gap-x-5 gap-y-2.5 mt-4 text-[13px]">
         {[
           ["Organisasjonsform", enhet.form],
           ["Bransje", enhet.bransje],

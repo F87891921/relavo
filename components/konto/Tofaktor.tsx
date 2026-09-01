@@ -18,7 +18,7 @@ const KNAPP =
  * kostnad. Koden regnes ut i appen på telefonen — hemmeligheten forlater
  * aldri enheten etter at den er skannet inn.
  */
-export function Tofaktor({ maPa }: { maPa: boolean }) {
+export function Tofaktor() {
   const router = useRouter();
   const supabase = createClient();
 
@@ -125,17 +125,14 @@ export function Tofaktor({ maPa }: { maPa: boolean }) {
       <div className="flex items-center gap-3 mb-4">
         {aktiv.length ? (
           <Merke tone="god">Slått på</Merke>
-        ) : maPa ? (
-          <Merke tone="brudd">Påkrevd — ikke satt opp</Merke>
         ) : (
           <Merke tone="noytral">Ikke satt opp</Merke>
         )}
       </div>
 
       <p className="text-[12.5px] text-dim leading-relaxed mb-4">
-        {maPa
-          ? "Kontoen din har tilgang til flere kunders data. Derfor kreves engangskode i tillegg til passord."
-          : "En engangskode fra mobilen i tillegg til passordet. Anbefales — kontoen gir tilgang til leverandørdata og kontrollhistorikk."}
+        En engangskode fra mobilen i tillegg til passordet. Frivillig, men
+        anbefalt — kontoen gir tilgang til leverandørdata og kontrollhistorikk.
       </p>
 
       {aktiv.length > 0 && (
@@ -150,9 +147,8 @@ export function Tofaktor({ maPa }: { maPa: boolean }) {
               </span>
               <button
                 type="button"
-                disabled={venter || maPa}
+                disabled={venter}
                 onClick={() => slaAv(f.id)}
-                title={maPa ? "Kan ikke slås av for ansatte" : undefined}
                 className="text-[12.5px] text-bad hover:underline disabled:opacity-40 disabled:no-underline"
               >
                 Slå av

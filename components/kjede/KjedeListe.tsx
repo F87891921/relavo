@@ -74,7 +74,7 @@ export function KjedeListe({ kjeder }: { kjeder: Kjede[] }) {
                 type="button"
                 onClick={() => setApne({ ...apne, [k.org]: foldet })}
                 aria-expanded={!foldet}
-                className="w-full flex items-center justify-between gap-4 px-5 py-3.5 border-b border-border text-left hover:bg-canvas transition"
+                className="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-3.5 border-b border-border text-left hover:bg-canvas transition"
               >
                 <span className="flex items-center gap-3 min-w-0">
                   <span className="text-[13.5px] font-semibold truncate">{k.navn}</span>
@@ -90,21 +90,27 @@ export function KjedeListe({ kjeder }: { kjeder: Kjede[] }) {
               </button>
 
               {!foldet && (
-                <div className="px-5 py-5">
-                  <div className="flex flex-wrap items-stretch gap-0">
+                <div className="px-4 sm:px-5 py-5">
+                  {/* På telefon går kjeden nedover. Vannrett brøt den over flere
+                      linjer, og strekene ble hengende løst i venstremargen på
+                      hver ny linje — det så ut som feil, ikke som en kjede. */}
+                  <div className="flex flex-col items-start sm:flex-row sm:flex-wrap sm:items-stretch gap-0">
                     {k.ledd.map((l, i) => {
                       const over = i > GRENSE;
                       return (
-                        <div key={l.org} className="flex items-center">
+                        <div
+                          key={l.org}
+                          className="w-full sm:w-auto flex flex-col items-stretch sm:flex-row sm:items-center"
+                        >
                           {i > 0 && (
                             <div
-                              className={`w-6 h-[1.5px] rounded ${
+                              className={`ml-6 h-4 w-[1.5px] sm:ml-0 sm:h-[1.5px] sm:w-6 rounded ${
                                 i === GRENSE + 1 ? "bg-bad" : "bg-border-strong"
                               }`}
                             />
                           )}
                           <div
-                            className={`rounded-xl px-3.5 py-2.5 text-center min-w-[132px] ${
+                            className={`rounded-xl px-3.5 py-2.5 text-left sm:text-center sm:min-w-[132px] ${
                               over
                                 ? "border-[1.5px] border-dashed border-bad bg-bad-bg"
                                 : i === 0

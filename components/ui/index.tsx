@@ -15,7 +15,11 @@ export function Side({
   children: ReactNode;
 }) {
   return (
-    <div className={`px-8 py-6 ${smal ? "max-w-[880px]" : "max-w-[1180px]"}`}>
+    <div
+      className={`px-4 sm:px-6 lg:px-8 py-5 sm:py-6 ${
+        smal ? "max-w-[880px]" : "max-w-[1180px]"
+      }`}
+    >
       {children}
     </div>
   );
@@ -25,7 +29,7 @@ export function Side({
 export function Sidehode({ tittel, tekst }: { tittel: string; tekst: string }) {
   return (
     <div className="mb-6">
-      <h1 className="text-2xl font-semibold tracking-tight mb-1">{tittel}</h1>
+      <h1 className="text-xl sm:text-2xl font-semibold tracking-tight mb-1">{tittel}</h1>
       <p className="text-sm text-dim max-w-[68ch] leading-relaxed">{tekst}</p>
     </div>
   );
@@ -45,7 +49,7 @@ export function Kort({
   return (
     <div className={`bg-surface rounded-card border border-border shadow-card overflow-hidden ${className}`}>
       {tittel && (
-        <div className="flex items-baseline justify-between gap-4 px-5 py-3.5 border-b border-border">
+        <div className="flex items-baseline justify-between gap-3 px-4 sm:px-5 py-3.5 border-b border-border">
           <span className="text-[13.5px] font-semibold">{tittel}</span>
           {note && <span className="text-[11.5px] text-faint">{note}</span>}
         </div>
@@ -66,14 +70,18 @@ export function Tabell({
   tom?: string;
 }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+    <div className="overflow-x-auto -mx-px">
+      <table
+        className={`w-full text-sm ${
+          kolonner.length > 3 ? "min-w-[620px]" : kolonner.length > 2 ? "min-w-[440px]" : ""
+        }`}
+      >
         <thead>
           <tr className="text-left text-[11px] uppercase tracking-wide text-faint border-b border-border">
             {/* Indeks som nøkkel, ikke teksten: flere tabeller har to tomme
                 kolonneoverskrifter, og da kolliderer nøklene. */}
             {kolonner.map((k, i) => (
-              <th key={i} className="px-5 py-3 font-semibold whitespace-nowrap">
+              <th key={i} className="px-4 sm:px-5 py-3 font-semibold whitespace-nowrap">
                 {k}
               </th>
             ))}
@@ -84,7 +92,7 @@ export function Tabell({
             rader.map((rad, i) => (
               <tr key={i} className="border-b border-border last:border-0 align-top">
                 {rad.map((celle, j) => (
-                  <td key={j} className="px-5 py-3.5">
+                  <td key={j} className="px-4 sm:px-5 py-3.5">
                     {celle ?? "—"}
                   </td>
                 ))}
@@ -94,7 +102,7 @@ export function Tabell({
             <tr>
               <td
                 colSpan={kolonner.length}
-                className="px-5 py-10 text-center text-dim text-sm"
+                className="px-4 sm:px-5 py-10 text-center text-dim text-sm"
               >
                 {tom}
               </td>
@@ -137,9 +145,9 @@ export function Tall({
   tone?: Tone;
 }) {
   return (
-    <div className="bg-surface rounded-card border border-border shadow-card px-5 py-4">
+    <div className="bg-surface rounded-card border border-border shadow-card px-4 sm:px-5 py-4">
       <div
-        className={`text-[26px] font-bold tracking-tight leading-none ${
+        className={`text-[22px] sm:text-[26px] font-bold tracking-tight leading-none ${
           tone === "brudd" ? "text-bad" : tone === "advarsel" ? "text-warn" : ""
         }`}
       >
@@ -151,7 +159,7 @@ export function Tall({
 }
 
 export function Rad({ children }: { children: ReactNode }) {
-  return <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-6">{children}</div>;
+  return <div className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4 mb-5 sm:mb-6">{children}</div>;
 }
 
 /** Framdriftsstripe. Brukes for kontrollplikt og forbruk mot kvote. */

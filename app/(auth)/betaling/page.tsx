@@ -107,7 +107,7 @@ export default function BetalingSide() {
                 •••• •••• •••• ••••
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold mb-1.5">Utløper</label>
                 <div className="w-full text-[13.5px] px-3 py-2.5 rounded-xl border border-border-strong bg-canvas text-faint">

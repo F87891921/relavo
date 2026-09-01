@@ -28,6 +28,14 @@ export function LandingNav() {
           </Link>
         </div>
       </div>
+      {/* Samme fire lenkene som .nav-links, men i en rullbar rad. Vises bare
+          under 820px, der .nav-links er skjult. */}
+      <div className="nav-mob">
+        <a href="#plattform">Plattform</a>
+        <a href="#regelverk">Regelverk</a>
+        <a href="#priser">Priser</a>
+        <a href="#faq">Spørsmål</a>
+      </div>
     </nav>
   );
 }

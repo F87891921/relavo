@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { RelavoLogo } from "./RelavoLogo";
 import { LoggUt } from "./LoggUt";
+import { MobilMeny } from "./MobilMeny";
 import { krevProfil } from "@/lib/tilgang";
 
 /**
@@ -48,9 +49,49 @@ export async function DashboardShell({
     .map((d: string) => d[0]?.toUpperCase())
     .join("");
 
+  // Bunnen av menyen: konto, utlogging og veien inn til kontopanelet. Samme
+  // innhold i sidemenyen og i mobilskuffen — skrevet én gang, ikke to.
+  const bunn = (
+    <>
+      {ansatt && (
+        <Link
+          href="/internt"
+          className="text-[13px] px-3 py-2 rounded-lg text-dim hover:bg-canvas hover:text-ink transition block"
+        >
+          Relavo internt →
+        </Link>
+      )}
+
+      <div className="border-t border-border pt-2 mt-1">
+        <Link
+          href="/konto"
+          aria-current={aktivtSteg === "Konto" ? "page" : undefined}
+          className={`flex items-center gap-2.5 px-2 py-2 rounded-lg transition ${
+            aktivtSteg === "Konto" ? "bg-surface2" : "hover:bg-canvas"
+          }`}
+        >
+          <span className="w-7 h-7 rounded-lg bg-surface2 text-accent text-[10.5px] font-bold flex items-center justify-center shrink-0">
+            {initialer}
+          </span>
+          <span className="min-w-0">
+            <span className="block text-[12.5px] font-semibold truncate">
+              {brukernavn ?? "Kontoen din"}
+            </span>
+            <span className="block text-[10.5px] text-faint truncate">
+              {epost}
+            </span>
+          </span>
+        </Link>
+        <LoggUt />
+      </div>
+    </>
+  );
+
   return (
-    <div className="min-h-screen flex">
-      <aside className="w-[228px] shrink-0 border-r border-border bg-surface px-4 py-5 flex flex-col sticky top-0 h-screen">
+    <div className="min-h-screen lg:flex">
+      {/* Under lg ligger de samme punktene i MobilMeny. Sidemenyen tar 228 av
+          375 piksler på en telefon — der må den bort, ikke bare krympes. */}
+      <aside className="hidden lg:flex w-[228px] shrink-0 border-r border-border bg-surface px-4 py-5 flex-col sticky top-0 h-screen">
         <Link href="/oversikt" className="block px-1 mb-1" aria-label="Relavo">
           <RelavoLogo className="w-[86px] h-auto text-ink" />
         </Link>
@@ -80,42 +121,17 @@ export async function DashboardShell({
           ))}
         </nav>
 
-        <div className="shrink-0 pt-4 space-y-1">
-          {ansatt && (
-            <Link
-              href="/internt"
-              className="text-[13px] px-3 py-2 rounded-lg text-dim hover:bg-canvas hover:text-ink transition block"
-            >
-              Relavo internt →
-            </Link>
-          )}
-
-          <div className="border-t border-border pt-2">
-            <Link
-              href="/konto"
-              aria-current={aktivtSteg === "Konto" ? "page" : undefined}
-              className={`flex items-center gap-2.5 px-2 py-2 rounded-lg transition ${
-                aktivtSteg === "Konto"
-                  ? "bg-surface2"
-                  : "hover:bg-canvas"
-              }`}
-            >
-              <span className="w-7 h-7 rounded-lg bg-surface2 text-accent text-[10.5px] font-bold flex items-center justify-center shrink-0">
-                {initialer}
-              </span>
-              <span className="min-w-0">
-                <span className="block text-[12.5px] font-semibold truncate">
-                  {brukernavn ?? "Kontoen din"}
-                </span>
-                <span className="block text-[10.5px] text-faint truncate">
-                  {epost}
-                </span>
-              </span>
-            </Link>
-            <LoggUt />
-          </div>
-        </div>
+        <div className="shrink-0 pt-4 space-y-1">{bunn}</div>
       </aside>
+
+      <MobilMeny
+        punkter={KUNDEMENY}
+        aktivtSteg={aktivtSteg}
+        tittel={organisasjon}
+      >
+        <div className="space-y-1">{bunn}</div>
+      </MobilMeny>
+
       <main className="flex-1 min-w-0">{children}</main>
     </div>
   );

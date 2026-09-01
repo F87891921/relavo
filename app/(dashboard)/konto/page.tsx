@@ -12,11 +12,7 @@ import {
   BrukerRad,
 } from "@/components/konto/Skjemaer";
 
-export default async function KontoSide({
-  searchParams,
-}: {
-  searchParams: { mfa?: string };
-}) {
+export default async function KontoSide() {
   const { supabase, user, profil } = await krevProfil();
 
   const [{ data: org }, { data: kolleger }, { count: antallLeverandorer }, { count: antallKontroller }] = await Promise.all([
@@ -46,14 +42,6 @@ export default async function KontoSide({
           tittel="Kontoinnstillinger"
           tekst="Dine egne opplysninger, organisasjonen du hører til, og hvem som har tilgang."
         />
-
-        {searchParams.mfa === "kreves" && (
-          <div className="bg-bad-bg text-bad rounded-xl px-4 py-3.5 mb-5 text-[13px] leading-relaxed">
-            <b>Tofaktor kreves for ansatte.</b> Kontoen din gir tilgang til
-            flere kunders data. Sett det opp under Tofaktor lenger ned — resten
-            av panelet åpnes så snart det er på plass.
-          </div>
-        )}
 
         <div className="grid lg:grid-cols-2 gap-4 mb-4">
           <Kort tittel="Deg">
@@ -89,7 +77,7 @@ export default async function KontoSide({
 
         <Kort tittel="Tofaktor" note="engangskode fra mobilen" className="mb-4">
           <div className="px-5 py-5">
-            <Tofaktor maPa={profil.ansatt === true} />
+            <Tofaktor />
           </div>
         </Kort>
 
