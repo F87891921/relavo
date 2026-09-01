@@ -6,7 +6,7 @@ import { dagerIgjen } from "@/lib/brev";
 import { grunnUrl } from "@/lib/url";
 
 export default async function EspdSide() {
-  const { supabase, profil, organisasjonNavn } = await krevProfil();
+  const { supabase, profil, organisasjonNavn, t } = await krevProfil();
   const lenkebase = grunnUrl();
 
   const { data: erklaringer } = await supabase
@@ -29,11 +29,11 @@ export default async function EspdSide() {
   });
 
   return (
-    <DashboardShell aktivtSteg="ESPD">
+    <DashboardShell aktivtSteg="espd">
       <Side>
         <Sidehode
-          tittel="ESPD og egenerklæringer"
-          tekst="Egenerklæringene dekker den delen av kvalifikasjonsvurderingen registrene ikke kan svare på. Mangler en, kan den kreves ettersendt etter § 23-5 — og fristen følges opp her."
+          tittel={t.sider.espd.tittel}
+          tekst={t.sider.espd.tekst}
         />
 
         <Rad>

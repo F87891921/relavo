@@ -11,7 +11,7 @@ const navnFor = (org: string) =>
   SUPPLIERS.find((s) => s.org === org)?.name ?? formaterOrgnr(org);
 
 export default async function KjedeSide() {
-  await krevProfil();
+  const { t } = await krevProfil();
 
   const kjeder: Kjede[] = SUPPLIERS.filter((s) => s.kjede && s.kjede.length > 1).map(
     (s) => ({
@@ -22,11 +22,11 @@ export default async function KjedeSide() {
   );
 
   return (
-    <DashboardShell aktivtSteg="Leverandørkjede">
+    <DashboardShell aktivtSteg="kjede">
       <Side>
         <Sidehode
-          tittel="Leverandørkjede"
-          tekst="§ 5k tillater høyst to ledd underleverandører i bygg, anlegg og renhold. Overskridelser flagges — og de to lovlige utveiene er å kutte leddet eller søke dispensasjon hos oppdragsgiver."
+          tittel={t.sider.kjede.tittel}
+          tekst={t.sider.kjede.tekst}
         />
         <KjedeListe kjeder={kjeder} />
       </Side>

@@ -8,7 +8,7 @@ const navnFor = (org: string) =>
   SUPPLIERS.find((s) => s.org === org)?.name ?? org;
 
 export default async function OversiktSide() {
-  const { supabase, profil } = await krevProfil();
+  const { supabase, profil, t } = await krevProfil();
 
   // Tallene som finnes i databasen hentes derfra. Resten er ennå demodata
   // fra prototypen — se lib/demo/app.ts.
@@ -45,11 +45,11 @@ export default async function OversiktSide() {
   const andel = totalt ? Math.round((kontrollert / totalt) * 100) : 0;
 
   return (
-    <DashboardShell aktivtSteg="Oversikt">
+    <DashboardShell aktivtSteg="oversikt">
       <Side>
         <Sidehode
-          tittel="Oversikt"
-          tekst="Status på kontrollplikten, og det som krever noe av deg i dag."
+          tittel={t.sider.oversikt.tittel}
+          tekst={t.sider.oversikt.tekst}
         />
 
         <Rad>

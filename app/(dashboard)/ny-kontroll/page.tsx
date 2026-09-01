@@ -4,15 +4,16 @@ import { NyKontrollVeiviser } from "@/components/kontroll/NyKontrollVeiviser";
 import { Side } from "@/components/ui";
 
 export default async function NyKontrollSide() {
-  const { profil } = await krevProfil();
+  const { profil, t } = await krevProfil();
 
   return (
-    <DashboardShell aktivtSteg="Ny kontroll">
+    <DashboardShell aktivtSteg="nyKontroll">
       <Side smal>
-        <h1 className="text-2xl font-semibold tracking-tight mb-1">Ny kontroll</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight mb-1">
+          {t.sider.nyKontroll.tittel}
+        </h1>
         <p className="text-sm text-dim mb-7 max-w-[62ch] leading-relaxed">
-          Seks steg, hvorav tre er valgfrie. Resultatet lagres uendret som
-          dokumentasjon på oppfylt kontrollplikt etter anskaffelsesloven § 5i.
+          {t.sider.nyKontroll.tekst}
         </p>
         <NyKontrollVeiviser />
       </Side>

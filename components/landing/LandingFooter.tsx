@@ -1,3 +1,4 @@
+import { ord } from "@/lib/sprak";
 import Link from "next/link";
 import { RelavoLogo } from "@/components/RelavoLogo";
 
@@ -6,6 +7,8 @@ import { RelavoLogo } from "@/components/RelavoLogo";
  * ankere, slik prototypen hadde dem.
  */
 export function LandingFooter() {
+  const t = ord().landing;
+
   return (
     <footer className="foot">
       <div className="wrap">
@@ -13,17 +16,14 @@ export function LandingFooter() {
           <span className="logo">
             <RelavoLogo />
           </span>
-          <p>
-            Relavo kontrollerer selskaper, ikke enkeltpersoner. Opplysninger om
-            straffedommer behandles ikke.
-          </p>
+          <p>{t.foot.tekst}</p>
           <div className="foot-l">
-            <a href="#plattform">Plattform</a>
-            <a href="#priser">Priser</a>
-            <Link href="/juridisk#vilkar">Vilkår</Link>
-            <Link href="/juridisk#personvern">Personvern</Link>
-            <Link href="/juridisk#cookies">Cookies</Link>
-            <Link href="/kontakt">Kontakt</Link>
+            <a href="#plattform">{t.nav.plattform}</a>
+            <a href="#priser">{t.nav.priser}</a>
+            <Link href="/juridisk#vilkar">{t.foot.vilkar}</Link>
+            <Link href="/juridisk#personvern">{t.foot.personvern}</Link>
+            <Link href="/juridisk#cookies">{t.foot.cookies}</Link>
+            <Link href="/kontakt">{t.foot.kontakt}</Link>
           </div>
         </div>
       </div>

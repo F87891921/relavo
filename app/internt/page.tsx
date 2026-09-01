@@ -4,7 +4,7 @@ import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, Stripe, NOK } from "@/c
 import { KONTON, PLANER } from "@/lib/demo/staff";
 
 export default async function InterntKontonSide() {
-  await krevAnsatt();
+  const { t } = await krevAnsatt();
 
   const mrr = KONTON.reduce(
     (s, k) => s + (PLANER[k.plan as keyof typeof PLANER]?.pris ?? 0),
@@ -12,11 +12,11 @@ export default async function InterntKontonSide() {
   );
 
   return (
-    <StaffShell aktivtSteg="Konton">
+    <StaffShell aktivtSteg="konton">
       <Side>
         <Sidehode
-          tittel="Konton"
-          tekst="Alla kundkonton, vilken plan de ligger på och hur mycket av kvoten de använt."
+          tittel={t.ansattsider.konton.tittel}
+          tekst={t.ansattsider.konton.tekst}
         />
 
         <Rad>

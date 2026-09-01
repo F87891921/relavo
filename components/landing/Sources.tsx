@@ -1,3 +1,4 @@
+import { ord } from "@/lib/sprak";
 import { Fragment } from "react";
 
 /**
@@ -13,10 +14,12 @@ const KILDER = [
 ];
 
 export function Sources() {
+  const t = ord().landing;
+
   return (
     <section className="sources">
       <div className="sources-l">
-        Bygger på
+        {t.kilder.byggerPa}
         {KILDER.map((kilde, i) => (
           <Fragment key={kilde}>
             <b>{kilde}</b>

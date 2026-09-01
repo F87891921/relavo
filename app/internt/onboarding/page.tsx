@@ -11,7 +11,7 @@ import { KONTON, PLANER } from "@/lib/demo/staff";
 const STEG = ["Avtal", "Konto skapat", "Användare inbjudna", "Leverantörer inlästa", "Första kontrollen"];
 
 export default async function InterntOnboardingSide() {
-  await krevAnsatt();
+  const { t } = await krevAnsatt();
 
   // Hur långt varje konto kommit utleds av demodatan: konton med
   // förbrukning har kört kontroller, konton med leverantörer har läst in dem.
@@ -23,11 +23,11 @@ export default async function InterntOnboardingSide() {
   });
 
   return (
-    <StaffShell aktivtSteg="Onboarding">
+    <StaffShell aktivtSteg="onboarding">
       <Side>
         <Sidehode
-          tittel="Onboarding"
-          tekst="Var i uppstarten varje kund står. Ett konto räknas som igång först när det kört sin första kontroll, inte när avtalet är påskrivet."
+          tittel={t.ansattsider.onboarding.tittel}
+          tekst={t.ansattsider.onboarding.tekst}
         />
         <Kort note="demodata från relavo-staff.html">
           <Tabell

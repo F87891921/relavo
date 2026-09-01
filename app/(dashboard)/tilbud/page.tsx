@@ -21,7 +21,7 @@ const TILBUD = [
 const TERSKEL = -20;
 
 export default async function TilbudSide() {
-  const { supabase, profil, organisasjonNavn } = await krevProfil();
+  const { supabase, profil, organisasjonNavn, t } = await krevProfil();
 
   const { data: lagrede } = await supabase
     .from("redegjorelser")
@@ -44,11 +44,11 @@ export default async function TilbudSide() {
   const frist = somDato(virkedagerFram(10));
 
   return (
-    <DashboardShell aktivtSteg="Unormalt lave tilbud">
+    <DashboardShell aktivtSteg="tilbud">
       <Side>
         <Sidehode
-          tittel="Unormalt lave tilbud"
-          tekst="Avviket regnes mot medianen av de øvrige tilbudene. Er et tilbud unormalt lavt, plikter dere etter § 24-9 å be tilbyderen redegjøre skriftlig før tilbudet eventuelt avvises."
+          tittel={t.sider.tilbud.tittel}
+          tekst={t.sider.tilbud.tekst}
         />
 
         <Kort

@@ -10,7 +10,7 @@ import { settOffertStatus } from "@/app/internt/handlinger";
 import { formaterOrgnr } from "@/lib/orgnr";
 
 export default async function InterntOfferterSide() {
-  const { supabase } = await krevAnsatt();
+  const { supabase, t } = await krevAnsatt();
 
   const [{ data: offerter }, { data: leads }] = await Promise.all([
     supabase
@@ -29,11 +29,11 @@ export default async function InterntOfferterSide() {
   const rader = (offerter ?? []).map((o) => ({ ...o, ...regnUt(o) }));
 
   return (
-    <StaffShell aktivtSteg="Offerter">
+    <StaffShell aktivtSteg="offerter">
       <Side>
         <Sidehode
-          tittel="Offerter"
-          tekst="Skickade offerter, vad de är värda och när de går ut. Sök på kundens namn så fylls organisationsnummer och kontaktuppgifter i automatiskt."
+          tittel={t.ansattsider.offerter.tittel}
+          tekst={t.ansattsider.offerter.tekst}
         />
 
         <Rad>

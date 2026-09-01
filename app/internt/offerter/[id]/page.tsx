@@ -28,7 +28,7 @@ export default async function OffertSide({ params }: { params: { id: string } })
     t ? new Date(t).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" }) : null;
 
   return (
-    <StaffShell aktivtSteg="Offerter">
+    <StaffShell aktivtSteg="offerter">
       <Side smal>
         <div className="skjul-i-utskrift flex items-center justify-between gap-4 flex-wrap mb-4">
           <Link

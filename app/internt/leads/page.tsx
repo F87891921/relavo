@@ -15,7 +15,7 @@ const STATUS: StatusVal[] = [
 ];
 
 export default async function InterntLeadsSide() {
-  const { supabase } = await krevAnsatt();
+  const { supabase, t } = await krevAnsatt();
 
   const { data: leads, error } = await supabase
     .from("leads")
@@ -27,11 +27,11 @@ export default async function InterntLeadsSide() {
   const forlorade = alle.filter((l) => l.status === "forlorad").length;
 
   return (
-    <StaffShell aktivtSteg="Leads">
+    <StaffShell aktivtSteg="leads">
       <Side>
         <Sidehode
-          tittel="Leads"
-          tekst="Intresserade som ännu inte är kunder. Kolumnen nästa steg är den som avgör om något faller mellan stolarna."
+          tittel={t.ansattsider.leads.tittel}
+          tekst={t.ansattsider.leads.tekst}
         />
 
         <Rad>

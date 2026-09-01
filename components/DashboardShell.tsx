@@ -3,23 +3,30 @@ import { RelavoLogo } from "./RelavoLogo";
 import { LoggUt } from "./LoggUt";
 import { MobilMeny } from "./MobilMeny";
 import { krevProfil } from "@/lib/tilgang";
+import { Sprakvelger } from "./Sprakvelger";
+import type { Ordbok } from "@/lib/sprak";
 
 /**
  * Sidemenyen for kundedelen. Punktene og rekkefølgen er de samme som i
  * relavo-app.html, slik at prototypen og appen kan sammenlignes direkte.
  */
+/**
+ * Punktene har en fast nøkkel, ikke en fast tekst. Etiketten hentes fra
+ * ordboka — hang markeringen «hvilken side står jeg på» på teksten, ville
+ * den falt bort i samme øyeblikk noen byttet språk.
+ */
 export const KUNDEMENY = [
-  { navn: "Oversikt", href: "/oversikt" },
-  { navn: "Ny kontroll", href: "/ny-kontroll" },
-  { navn: "Bulkkontroll", href: "/bulk" },
-  { navn: "Leverandørkjede", href: "/kjede" },
-  { navn: "Unormalt lave tilbud", href: "/tilbud" },
-  { navn: "Anskaffelser", href: "/anskaffelser" },
-  { navn: "Leverandører", href: "/leverandorer" },
-  { navn: "Interessekonflikt", href: "/jav" },
-  { navn: "ESPD", href: "/espd" },
-  { navn: "Brukerstøtte", href: "/support" },
-];
+  { id: "oversikt", href: "/oversikt" },
+  { id: "nyKontroll", href: "/ny-kontroll" },
+  { id: "bulk", href: "/bulk" },
+  { id: "kjede", href: "/kjede" },
+  { id: "tilbud", href: "/tilbud" },
+  { id: "anskaffelser", href: "/anskaffelser" },
+  { id: "leverandorer", href: "/leverandorer" },
+  { id: "jav", href: "/jav" },
+  { id: "espd", href: "/espd" },
+  { id: "support", href: "/support" },
+] as const;
 
 /**
  * Henter sine egne opplysninger i stedet for å få dem som props. Ellers
@@ -35,7 +42,13 @@ export async function DashboardShell({
 }) {
   // krevProfil er cachet per forespørsel, så dette koster ingenting ekstra
   // selv om siden allerede har kalt den.
-  const { user, profil, organisasjonNavn } = await krevProfil();
+  const { user, profil, organisasjonNavn, sprak, t } = await krevProfil();
+
+  const punkter = KUNDEMENY.map((s) => ({
+    navn: t.meny[s.id as keyof Ordbok["meny"]],
+    href: s.href,
+    id: s.id as string,
+  }));
 
   const ansatt = profil.ansatt;
   const organisasjon = organisasjonNavn;
@@ -58,11 +71,14 @@ export async function DashboardShell({
           href="/internt"
           className="text-[13px] px-3 py-2 rounded-lg text-dim hover:bg-canvas hover:text-ink transition block"
         >
-          Relavo internt →
+          {t.skall.relavoInternt}
         </Link>
       )}
 
       <div className="border-t border-border pt-2 mt-1">
+        <div className="flex justify-end mb-1">
+          <Sprakvelger na={sprak} />
+        </div>
         <Link
           href="/konto"
           aria-current={aktivtSteg === "Konto" ? "page" : undefined}
@@ -75,14 +91,14 @@ export async function DashboardShell({
           </span>
           <span className="min-w-0">
             <span className="block text-[12.5px] font-semibold truncate">
-              {brukernavn ?? "Kontoen din"}
+              {brukernavn ?? t.skall.kontoenDin}
             </span>
             <span className="block text-[10.5px] text-faint truncate">
               {epost}
             </span>
           </span>
         </Link>
-        <LoggUt />
+        <LoggUt tekst={t.skall.loggUt} venterTekst={t.skall.loggerUt} />
       </div>
     </>
   );
@@ -105,13 +121,13 @@ export async function DashboardShell({
         )}
 
         <nav className="flex flex-col gap-0.5 overflow-y-auto min-h-0 flex-1">
-          {KUNDEMENY.map((s) => (
+          {punkter.map((s) => (
             <Link
               key={s.href}
               href={s.href}
-              aria-current={aktivtSteg === s.navn ? "page" : undefined}
+              aria-current={aktivtSteg === s.id ? "page" : undefined}
               className={`text-[13.5px] px-3 py-2 rounded-lg transition ${
-                aktivtSteg === s.navn
+                aktivtSteg === s.id
                   ? "bg-surface2 text-accent font-semibold"
                   : "text-dim hover:bg-canvas hover:text-ink"
               }`}
@@ -125,9 +141,12 @@ export async function DashboardShell({
       </aside>
 
       <MobilMeny
-        punkter={KUNDEMENY}
+        punkter={punkter}
         aktivtSteg={aktivtSteg}
         tittel={organisasjon}
+        tittelForSteg={t.meny[aktivtSteg as keyof Ordbok["meny"]] ?? ""}
+        apneMenyen={t.skall.apneMenyen}
+        lukkMenyen={t.skall.lukkMenyen}
       >
         <div className="space-y-1">{bunn}</div>
       </MobilMeny>

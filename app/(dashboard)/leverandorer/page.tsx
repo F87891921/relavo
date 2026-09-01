@@ -11,7 +11,7 @@ import { Side } from "@/components/ui";
  * hva koden gjør.
  */
 export default async function LeverandorerSide() {
-  const { supabase, profil } = await krevProfil();
+  const { supabase, profil, t } = await krevProfil();
 
   const { data: leverandorer, error } = await supabase
     .from("leverandorer")
@@ -43,11 +43,13 @@ export default async function LeverandorerSide() {
   };
 
   return (
-    <DashboardShell aktivtSteg="Leverandører">
+    <DashboardShell aktivtSteg="leverandorer">
       <Side>
-        <h1 className="text-2xl font-semibold tracking-tight mb-1">Leverandører</h1>
-        <p className="text-sm text-dim mb-6">
-          Alle selskaper knyttet til aktive kontrakter.
+        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight mb-1">
+          {t.sider.leverandorer.tittel}
+        </h1>
+        <p className="text-sm text-dim mb-6 max-w-[68ch] leading-relaxed">
+          {t.sider.leverandorer.tekst}
         </p>
 
         {javPerLeverandor.size > 0 && (

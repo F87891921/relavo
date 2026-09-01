@@ -1,3 +1,4 @@
+import { ord } from "@/lib/sprak";
 import { Chain } from "./Chain";
 
 /**
@@ -12,24 +13,24 @@ const LOVKRAV = [
 ];
 
 export function Plattform() {
+  const t = ord().landing.plattform;
+
   return (
     <section className="sec" id="plattform">
       <div className="wrap">
         <div className="sec-head">
           <div className="eyebrow">Plattform</div>
           <h2 className="statement">
-            Én kontroll, alle registre.{" "}
-            <span>Svaret kommer før du rekker å åpne neste fane.</span>
+            {t.tittel}{" "}
+            <span>{t.raskt}</span>
           </h2>
         </div>
 
         <div className="feats">
           <div className="feat">
-            <div className="feat-t">Leverandørkjeden, hele veien ned</div>
+            <div className="feat-t">{t.kjede}</div>
             <p className="feat-d">
-              § 5k tillater høyst to ledd underleverandører i bygg, anlegg og
-              renhold. Legg inn kjeden du har, så flagges overskridelsen med en
-              gang — og du får de to vanlige utveiene.
+              {t.kjedeD}
             </p>
             <div className="feat-ui">
               <Chain />
@@ -37,10 +38,9 @@ export function Plattform() {
           </div>
 
           <div className="feat">
-            <div className="feat-t">Hvert krav som en kryssbar linje</div>
+            <div className="feat-t">{t.krav}</div>
             <p className="feat-d">
-              Rapporten følger loven punkt for punkt, med samme
-              paragrafhenvisning du siterer i anskaffelsesprotokollen.
+              {t.kravD}
             </p>
             <div className="feat-ui">
               <div className="laws">
@@ -64,14 +64,13 @@ export function Plattform() {
 
         <div className="feats-3">
           <div className="feat feat-label">
-            <div className="eyebrow">Flere funksjoner</div>
+            <div className="eyebrow">{t.eyebrow}</div>
           </div>
 
           <div className="feat">
-            <div className="feat-t">Unormalt lave tilbud</div>
+            <div className="feat-t">{t.laveTilbud}</div>
             <p className="feat-d">
-              Avviket beregnes mot de øvrige tilbudene, og du får et utkast til
-              redegjørelseskravet § 24-9 pålegger deg å sende.
+              {t.laveTilbudD}
             </p>
             <div className="feat-ui">
               <div className="bud">
@@ -90,10 +89,9 @@ export function Plattform() {
           </div>
 
           <div className="feat">
-            <div className="feat-t">Løpende overvåking</div>
+            <div className="feat-t">{t.overvaking}</div>
             <p className="feat-d">
-              Konkurs, tvangsavvikling og nye anmerkninger fanges opp samme dag
-              de registreres, ikke ved neste kontroll.
+              {t.overvakingD}
             </p>
             <div className="feat-ui">
               <div className="tidslinje">
@@ -112,10 +110,9 @@ export function Plattform() {
           </div>
 
           <div className="feat">
-            <div className="feat-t">Rapport som holder</div>
+            <div className="feat-t">{t.rapport}</div>
             <p className="feat-d">
-              Hver kjøring lagres uendret med kilde og dato på hver linje. Det
-              som ikke er kontrollert står oppført som ikke kontrollert.
+              {t.rapportD}
             </p>
             <div className="feat-ui">
               <div className="rcpt">

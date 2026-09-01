@@ -1,3 +1,4 @@
+import { ord } from "@/lib/sprak";
 import "./landing.css";
 
 import { LandingNav } from "@/components/landing/LandingNav";
@@ -16,6 +17,8 @@ import { LandingFooter } from "@/components/landing/LandingFooter";
  * Supabase Auth — alt annet er samme innhold og samme uttrykk.
  */
 export default function Hjemmeside() {
+  const t = ord().landing;
+
   return (
     <div className="landing">
       <LandingNav />
@@ -25,7 +28,11 @@ export default function Hjemmeside() {
         <Plattform />
         <Regelverk />
         <Priser />
-        <Faq />
+        <Faq
+          eyebrow={t.faq.eyebrow}
+          tittel={t.faq.tittel}
+          sporsmal={t.faq.sporsmal}
+        />
         <Close />
       </main>
       <LandingFooter />

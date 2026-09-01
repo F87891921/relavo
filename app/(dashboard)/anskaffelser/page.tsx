@@ -4,14 +4,14 @@ import { Side, Sidehode, Kort, Tabell, Merke } from "@/components/ui";
 import { ANSKAFFELSER } from "@/lib/demo/app";
 
 export default async function AnskaffelserSide() {
-  const { profil } = await krevProfil();
+  const { profil, t } = await krevProfil();
 
   return (
-    <DashboardShell aktivtSteg="Anskaffelser">
+    <DashboardShell aktivtSteg="anskaffelser">
       <Side>
         <Sidehode
-          tittel="Anskaffelser"
-          tekst="Avtalene kontrollene henger på. Saksnummeret her er det samme du fører i anskaffelsesprotokollen."
+          tittel={t.sider.anskaffelser.tittel}
+          tekst={t.sider.anskaffelser.tekst}
         />
         <Kort note="fra prototypens demodata">
           <Tabell

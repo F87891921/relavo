@@ -4,7 +4,7 @@ import { Side, Sidehode, Tall, Rad } from "@/components/ui";
 import { NySak, SakKort, type Sak } from "@/components/sak/SakTrad";
 
 export default async function SupportSide() {
-  const { supabase } = await krevProfil();
+  const { supabase, t } = await krevProfil();
 
   const { data: saker } = await supabase
     .from("saker")
@@ -21,11 +21,11 @@ export default async function SupportSide() {
   const apne = alle.filter((s) => s.status !== "lukket");
 
   return (
-    <DashboardShell aktivtSteg="Brukerstøtte">
+    <DashboardShell aktivtSteg="support">
       <Side smal>
         <Sidehode
-          tittel="Brukerstøtte"
-          tekst="Meld inn en sak og følg svaret her. Velger du varsling, får du e-post når saken får svar eller endrer status."
+          tittel={t.sider.support.tittel}
+          tekst={t.sider.support.tekst}
         />
 
         <Rad>

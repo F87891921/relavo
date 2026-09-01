@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import { aktivtSprak } from "@/lib/sprak";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="no" className={`${inter.variable} ${plexMono.variable}`}>
+    <html lang={aktivtSprak()} className={`${inter.variable} ${plexMono.variable}`}>
       <body>{children}</body>
     </html>
   );

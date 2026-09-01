@@ -20,7 +20,7 @@ type Detaljer = {
 };
 
 export default async function JavSide() {
-  const { supabase } = await krevProfil();
+  const { supabase, t } = await krevProfil();
 
   const [{ data: treff, error }, { count: antallDeltakere }] = await Promise.all([
     supabase
@@ -47,11 +47,11 @@ export default async function JavSide() {
   const sikre = alle.filter((t) => (t.detaljer as Detaljer)?.eksakt);
 
   return (
-    <DashboardShell aktivtSteg="Interessekonflikt">
+    <DashboardShell aktivtSteg="jav">
       <Side>
         <Sidehode
-          tittel="Interessekonflikt"
-          tekst="Styret og daglig leder hos leverandøren krysset mot dem dere har registrert som deltakere i anskaffelsen. Et treff er ikke en avgjørelse — inhabilitet etter forvaltningsloven § 6 må vurderes av en person."
+          tittel={t.sider.jav.tittel}
+          tekst={t.sider.jav.tekst}
         />
 
         <Rad>

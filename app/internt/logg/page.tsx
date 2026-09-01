@@ -4,14 +4,14 @@ import { Side, Sidehode, Kort, Tabell, Merke } from "@/components/ui";
 import { LOGG } from "@/lib/demo/staff";
 
 export default async function InterntLoggSide() {
-  await krevSuperadmin();
+  const { t } = await krevSuperadmin();
 
   return (
-    <StaffShell aktivtSteg="Åtkomstlogg">
+    <StaffShell aktivtSteg="logg">
       <Side>
         <Sidehode
-          tittel="Åtkomstlogg"
-          tekst="Vem hos oss har öppnat vilken kunds data, och varför. Loggen ska kunna visas upp för kunden utan att vi först måste städa i den."
+          tittel={t.ansattsider.logg.tittel}
+          tekst={t.ansattsider.logg.tekst}
         />
 
         <div className="bg-surface2 text-accent text-[12.5px] rounded-xl px-4 py-3 mb-5 leading-relaxed">

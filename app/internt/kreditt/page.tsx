@@ -17,7 +17,7 @@ const PUNKT_TONE: Record<string, Tone> = {
 type Punkt = { punkt: string; status: string; tekst: string };
 
 export default async function InterntKredittSide() {
-  const { supabase } = await krevAnsatt();
+  const { supabase, t } = await krevAnsatt();
 
   const { data: sjekker } = await supabase
     .from("kredittsjekker")
@@ -28,11 +28,11 @@ export default async function InterntKredittSide() {
   const alle = sjekker ?? [];
 
   return (
-    <StaffShell aktivtSteg="Kreditkontroll">
+    <StaffShell aktivtSteg="kreditt">
       <Side>
         <Sidehode
-          tittel="Kreditkontroll"
-          tekst="Kontroll av kunder och blivande kunder innan vi fakturerar. Varje körning sparas oförändrad med tidpunkt, så den kan hämtas fram i efterhand."
+          tittel={t.ansattsider.kreditt.tittel}
+          tekst={t.ansattsider.kreditt.tekst}
         />
 
         <Rad>

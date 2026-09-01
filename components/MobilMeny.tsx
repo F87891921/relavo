@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { RelavoLogo } from "./RelavoLogo";
 
-type Punkt = { navn: string; href: string; merke?: number };
+type Punkt = { navn: string; href: string; id: string; merke?: number };
 
 /**
  * Sidemenyen på små skjermer.
@@ -22,12 +22,19 @@ export function MobilMeny({
   punkter,
   aktivtSteg,
   tittel,
+  tittelForSteg,
+  apneMenyen,
+  lukkMenyen,
   mork = false,
   children,
 }: {
   punkter: Punkt[];
   aktivtSteg: string;
   tittel: string | null;
+  /** Navnet på siden man står på, oversatt. Vises i topplinjen. */
+  tittelForSteg: string;
+  apneMenyen: string;
+  lukkMenyen: string;
   mork?: boolean;
   children: React.ReactNode;
 }) {
@@ -63,7 +70,7 @@ export function MobilMeny({
         <button
           type="button"
           onClick={() => setApen(true)}
-          aria-label="Åpne menyen"
+          aria-label={apneMenyen}
           aria-expanded={apen}
           className={`-ml-2 p-2 rounded-lg transition ${
             mork ? "hover:bg-white/10" : "hover:bg-canvas"
@@ -92,7 +99,7 @@ export function MobilMeny({
             mork ? "text-white/70" : "text-dim"
           }`}
         >
-          {aktivtSteg}
+          {tittelForSteg}
         </span>
       </header>
 
@@ -100,7 +107,7 @@ export function MobilMeny({
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <button
             type="button"
-            aria-label="Lukk menyen"
+            aria-label={lukkMenyen}
             onClick={() => setApen(false)}
             className="absolute inset-0 bg-ink/40"
           />
@@ -128,7 +135,7 @@ export function MobilMeny({
               <button
                 type="button"
                 onClick={() => setApen(false)}
-                aria-label="Lukk menyen"
+                aria-label={lukkMenyen}
                 className={`-mr-1 -mt-1 p-2 rounded-lg transition ${
                   mork
                     ? "text-white/60 hover:bg-white/10"
@@ -149,9 +156,9 @@ export function MobilMeny({
                 <Link
                   key={p.href}
                   href={p.href}
-                  aria-current={aktivtSteg === p.navn ? "page" : undefined}
+                  aria-current={aktivtSteg === p.id ? "page" : undefined}
                   className={`text-[14px] px-3 py-2.5 rounded-lg transition flex items-center gap-2 ${
-                    aktivtSteg === p.navn
+                    aktivtSteg === p.id
                       ? mork
                         ? "bg-white/15 text-white font-semibold"
                         : "bg-surface2 text-accent font-semibold"

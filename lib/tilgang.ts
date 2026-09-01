@@ -2,6 +2,7 @@ import { cache } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { aktivtSprak, ord } from "@/lib/sprak";
 
 /**
  * Samme dør inn til alle kundesidene: må være innlogget, og må høre til en
@@ -24,7 +25,7 @@ export const krevProfil = cache(async () => {
 
   const { data: profil } = await supabase
     .from("profiler")
-    .select("organisasjon_id, navn, rolle, ansatt, ansatt_rolle, organisasjoner(navn)")
+    .select("organisasjon_id, navn, rolle, ansatt, ansatt_rolle, sprak, organisasjoner(navn)")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -51,5 +52,9 @@ export const krevProfil = cache(async () => {
     user,
     profil,
     organisasjonNavn: org?.navn ?? null,
+    // Profilen vinner over kapselen: valget skal følge personen, ikke
+    // maskinen de tilfeldigvis sitter ved.
+    sprak: aktivtSprak(profil.sprak),
+    t: ord(profil.sprak),
   };
 });

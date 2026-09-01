@@ -12,7 +12,7 @@ const KOSTNAD_PER_UPPSLAG =
   KALLOR.reduce((s, k) => s + k.kostnad, 0) / Math.max(1, KALLOR.length);
 
 export default async function InterntMarginalSide() {
-  await krevSuperadmin();
+  const { t } = await krevSuperadmin();
 
   const rader = KONTON.map((k) => {
     const plan = PLANER[k.plan as keyof typeof PLANER];
@@ -27,11 +27,11 @@ export default async function InterntMarginalSide() {
   const sumKostnad = rader.reduce((s, r) => s + r.kostnad, 0);
 
   return (
-    <StaffShell aktivtSteg="Marginal">
+    <StaffShell aktivtSteg="marginal">
       <Side>
         <Sidehode
-          tittel="Marginal"
-          tekst="Vad varje konto ger mot vad registeruppslagen kostar oss. Konton som går med förlust står rött."
+          tittel={t.ansattsider.marginal.tittel}
+          tekst={t.ansattsider.marginal.tekst}
         />
 
         <Rad>

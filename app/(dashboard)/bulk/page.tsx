@@ -4,14 +4,14 @@ import { Side, Sidehode } from "@/components/ui";
 import { BulkListe } from "@/components/kontroll/BulkListe";
 
 export default async function BulkSide() {
-  const { profil } = await krevProfil();
+  const { profil, t } = await krevProfil();
 
   return (
-    <DashboardShell aktivtSteg="Bulkkontroll">
+    <DashboardShell aktivtSteg="bulk">
       <Side smal>
         <Sidehode
-          tittel="Bulkkontroll"
-          tekst="Lim inn organisasjonsnumrene til hele porteføljen og kjør kontroll på alle i én omgang."
+          tittel={t.sider.bulk.tittel}
+          tekst={t.sider.bulk.tekst}
         />
         <BulkListe />
       </Side>

@@ -13,7 +13,7 @@ import {
 } from "@/components/konto/Skjemaer";
 
 export default async function KontoSide() {
-  const { supabase, user, profil } = await krevProfil();
+  const { supabase, user, profil, t } = await krevProfil();
 
   const [{ data: org }, { data: kolleger }, { count: antallLeverandorer }, { count: antallKontroller }] = await Promise.all([
     supabase
@@ -36,11 +36,11 @@ export default async function KontoSide() {
   const fullt = brukt >= plan.brukere;
 
   return (
-    <DashboardShell aktivtSteg="Konto">
+    <DashboardShell aktivtSteg="konto">
       <Side smal>
         <Sidehode
-          tittel="Kontoinnstillinger"
-          tekst="Dine egne opplysninger, organisasjonen du hører til, og hvem som har tilgang."
+          tittel={t.sider.konto.tittel}
+          tekst={t.sider.konto.tekst}
         />
 
         <div className="grid lg:grid-cols-2 gap-4 mb-4">

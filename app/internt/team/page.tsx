@@ -4,7 +4,7 @@ import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad } from "@/components/ui"
 import { PersonalVelger } from "@/components/internt/PersonalVelger";
 
 export default async function InterntTeamSide() {
-  const { supabase, user } = await krevSuperadmin();
+  const { supabase, user, t } = await krevSuperadmin();
 
   // Alla profiler, inte bara de anställda — det är här man gör en kollega
   // till personal.
@@ -17,11 +17,11 @@ export default async function InterntTeamSide() {
   const ansatte = profiler.filter((p) => p.ansatt);
 
   return (
-    <StaffShell aktivtSteg="Team och behörighet">
+    <StaffShell aktivtSteg="team">
       <Side>
         <Sidehode
-          tittel="Team och behörighet"
-          tekst="Vilka som jobbar hos oss och vad var och en får se. Behörighet att läsa kunddata är skild från behörighet att ändra inställningar — den ena följer inte av den andra."
+          tittel={t.ansattsider.team.tittel}
+          tekst={t.ansattsider.team.tekst}
         />
 
         <Rad>

@@ -1,75 +1,28 @@
+import { ord } from "@/lib/sprak";
 import Link from "next/link";
 
-const PLANER = [
-  {
-    navn: "Leverandørkontroll",
-    pris: "590",
-    enhet: "NOK",
-    beskrivelse: "Én kontroll, full rapport som PDF. Uten abonnement.",
-    punkter: [
-      "Selskapsdata og roller",
-      "Skatt, avgift og anmerkninger",
-      "Kjedekontroll mot § 5k",
-      "Rapport som PDF",
-    ],
-    knapp: "Kjør én kontroll",
-    anbefalt: false,
-  },
-  {
-    navn: "Standard",
-    pris: "6 900",
-    enhet: "NOK/mnd",
-    beskrivelse: "Løpende overvåking av leverandørene i porteføljen.",
-    punkter: [
-      "Alt i enkeltkontroll",
-      "Alle kilder i hver kontroll",
-      "Daglig overvåking",
-      "Bulkkontroll og anskaffelser",
-      "Vurdering av lave tilbud",
-    ],
-    knapp: "Start Standard",
-    anbefalt: true,
-  },
-  {
-    navn: "Enterprise",
-    pris: "12 900",
-    enhet: "NOK/mnd",
-    beskrivelse: "Flere enheter under samme avtale, med API.",
-    punkter: [
-      "Alt i Standard",
-      "Flere enheter og arbeidsområder",
-      "API-tilgang",
-      "Egen kontaktperson",
-      "Databehandleravtale",
-    ],
-    knapp: "Start Enterprise",
-    anbefalt: false,
-  },
-];
+const PRISER = ["590", "6 900", "12 900"];
+const ANBEFALT = 1;
 
 export function Priser() {
+  const t = ord().landing.priser;
+
   return (
     <section className="sec" id="priser">
       <div className="wrap">
         <div className="sec-head center">
-          <div className="eyebrow">Priser</div>
+          <div className="eyebrow">{t.eyebrow}</div>
           <h2 className="statement">
-            Én pris, hele rapporten.{" "}
-            <span>
-              Ingen tillegg per oppslag og ingen overraskelser på fakturaen.
-            </span>
+            {t.tittel} <span>{t.undertittel}</span>
           </h2>
         </div>
         <div className="plans">
-          {PLANER.map((plan) => (
-            <div
-              key={plan.navn}
-              className={plan.anbefalt ? "plan rec" : "plan"}
-            >
-              {plan.anbefalt && <span className="plan-tag">Vanligst</span>}
+          {t.planer.map((plan, i) => (
+            <div key={plan.navn} className={i === ANBEFALT ? "plan rec" : "plan"}>
+              {i === ANBEFALT && <span className="plan-tag">{t.vanligst}</span>}
               <div className="plan-n">{plan.navn}</div>
               <div className="plan-p">
-                {plan.pris} <em>{plan.enhet}</em>
+                {PRISER[i]} <em>{plan.enhet}</em>
               </div>
               <p className="plan-d">{plan.beskrivelse}</p>
               <ul>
@@ -79,7 +32,7 @@ export function Priser() {
               </ul>
               <Link
                 href="/logg-inn"
-                className={`btn ${plan.anbefalt ? "btn-primary" : "btn-ghost"}`}
+                className={`btn ${i === ANBEFALT ? "btn-primary" : "btn-ghost"}`}
               >
                 {plan.knapp}
               </Link>

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { RelavoLogo } from "./RelavoLogo";
 import { MobilMeny } from "./MobilMeny";
+import { Sprakvelger } from "./Sprakvelger";
+import type { Ordbok } from "@/lib/sprak";
 
 /**
  * Sidemenyen for kontopanelet. Punktene følger relavo-staff.html, som er
@@ -10,20 +12,20 @@ import { MobilMeny } from "./MobilMeny";
  */
 /** bara=true betyder att punkten kräver superadmin. */
 export const ANSATTMENY = [
-  { navn: "Konton", href: "/internt" },
-  { navn: "Att göra", href: "/internt/attgora" },
-  { navn: "Support", href: "/internt/support" },
-  { navn: "Kontakt", href: "/internt/kontakt" },
-  { navn: "Leads", href: "/internt/leads" },
-  { navn: "Offerter", href: "/internt/offerter" },
-  { navn: "Fakturering", href: "/internt/fakturering" },
-  { navn: "Onboarding", href: "/internt/onboarding" },
-  { navn: "Kreditkontroll", href: "/internt/kreditt" },
-  { navn: "Källhälsa", href: "/internt/kallor" },
-  { navn: "Marginal", href: "/internt/marginal", bara: "superadmin" },
-  { navn: "Åtkomstlogg", href: "/internt/logg", bara: "superadmin" },
-  { navn: "Team och behörighet", href: "/internt/team", bara: "superadmin" },
-];
+  { id: "konton", href: "/internt" },
+  { id: "attgora", href: "/internt/attgora" },
+  { id: "support", href: "/internt/support" },
+  { id: "kontakt", href: "/internt/kontakt" },
+  { id: "leads", href: "/internt/leads" },
+  { id: "offerter", href: "/internt/offerter" },
+  { id: "fakturering", href: "/internt/fakturering" },
+  { id: "onboarding", href: "/internt/onboarding" },
+  { id: "kreditt", href: "/internt/kreditt" },
+  { id: "kallor", href: "/internt/kallor" },
+  { id: "marginal", href: "/internt/marginal", bara: "superadmin" },
+  { id: "logg", href: "/internt/logg", bara: "superadmin" },
+  { id: "team", href: "/internt/team", bara: "superadmin" },
+] as const;
 
 export async function StaffShell({
   aktivtSteg,
@@ -32,7 +34,7 @@ export async function StaffShell({
   aktivtSteg: string;
   children: React.ReactNode;
 }) {
-  const { profil, user, supabase } = await krevAnsatt();
+  const { profil, user, supabase, sprak, t } = await krevAnsatt();
   const superadmin = profil.ansatt_rolle === "superadmin";
   // Olästa notiser visas som en siffra vid «Att göra» — annars måste man gå
   // in på sidan för att få veta att det finns något där.
@@ -41,26 +43,32 @@ export async function StaffShell({
     .select("id", { count: "exact", head: true })
     .is("lest", null);
 
-  const meny = ANSATTMENY.filter((s) => !s.bara || superadmin).map((s) =>
-    s.navn === "Att göra" && olasta ? { ...s, merke: olasta } : s,
-  );
+  const meny = ANSATTMENY.filter((s) => !("bara" in s) || superadmin).map((s) => ({
+    id: s.id as string,
+    href: s.href,
+    navn: t.ansattmeny[s.id as keyof Ordbok["ansattmeny"]],
+    ...(s.id === "attgora" && olasta ? { merke: olasta } : {}),
+  }));
 
   // Samma botten i sidomenyn och i mobillådan.
   const botten = (
     <>
+      <div className="flex justify-end mb-1">
+        <Sprakvelger na={sprak} variant="mork" />
+      </div>
       <div className="px-3 py-2 border-t border-white/15">
         <div className="text-[12.5px] font-semibold text-white truncate">
           {profil.navn ?? user.email}
         </div>
         <div className="text-[10.5px] text-white/45">
-          {superadmin ? "Superadmin" : "Personal"}
+          {superadmin ? t.skall.superadmin : t.skall.personal}
         </div>
       </div>
       <Link
         href="/oversikt"
         className="text-[13px] px-3 py-2 rounded-lg text-white/60 hover:bg-white/10 hover:text-white transition block"
       >
-        ← Tillbaka till kundvyn
+        {t.skall.tilbakeTilKunde}
       </Link>
     </>
   );
@@ -72,7 +80,7 @@ export async function StaffShell({
           <RelavoLogo className="w-[86px] h-auto text-white" />
         </Link>
         <div className="px-1 mb-7 text-[10.5px] font-bold tracking-[0.09em] uppercase text-white/40">
-          Internt
+          {t.skall.internt}
         </div>
 
         <nav className="flex flex-col gap-0.5 overflow-y-auto min-h-0 flex-1">
@@ -80,15 +88,15 @@ export async function StaffShell({
             <Link
               key={s.href}
               href={s.href}
-              aria-current={aktivtSteg === s.navn ? "page" : undefined}
+              aria-current={aktivtSteg === s.id ? "page" : undefined}
               className={`text-[13px] px-3 py-2 rounded-lg transition flex items-center gap-2 ${
-                aktivtSteg === s.navn
+                aktivtSteg === s.id
                   ? "bg-white/15 text-white font-semibold"
                   : "text-white/60 hover:bg-white/10 hover:text-white"
               }`}
             >
               {s.navn}
-              {"merke" in s && !!s.merke && (
+              {!!s.merke && (
                 <span className="ml-auto bg-accent text-white text-[10.5px] font-bold rounded-full px-1.5 min-w-[18px] text-center leading-[18px]">
                   {s.merke}
                 </span>
@@ -100,7 +108,15 @@ export async function StaffShell({
         <div className="shrink-0 pt-4">{botten}</div>
       </aside>
 
-      <MobilMeny punkter={meny} aktivtSteg={aktivtSteg} tittel="Internt" mork>
+      <MobilMeny
+        punkter={meny}
+        aktivtSteg={aktivtSteg}
+        tittel={t.skall.internt}
+        tittelForSteg={t.ansattmeny[aktivtSteg as keyof Ordbok["ansattmeny"]] ?? ""}
+        apneMenyen={t.skall.apneMenyen}
+        lukkMenyen={t.skall.lukkMenyen}
+        mork
+      >
         {botten}
       </MobilMeny>
 

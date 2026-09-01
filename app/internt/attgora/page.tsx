@@ -11,7 +11,7 @@ import { Varsler, type Varsel } from "@/components/internt/Varsler";
  * något brinner. Källhälsolarmen är ännu demodata — de har ingen tabell.
  */
 export default async function InterntAttgoraSide() {
-  const { supabase } = await krevAnsatt();
+  const { supabase, t } = await krevAnsatt();
 
   const idag = new Date().toISOString().slice(0, 10);
 
@@ -92,11 +92,11 @@ export default async function InterntAttgoraSide() {
   poster.sort((a, b) => Number(b.hastar) - Number(a.hastar));
 
   return (
-    <StaffShell aktivtSteg="Att göra">
+    <StaffShell aktivtSteg="attgora">
       <Side>
         <Sidehode
-          tittel="Att göra"
-          tekst="Det som kräver en människa i dag, hämtat från fakturor, offerter, leads och källhälsa. Rött hastar."
+          tittel={t.ansattsider.attgora.tittel}
+          tekst={t.ansattsider.attgora.tekst}
         />
         <Varsler varsler={(varsler ?? []) as Varsel[]} />
 

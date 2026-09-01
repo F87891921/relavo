@@ -4,7 +4,7 @@ import { Side, Sidehode, Tall, Rad } from "@/components/ui";
 import { SakKort, type Sak } from "@/components/sak/SakTrad";
 
 export default async function InterntSupportSide() {
-  const { supabase } = await krevAnsatt();
+  const { supabase, t } = await krevAnsatt();
 
   const { data: saker } = await supabase
     .from("saker")
@@ -20,11 +20,11 @@ export default async function InterntSupportSide() {
   const venterPaOss = alle.filter((s) => s.status === "venter_oss");
 
   return (
-    <StaffShell aktivtSteg="Support">
+    <StaffShell aktivtSteg="support">
       <Side>
         <Sidehode
-          tittel="Support"
-          tekst="Ärenden från alla konton. Svarar du här går svaret direkt till kunden, och ärendet flyttas till Väntar på kunden."
+          tittel={t.ansattsider.support.tittel}
+          tekst={t.ansattsider.support.tekst}
         />
 
         <Rad>

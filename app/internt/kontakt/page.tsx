@@ -5,7 +5,7 @@ import { kontaktKategoriTekst } from "@/lib/sak";
 import { MarkerBehandlet } from "@/components/internt/MarkerBehandlet";
 
 export default async function InterntKontaktSide() {
-  const { supabase } = await krevAnsatt();
+  const { supabase, t } = await krevAnsatt();
 
   const { data: henvendelser } = await supabase
     .from("kontakt_henvendelser")
@@ -16,11 +16,11 @@ export default async function InterntKontaktSide() {
   const nya = alle.filter((h) => !h.behandlet);
 
   return (
-    <StaffShell aktivtSteg="Kontakt">
+    <StaffShell aktivtSteg="kontakt">
       <Side>
         <Sidehode
-          tittel="Kontakt"
-          tekst="Meddelanden från kontaktformuläret på landningssidan. Markera som behandlad när någon har svarat."
+          tittel={t.ansattsider.kontakt.tittel}
+          tekst={t.ansattsider.kontakt.tekst}
         />
 
         <Rad>

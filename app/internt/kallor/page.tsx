@@ -5,7 +5,7 @@ import { KALLOR, LARM, NYCKLAR } from "@/lib/demo/staff";
 import { SynkRenhold } from "@/components/internt/SynkRenhold";
 
 export default async function InterntKallorSide() {
-  const { supabase } = await krevAnsatt();
+  const { supabase, t } = await krevAnsatt();
 
   const { data: synk } = await supabase
     .from("registersynk")
@@ -16,11 +16,11 @@ export default async function InterntKallorSide() {
   const aktivaLarm = LARM.filter((l) => l.status === "aktivt");
 
   return (
-    <StaffShell aktivtSteg="Källhälsa">
+    <StaffShell aktivtSteg="kallor">
       <Side>
         <Sidehode
-          tittel="Källhälsa"
-          tekst="Svarstider, felfrekvens och kostnad per register. Ligger en källa nere ska kundens rapport säga det, inte tiga om det."
+          tittel={t.ansattsider.kallor.tittel}
+          tekst={t.ansattsider.kallor.tekst}
         />
 
         <SynkRenhold

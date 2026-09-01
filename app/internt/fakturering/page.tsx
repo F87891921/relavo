@@ -14,7 +14,7 @@ const STATUS: StatusVal[] = [
 ];
 
 export default async function InterntFaktureringSide() {
-  const { supabase } = await krevAnsatt();
+  const { supabase, t } = await krevAnsatt();
 
   const { data: fakturaer } = await supabase
     .from("fakturaer")
@@ -33,11 +33,11 @@ export default async function InterntFaktureringSide() {
   const forfallna = alle.filter((f) => f.status === "forfallen");
 
   return (
-    <StaffShell aktivtSteg="Fakturering">
+    <StaffShell aktivtSteg="fakturering">
       <Side>
         <Sidehode
-          tittel="Fakturering"
-          tekst="Fakturor per konto, med förfallodatum och status. Fakturanumret sätts automatiskt som löpnummer per år."
+          tittel={t.ansattsider.fakturering.tittel}
+          tekst={t.ansattsider.fakturering.tekst}
         />
 
         <Rad>
