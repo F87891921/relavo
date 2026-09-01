@@ -103,6 +103,7 @@ export async function middleware(request: NextRequest) {
     "/",
     "/port",
     "/logg-inn",
+    "/registrer",
     "/tofaktor",
     "/kontakt",
     "/juridisk",

@@ -373,6 +373,8 @@ export const no = {
     innenfor: "Innenfor grensen i § 5k",
   },
   konto: {
+    sprakTittel: "Språk",
+    sprakTekst: "Gjelder grensesnittet. Tilbud, brev og vilkår er alltid på norsk — de går til norske mottakere og skal kunne journalføres.",
     kontoDeg: "Deg",
     kontoTofaktor: "Tofaktor",
     engangskodeFraMobil: "engangskode fra mobilen",
@@ -817,6 +819,14 @@ export const no = {
     nyeBestillinger: "Nye bestillinger",
     betalingsmate: "Betalingsmåte",
     forskudd: "Forskudd",
+  },
+  registrering: {
+    tittel: "Opprett konto",
+    ingress: "To minutter. Selskapet legger du inn i neste steg.",
+    opprett: "Opprett konto",
+    harKonto: "Har dere allerede konto?",
+    nyKunde: "Ny kunde?",
+    registrerDeg: "Opprett konto",
   },
   auth: {
     feilInnlogging: "Feil e-post eller passord.",

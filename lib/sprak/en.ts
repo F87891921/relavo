@@ -364,6 +364,8 @@ export const en: Ordbok = {
     innenfor: "Within the limit in § 5k",
   },
   konto: {
+    sprakTittel: "Language",
+    sprakTekst: "Applies to the interface. Quotes, letters and terms are always in Norwegian — they go to Norwegian recipients and must be filed as records.",
     kontoDeg: "You",
     kontoTofaktor: "Two-factor",
     engangskodeFraMobil: "one-time code from your phone",
@@ -808,6 +810,14 @@ export const en: Ordbok = {
     nyeBestillinger: "New orders",
     betalingsmate: "Payment method",
     forskudd: "Prepayment",
+  },
+  registrering: {
+    tittel: "Create an account",
+    ingress: "Two minutes. You add the company in the next step.",
+    opprett: "Create account",
+    harKonto: "Already have an account?",
+    nyKunde: "New customer?",
+    registrerDeg: "Create an account",
   },
   auth: {
     feilInnlogging: "Wrong email or password.",

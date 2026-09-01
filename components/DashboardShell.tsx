@@ -3,7 +3,6 @@ import { RelavoLogo } from "./RelavoLogo";
 import { LoggUt } from "./LoggUt";
 import { MobilMeny } from "./MobilMeny";
 import { krevProfil } from "@/lib/tilgang";
-import { Sprakvelger } from "./Sprakvelger";
 import type { Ordbok } from "@/lib/sprak";
 
 /**
@@ -42,7 +41,7 @@ export async function DashboardShell({
 }) {
   // krevProfil er cachet per forespørsel, så dette koster ingenting ekstra
   // selv om siden allerede har kalt den.
-  const { user, profil, organisasjonNavn, sprak, t } = await krevProfil();
+  const { user, profil, organisasjonNavn, t } = await krevProfil();
 
   const punkter = KUNDEMENY.map((s) => ({
     navn: t.meny[s.id as keyof Ordbok["meny"]],
@@ -95,10 +94,7 @@ export async function DashboardShell({
             </span>
           </span>
         </Link>
-        <div className="flex items-center justify-between gap-2">
-          <LoggUt tekst={t.skall.loggUt} venterTekst={t.skall.loggerUt} />
-          <Sprakvelger na={sprak} />
-        </div>
+        <LoggUt tekst={t.skall.loggUt} venterTekst={t.skall.loggerUt} />
       </div>
     </>
   );

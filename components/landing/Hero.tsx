@@ -14,7 +14,7 @@ export function Hero() {
         <h1>{t.hero.tittel}</h1>
         <p className="lead">{t.hero.lead}</p>
         <div className="hero-cta">
-          <Link href="/logg-inn" className="btn btn-primary btn-lg">
+          <Link href="/registrer" className="btn btn-primary btn-lg">
             {t.nav.komIGang}
           </Link>
           <a className="btn btn-ghost btn-lg" href="#priser">

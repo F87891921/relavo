@@ -364,6 +364,8 @@ export const sv: Ordbok = {
     innenfor: "Inom gränsen i § 5k",
   },
   konto: {
+    sprakTittel: "Språk",
+    sprakTekst: "Gäller gränssnittet. Offerter, brev och villkor är alltid på norska — de går till norska mottagare och ska kunna diarieföras.",
     kontoDeg: "Du",
     kontoTofaktor: "Tvåfaktor",
     engangskodeFraMobil: "engångskod från mobilen",
@@ -808,6 +810,14 @@ export const sv: Ordbok = {
     nyeBestillinger: "Nya beställningar",
     betalingsmate: "Betalningssätt",
     forskudd: "Förskott",
+  },
+  registrering: {
+    tittel: "Skapa konto",
+    ingress: "Två minuter. Bolaget lägger du in i nästa steg.",
+    opprett: "Skapa konto",
+    harKonto: "Har ni redan konto?",
+    nyKunde: "Ny kund?",
+    registrerDeg: "Skapa konto",
   },
   auth: {
     feilInnlogging: "Fel e-post eller lösenord.",

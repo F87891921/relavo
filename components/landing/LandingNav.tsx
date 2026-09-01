@@ -31,7 +31,7 @@ export function LandingNav() {
           <Link href="/logg-inn" className="btn btn-quiet">
             {t.nav.loggInn}
           </Link>
-          <Link href="/logg-inn" className="btn btn-primary">
+          <Link href="/registrer" className="btn btn-primary">
             {t.nav.komIGang}
           </Link>
         </div>

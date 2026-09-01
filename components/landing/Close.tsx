@@ -10,7 +10,7 @@ export function Close() {
         <h2>{t.close.tittel}</h2>
         <p>{t.close.tekst}</p>
         <div className="hero-cta">
-          <Link href="/logg-inn" className="btn btn-primary btn-lg">
+          <Link href="/registrer" className="btn btn-primary btn-lg">
             {t.nav.komIGang}
           </Link>
           <Link href="/kontakt?om=demo" className="btn btn-ghost btn-lg">

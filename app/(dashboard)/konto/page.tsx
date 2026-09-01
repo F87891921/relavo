@@ -4,6 +4,7 @@ import { Side, Sidehode, Kort, Tabell, Merke, Stripe } from "@/components/ui";
 import { planFor } from "@/lib/plan";
 import { MIN_LENGDE } from "@/lib/passord";
 import { Tofaktor } from "@/components/konto/Tofaktor";
+import { Sprakvelger } from "@/components/Sprakvelger";
 import {
   EgetNavn,
   EgetPassord,
@@ -13,7 +14,7 @@ import {
 } from "@/components/konto/Skjemaer";
 
 export default async function KontoSide() {
-  const { supabase, user, profil, t } = await krevProfil();
+  const { supabase, user, profil, t, sprak } = await krevProfil();
 
   const [{ data: org }, { data: kolleger }, { count: antallLeverandorer }, { count: antallKontroller }] = await Promise.all([
     supabase
@@ -73,6 +74,17 @@ export default async function KontoSide() {
             </div>
           </Kort>
         </div>
+
+        <Kort tittel={t.konto.sprakTittel} className="mb-4">
+          <div className="px-5 py-5 flex items-start justify-between gap-5">
+            <p className="text-[12.5px] text-dim leading-relaxed max-w-[62ch]">
+              {t.konto.sprakTekst}
+            </p>
+            <span className="shrink-0 -mt-1">
+              <Sprakvelger na={sprak} retning="ned" />
+            </span>
+          </div>
+        </Kort>
 
         <Kort tittel={t.konto.kontoTofaktor} note={t.konto.engangskodeFraMobil} className="mb-4">
           <div className="px-5 py-5">

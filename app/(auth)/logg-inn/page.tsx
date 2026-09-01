@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { RelavoMark } from "@/components/RelavoMark";
 import { MicrosoftLogo } from "@/components/MicrosoftLogo";
+import Link from "next/link";
 import { useOrd } from "@/components/Sprakgiver";
 import { FELT_FULL } from "@/components/ui/felt";
 
@@ -28,7 +29,8 @@ export default function LoggInnSide() {
   const router = useRouter();
   const [epost, setEpost] = useState("");
   const [passord, setPassord] = useState("");
-  const t = useOrd().auth;
+  const ord = useOrd();
+  const t = ord.auth;
   const [feil, setFeil] = useState("");
   const [laster, setLaster] = useState(false);
   const [msLaster, setMsLaster] = useState(false);
@@ -167,6 +169,13 @@ export default function LoggInnSide() {
           >
             {laster ? t.loggerInn : t.loggInn}
           </button>
+
+          <p className="text-[12.5px] text-dim text-center mt-4">
+            {ord.registrering.nyKunde}{" "}
+            <Link href="/registrer" className="text-accent hover:underline">
+              {ord.registrering.registrerDeg}
+            </Link>
+          </p>
         </form>
       </div>
     </div>

@@ -31,7 +31,7 @@ export function Priser() {
                 ))}
               </ul>
               <Link
-                href="/logg-inn"
+                href="/registrer"
                 className={`btn ${i === ANBEFALT ? "btn-primary" : "btn-ghost"}`}
               >
                 {plan.knapp}
