@@ -53,34 +53,36 @@ export default async function OversiktSide() {
         />
 
         <Rad>
-          <Tall verdi={String(totalt)} merke="leverandører i porteføljen" />
-          <Tall verdi={String(kontrollert)} merke="kontroller kjørt" />
+          <Tall verdi={String(totalt)} merke={t.oversikt.iPortefoljen} />
+          <Tall verdi={String(kontrollert)} merke={t.oversikt.kontrollerKjort} />
           <Tall
             verdi={String(hoyRisiko?.length ?? 0)}
-            merke="med høy risiko"
+            merke={t.oversikt.medHoyRisiko}
             tone={hoyRisiko?.length ? "brudd" : undefined}
           />
-          <Tall verdi={`${andel} %`} merke="dokumentert etter § 5i" />
+          <Tall verdi={`${andel} %`} merke={t.oversikt.dokumentert} />
         </Rad>
 
         {(forfalteEspd?.length || apneKrav?.length) ? (
           <div className="bg-bad-bg text-bad rounded-xl px-4 py-3.5 mb-5 text-[12.5px] leading-relaxed">
-            <b>Frister som løper.</b>{" "}
+            <b>{t.oversikt.frister}</b>{" "}
             {forfalteEspd?.length ? (
               <>
-                {forfalteEspd.length} ESPD-erklæring
-                {forfalteEspd.length === 1 ? " er" : "er er"} over fristen.{" "}
+                {forfalteEspd.length}{" "}
+                {forfalteEspd.length === 1
+                  ? t.oversikt.espdEn
+                  : t.oversikt.espdFlere}{" "}
                 <Link href="/espd" className="underline">
-                  Se dem
+                  {t.oversikt.seDem}
                 </Link>
                 .{" "}
               </>
             ) : null}
             {apneKrav?.length ? (
               <>
-                {apneKrav.length} krav om redegjørelse venter på vurdering.{" "}
+                {apneKrav.length} {t.oversikt.kravVenter}{" "}
                 <Link href="/tilbud" className="underline">
-                  Se dem
+                  {t.oversikt.seDem}
                 </Link>
                 .
               </>
@@ -89,26 +91,25 @@ export default async function OversiktSide() {
         ) : null}
 
         <Kort
-          tittel="Kontrollplikt § 5i"
-          note={`${kontrollert} av ${totalt} leverandører dokumentert`}
+          tittel={t.oversikt.kontrollplikt}
+          note={`${kontrollert} / ${totalt} ${t.oversikt.avDokumentert}`}
           className="mb-6"
         >
           <div className="px-5 py-5">
             <Stripe andel={andel} tone={andel < 60 ? "advarsel" : "aksent"} />
             <p className="text-[12.5px] text-dim mt-3 leading-relaxed">
-              Kontrollen må kunne dokumenteres i ettertid, ikke bare utføres.
-              Leverandører uten lagret kontroll teller ikke med.{" "}
+              {t.oversikt.forklaring}{" "}
               <Link href="/ny-kontroll" className="text-accent hover:underline">
-                Kjør en kontroll →
+                {t.oversikt.kjorEnKontroll}
               </Link>
             </p>
           </div>
         </Kort>
 
         <div className="grid lg:grid-cols-2 gap-4">
-          <Kort tittel="Krever noe av deg" note="fra prototypens demodata">
+          <Kort tittel={t.oversikt.kreverNoe} note={t.ui.demodata}>
             <Tabell
-              kolonner={["Leverandør", "Hva", "Når"]}
+              kolonner={[t.ui.leverandor, t.ui.hva, t.ui.nar]}
               rader={HANDLING.map((h) => [
                 <span key="n" className="font-semibold">{navnFor(h.org)}</span>,
                 <span key="w" className="text-dim">{h.why}</span>,
@@ -119,9 +120,9 @@ export default async function OversiktSide() {
             />
           </Kort>
 
-          <Kort tittel="Siste kjøringer" note="fra prototypens demodata">
+          <Kort tittel={t.oversikt.sisteKjoringer} note={t.ui.demodata}>
             <Tabell
-              kolonner={["Leverandør", "Tidspunkt", "Utløst av", "Resultat"]}
+              kolonner={[t.ui.leverandor, t.ui.tidspunkt, t.ui.utlostAv, t.ui.resultat]}
               rader={KJORINGER.map((k) => [
                 <span key="n" className="font-semibold">{navnFor(k.org)}</span>,
                 <span key="t" className="text-dim whitespace-nowrap">{k.t}</span>,
@@ -130,7 +131,7 @@ export default async function OversiktSide() {
                   key="r"
                   tone={k.res === "hoy" ? "brudd" : k.res === "middels" ? "advarsel" : "god"}
                 >
-                  {k.res === "hoy" ? "Høy" : k.res === "middels" ? "Middels" : "Lav"}
+                  {k.res === "hoy" ? t.risiko.hoy : k.res === "middels" ? t.risiko.middels : t.risiko.lav}
                 </Merke>,
               ])}
             />

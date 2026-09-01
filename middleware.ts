@@ -1,6 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { KAPSEL, avtrykk, likeStrenger } from "@/lib/portvakt";
+import { KAPSEL_SPRAK, erSprak } from "@/lib/sprak/felles";
 
 /**
  * Kjøres på hver request. Supabase sin auth-cookie må fornyes jevnlig —
@@ -63,6 +64,28 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Språket ligger i en kapsel, fordi rotoppsettet må vite det uten å slå
+  // opp i databasen på hver eneste sidevisning. Men valget er lagret på
+  // profilen, og på en ny maskin finnes ikke kapselen ennå. Da hentes den
+  // her, én gang, og settes — ellers ville rotoppsettet stått på norsk mens
+  // resten av siden var på svensk.
+  if (user && !erSprak(request.cookies.get(KAPSEL_SPRAK)?.value)) {
+    const { data } = await supabase
+      .from("profiler")
+      .select("sprak")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (erSprak(data?.sprak)) {
+      request.cookies.set(KAPSEL_SPRAK, data.sprak);
+      response = NextResponse.next({ request });
+      response.cookies.set(KAPSEL_SPRAK, data.sprak, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365,
+        sameSite: "lax",
+      });
+    }
+  }
 
   // Snudd på hodet: alt krever innlogging bortsett fra det som er uttrykkelig
   // åpent. Med den gamle lista over beskyttede stier ble hver nye rute

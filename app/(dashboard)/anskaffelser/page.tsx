@@ -13,9 +13,16 @@ export default async function AnskaffelserSide() {
           tittel={t.sider.anskaffelser.tittel}
           tekst={t.sider.anskaffelser.tekst}
         />
-        <Kort note="fra prototypens demodata">
+        <Kort note={t.ui.demodata}>
           <Tabell
-            kolonner={["Saksnummer", "Anskaffelse", "Konkurranseform", "Avtaleverdi", "Periode", "Kontroller"]}
+            kolonner={[
+              t.ui.saksnummer,
+              t.ui.anskaffelse,
+              t.ui.konkurranseform,
+              t.ui.avtaleverdi,
+              t.ui.periode,
+              t.ui.kontroller,
+            ]}
             rader={ANSKAFFELSER.map((a) => [
               <span key="i" className="font-mono text-[12px] text-accent">{a.id}</span>,
               <span key="n" className="font-semibold">{a.navn}</span>,

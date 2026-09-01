@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { validerOrgnr, formaterOrgnr } from "@/lib/orgnr";
@@ -8,34 +10,47 @@ import { kjorKontroll } from "@/app/(dashboard)/ny-kontroll/handlinger";
 import { HMS_PUNKTER, type Svar } from "@/lib/kontroll";
 import { Steg, Foten, Kort, Felt, INPUT } from "./Steg";
 
-const ANSK_FELT = [
-  { k: "diar", l: "Saksnummer", t: "text", ph: "K-2026-118" },
-  { k: "best", l: "Bestiller", t: "text", ph: "Etat for utbygging" },
-  { k: "saks", l: "Saksbehandler", t: "text", ph: "Marit Aasen" },
-  {
-    k: "type",
-    l: "Konkurranseform",
-    t: "select",
-    opt: [
-      "Åpen anbudskonkurranse",
-      "Begrenset anbudskonkurranse",
-      "Åpen tilbudskonkurranse",
-      "Begrenset tilbudskonkurranse",
-      "Konkurranse med forhandling",
-    ],
-  },
-  { k: "fra", l: "Avtale fra", t: "date" },
-  { k: "til", l: "Avtale til", t: "date" },
-  { k: "verdi", l: "Avtaleverdi (NOK)", t: "text", ph: "96 000 000" },
-  {
-    k: "opsj",
-    l: "Opsjon",
-    t: "select",
-    opt: ["Ingen opsjon", "1 år", "2 år", "1 + 1 år", "2 + 1 år"],
-  },
-] as const;
+type Anskfelt = { k: string; l: string; t: string; ph?: string; opt?: string[] };
+
+/**
+ * Feltene i anskaffelsen. Etikettene kommer fra ordboka, mens verdiene i
+ * nedtrekkslistene står på norsk: konkurranseformene er navngitt i
+ * anskaffelsesforskriften, og en oversatt «åpen anbudskonkurranse» er ikke
+ * lenger den formen man faktisk har valgt i protokollen.
+ */
+function anskFelter(v: ReturnType<typeof useOrd>["veiviser"]): Anskfelt[] {
+  return [
+    { k: "diar", l: v.saksnummer, t: "text", ph: "K-2026-118" },
+    { k: "best", l: v.bestiller, t: "text", ph: "Etat for utbygging" },
+    { k: "saks", l: v.saksbehandler, t: "text", ph: "Marit Aasen" },
+    {
+      k: "type",
+      l: v.konkurranseform,
+      t: "select",
+      opt: [
+        "Åpen anbudskonkurranse",
+        "Begrenset anbudskonkurranse",
+        "Åpen tilbudskonkurranse",
+        "Begrenset tilbudskonkurranse",
+        "Konkurranse med forhandling",
+      ],
+    },
+    { k: "fra", l: v.avtaleFra, t: "date" },
+    { k: "til", l: v.avtaleTil, t: "date" },
+    { k: "verdi", l: v.avtaleverdi, t: "text", ph: "96 000 000" },
+    {
+      k: "opsj",
+      l: v.opsjon,
+      t: "select",
+      opt: [v.ingenOpsjon, "1 år", "2 år", "1 + 1 år", "2 + 1 år"],
+    },
+  ];
+}
 
 export function NyKontrollVeiviser() {
+  const o = useOrd();
+  const v = o.veiviser;
+  const ANSK_FELT = anskFelter(v);
   const router = useRouter();
   const [steg, setSteg] = useState(0);
 
@@ -71,10 +86,10 @@ export function NyKontrollVeiviser() {
     try {
       const svar = await fetch(`/api/oppslag?orgnr=${validering.orgnr}`);
       const data = await svar.json();
-      if (!svar.ok) setOppslagFeil(data.feil ?? "Oppslaget mislyktes.");
+      if (!svar.ok) setOppslagFeil(data.feil ?? v.oppslagFeilet);
       else setEnhet(data.enhet);
     } catch {
-      setOppslagFeil("Fikk ikke kontakt med Enhetsregisteret.");
+      setOppslagFeil(v.ingenKontakt);
     } finally {
       setSlaarOpp(false);
     }
@@ -107,11 +122,11 @@ export function NyKontrollVeiviser() {
    */
   function hint() {
     if (sifre.length === 0)
-      return "Ni siffer. Kontrollsifferet valideres med modulus 11 før oppslag.";
+      return v.hintNiSiffer;
     if (!fullLengde)
       return `${sifre.length} av 9 siffer — ${9 - sifre.length} igjen.`;
     if (!validering.ok) return validering.feil;
-    return "Ni siffer, kontrollsifferet stemmer. Klar for oppslag.";
+    return v.hintKlar;
   }
 
   return (
@@ -123,7 +138,7 @@ export function NyKontrollVeiviser() {
           <Kort>
             <Felt
               id="orgnr"
-              merke="Organisasjonsnummer"
+              merke={v.orgnummer}
               hint={hint()}
               feil={fullLengde && !validering.ok}
             >
@@ -163,7 +178,7 @@ export function NyKontrollVeiviser() {
               disabled={slaarOpp || !validering.ok}
               className="text-sm font-semibold px-4 py-2.5 rounded-xl bg-surface shadow-card hover:bg-surface2 active:scale-[0.97] transition disabled:opacity-60"
             >
-              {slaarOpp ? "Slår opp …" : "Slå opp i Enhetsregisteret"}
+              {slaarOpp ? v.slaarOpp : v.slaOpp}
             </button>
 
             {oppslagFeil && (
@@ -195,15 +210,15 @@ export function NyKontrollVeiviser() {
               alternativ={[
                 {
                   verdi: "ja",
-                  tittel: "Ja, offentlig anskaffelse",
+                  tittel: v.offentligJa,
                   tekst:
-                    "Full kontroll mot avvisningsgrunner, skatteattest, leddbegrensning og lærlingekrav.",
+                    v.offentligJaTekst,
                 },
                 {
                   verdi: "nei",
-                  tittel: "Nei, privat innkjøp",
+                  tittel: v.offentligNei,
                   tekst:
-                    "Kontrollerer selskapsdata, økonomi og sanksjonslister. Ingen paragrafvurdering.",
+                    v.offentligNeiTekst,
                 },
               ]}
             />
@@ -232,15 +247,16 @@ export function NyKontrollVeiviser() {
                         setSak({ ...sak, [f.k]: e.target.value })
                       }
                     >
-                      <option value="">Velg …</option>
-                      {"opt" in f &&
-                        f.opt.map((o) => <option key={o}>{o}</option>)}
+                      <option value="">{v.velg}</option>
+                      {f.opt?.map((o) => (
+                        <option key={o}>{o}</option>
+                      ))}
                     </select>
                   ) : (
                     <input
                       id={`sak-${f.k}`}
                       type={f.t}
-                      placeholder={"ph" in f ? f.ph : undefined}
+                      placeholder={f.ph}
                       className={INPUT}
                       value={sak[f.k] ?? ""}
                       onChange={(e) =>
@@ -268,10 +284,10 @@ export function NyKontrollVeiviser() {
           <Kort>
             <div className="flex items-baseline justify-between mb-4">
               <h2 className="text-[15px] font-semibold">
-                Tariffavtale, HMS-kort og lønnsvilkår
+                {v.tariffTittel}
               </h2>
               <span className="text-[11.5px] text-faint">
-                Kryss av det du har bekreftet
+                {v.kryssAv}
               </span>
             </div>
             <div className="space-y-1">
@@ -323,8 +339,8 @@ export function NyKontrollVeiviser() {
             </h2>
             <p className="text-[12.5px] text-dim leading-relaxed mb-4">
               {offentlig
-                ? "ESPD-egenerklæringen dekker den delen av kvalifikasjonsvurderingen vi ikke kan kontrollere mot registrene."
-                : "Ved private innkjøp er egenerklæring frivillig, men den lagres som vedlegg hvis den finnes."}
+                ? v.espdOffentlig
+                : v.espdPrivat}
             </p>
             <Valg
               navn="espd"
@@ -333,15 +349,15 @@ export function NyKontrollVeiviser() {
               alternativ={[
                 {
                   verdi: "finnes",
-                  tittel: "Levert med tilbudet",
+                  tittel: v.espdLevert,
                   tekst:
-                    "Hentes fra anskaffelsen og sammenlignes med registrene. Motstrid flagges som avvisningsgrunn etter § 24-2 tredje ledd.",
+                    v.espdLevertTekst,
                 },
                 {
                   verdi: "be",
-                  tittel: "Ikke levert — be om ettersending",
+                  tittel: v.espdMangler,
                   tekst:
-                    "Manglende egenerklæring er normalt en mangel som kan repareres etter § 23-5, i motsetning til innholdet i tilbudet.",
+                    v.espdManglerTekst,
                 },
               ]}
             />
@@ -349,8 +365,8 @@ export function NyKontrollVeiviser() {
               <div className="mt-4">
                 <Felt
                   id="espdfrist"
-                  merke="Frist for ettersending"
-                  hint="Ti virkedager er vanlig."
+                  merke={v.fristEttersending}
+                  hint={v.tiVirkedager}
                 >
                   <input
                     id="espdfrist"
@@ -396,7 +412,7 @@ export function NyKontrollVeiviser() {
           <Foten
             tilbake={() => setSteg(4)}
             neste={kjor}
-            nesteTekst={kjorer ? "Kjører …" : "Kjør kontrollen"}
+            nesteTekst={kjorer ? v.kjorer : v.kjorKontrollen}
             nesteAv={kjorer}
           />
         </>
@@ -406,10 +422,12 @@ export function NyKontrollVeiviser() {
 }
 
 function Treff({ enhet }: { enhet: Enhet }) {
+  const o = useOrd();
+  const v = o.veiviser;
   const flagg = [
-    enhet.konkurs && "Konkurs",
-    enhet.underTvangsavvikling && "Under tvangsavvikling",
-    enhet.underAvvikling && "Under avvikling",
+    enhet.konkurs && v.konkurs,
+    enhet.underTvangsavvikling && v.underTvangsavvikling,
+    enhet.underAvvikling && v.underAvvikling,
   ].filter(Boolean) as string[];
 
   return (
@@ -421,11 +439,11 @@ function Treff({ enhet }: { enhet: Enhet }) {
 
       <dl className="grid sm:grid-cols-2 gap-x-5 gap-y-2.5 mt-4 text-[13px]">
         {[
-          ["Organisasjonsform", enhet.form],
-          ["Bransje", enhet.bransje],
+          [v.organisasjonsform, enhet.form],
+          [o.ui.bransje, enhet.bransje],
           ["Sted", enhet.sted],
-          ["Ansatte", enhet.ansatte === null ? null : String(enhet.ansatte)],
-          ["Registrert", enhet.registrert],
+          [v.ansatte, enhet.ansatte === null ? null : String(enhet.ansatte)],
+          [v.registrert, enhet.registrert],
         ].map(([m, v]) => (
           <div key={m as string}>
             <dt className="text-[11px] uppercase tracking-wide text-faint">{m}</dt>
@@ -436,11 +454,11 @@ function Treff({ enhet }: { enhet: Enhet }) {
 
       {flagg.length > 0 ? (
         <div className="mt-4 bg-bad-bg text-bad rounded-xl px-3.5 py-3 text-[12.5px]">
-          <b>Avvisningsgrunn etter § 24-2:</b> {flagg.join(", ")}.
+          <b>{v.avvisningsgrunn}</b> {flagg.join(", ")}.
         </div>
       ) : (
         <div className="mt-4 inline-flex items-center gap-1.5 bg-good-bg text-good rounded-full px-2.5 py-1 text-[11px] font-semibold">
-          Ingen konkurs eller avvikling registrert
+          {v.ingenKonkurs}
         </div>
       )}
     </div>
@@ -504,26 +522,30 @@ function Oppsummering({
   espd: "finnes" | "be" | null;
   espdFrist: string;
 }) {
+  const o = useOrd();
+  const v = o.veiviser;
   const utfylt = Object.entries(sak).filter(([, v]) => v.trim());
 
   const rader: [string, string][] = [
-    ["Selskap", enhet ? `${enhet.navn} (${formaterOrgnr(enhet.orgnr)})` : "—"],
-    ["Type innkjøp", offentlig ? "Offentlig anskaffelse" : "Privat innkjøp"],
+    [o.ui.selskap, enhet ? `${enhet.navn} (${formaterOrgnr(enhet.orgnr)})` : "—"],
+    [v.typeInnkjop, offentlig ? v.offentligAnskaffelse : v.privatInnkjop],
     [
-      "Saksopplysninger",
-      utfylt.length ? `${utfylt.length} felt utfylt` : "Hoppet over",
+      v.steg[2],
+      utfylt.length ? `${utfylt.length} ${v.feltUtfylt}` : v.hoppetOver,
     ],
     [
-      "Tariff og HMS",
-      hms.length ? `${hms.length} av ${HMS_PUNKTER.length} bekreftet` : "Ingen bekreftet",
+      v.steg[3],
+      hms.length
+        ? `${hms.length} ${v.av} ${HMS_PUNKTER.length} ${v.bekreftet}`
+        : v.ingenBekreftet,
     ],
     [
-      "Egenerklæring",
+      v.steg[4],
       espd === "finnes"
-        ? "Levert med tilbudet"
+        ? v.espdLevert
         : espd === "be"
           ? `Etterspurt${espdFrist ? `, frist ${espdFrist}` : ""}`
-          : "Hoppet over",
+          : v.hoppetOver,
     ],
   ];
 

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { RelavoMark } from "@/components/RelavoMark";
 import { MicrosoftLogo } from "@/components/MicrosoftLogo";
+import { useOrd } from "@/components/Sprakgiver";
 import { FELT_FULL } from "@/components/ui/felt";
 
 /**
@@ -27,6 +28,7 @@ export default function LoggInnSide() {
   const router = useRouter();
   const [epost, setEpost] = useState("");
   const [passord, setPassord] = useState("");
+  const t = useOrd().auth;
   const [feil, setFeil] = useState("");
   const [laster, setLaster] = useState(false);
   const [msLaster, setMsLaster] = useState(false);
@@ -50,7 +52,7 @@ export default function LoggInnSide() {
 
     setLaster(false);
     if (error) {
-      setFeil("Feil e-post eller passord.");
+      setFeil(t.feilInnlogging);
       return;
     }
     router.push("/oversikt");
@@ -67,7 +69,7 @@ export default function LoggInnSide() {
     // opp og flagget skrus på.
     if (!MICROSOFT_PA) {
       setFeil(
-        "Innlogging med Microsoft er ikke slått på ennå. Bruk e-post og passord så lenge.",
+        t.microsoftAv,
       );
       return;
     }
@@ -87,7 +89,7 @@ export default function LoggInnSide() {
     // rekker aldri å kjøre.
     if (error) {
       setMsLaster(false);
-      setFeil("Fikk ikke kontakt med Microsoft. Prøv igjen.");
+      setFeil(t.microsoftFeil);
     }
   }
 
@@ -96,9 +98,9 @@ export default function LoggInnSide() {
       <div className="w-full max-w-[392px] bg-surface rounded-2xl shadow-lift overflow-hidden">
         <div className="px-6 pt-6 pb-1 text-center">
           <RelavoMark className="w-14 h-auto mx-auto mb-3 text-accent" />
-          <h1 className="text-[17px] font-semibold">Logg inn</h1>
+          <h1 className="text-[17px] font-semibold">{t.loggInn}</h1>
           <p className="text-[12.5px] text-dim mt-1.5">
-            Leverandørkontroll for offentlige anskaffelser
+            {t.undertittel}
           </p>
         </div>
 
@@ -112,7 +114,7 @@ export default function LoggInnSide() {
             }`}
           >
             <MicrosoftLogo className="w-[17px] h-[17px]" />
-            {msLaster ? "Sender deg til Microsoft …" : "Logg inn med Microsoft"}
+            {msLaster ? t.senderTilMicrosoft : t.medMicrosoft}
             {!MICROSOFT_PA && (
               <span className="text-[11px] font-medium text-faint">kommer</span>
             )}
@@ -121,14 +123,14 @@ export default function LoggInnSide() {
 
         <div className="px-6 pt-4 pb-1 flex items-center gap-3">
           <span className="h-px flex-1 bg-border" />
-          <span className="text-[11px] text-faint">eller</span>
+          <span className="text-[11px] text-faint">{t.eller}</span>
           <span className="h-px flex-1 bg-border" />
         </div>
 
         <form onSubmit={loggInn} className="px-6 pt-3 pb-1.5">
           <div className="mb-3">
             <label htmlFor="epost" className="block text-xs font-semibold mb-1.5">
-              E-post
+              {t.epost}
             </label>
             <input
               id="epost"
@@ -143,7 +145,7 @@ export default function LoggInnSide() {
           </div>
           <div className="mb-3">
             <label htmlFor="passord" className="block text-xs font-semibold mb-1.5">
-              Passord
+              {t.passord}
             </label>
             <input
               id="passord"
@@ -163,7 +165,7 @@ export default function LoggInnSide() {
             disabled={laster || msLaster}
             className="w-full bg-accent hover:bg-accent-hover active:scale-[0.97] transition text-white text-sm font-semibold py-2.5 rounded-xl disabled:opacity-60 mt-1 mb-4"
           >
-            {laster ? "Logger inn …" : "Logg inn"}
+            {laster ? t.loggerInn : t.loggInn}
           </button>
         </form>
       </div>

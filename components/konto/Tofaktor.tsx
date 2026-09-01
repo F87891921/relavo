@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Merke } from "@/components/ui";
 import { FELT_FULL } from "@/components/ui/felt";
+import { useOrd } from "@/components/Sprakgiver";
 
 type Faktor = { id: string; status: string; friendly_name?: string };
 
@@ -19,6 +20,8 @@ const KNAPP =
  * aldri enheten etter at den er skannet inn.
  */
 export function Tofaktor() {
+  const ordbok = useOrd();
+  const t = ordbok.konto;
   const router = useRouter();
   const supabase = createClient();
 
@@ -91,7 +94,7 @@ export function Tofaktor() {
       });
 
       if (error) {
-        setFeil("Koden stemmer ikke. Prøv den som vises nå.");
+        setFeil(ordbok.auth.kodenStemmerIkke);
         return;
       }
 
@@ -99,7 +102,7 @@ export function Tofaktor() {
       setHemmelighet(null);
       setNyFaktorId(null);
       setKode("");
-      setKvittering("Tofaktor er slått på.");
+      setKvittering(t.slattPa);
       await hentFaktorer();
       router.refresh();
     });
@@ -110,7 +113,7 @@ export function Tofaktor() {
       const { error } = await supabase.auth.mfa.unenroll({ factorId: id });
       if (error) setFeil(error.message);
       else {
-        setKvittering("Tofaktor er slått av.");
+        setKvittering(t.slattAv);
         await hentFaktorer();
         router.refresh();
       }
@@ -118,21 +121,20 @@ export function Tofaktor() {
   }
 
   if (faktorer === null)
-    return <div className="text-[13px] text-faint">Henter …</div>;
+    return <div className="text-[13px] text-faint">{ordbok.felles.henter}</div>;
 
   return (
     <div>
       <div className="flex items-center gap-3 mb-4">
         {aktiv.length ? (
-          <Merke tone="god">Slått på</Merke>
+          <Merke tone="god">{t.tofaktorPa}</Merke>
         ) : (
-          <Merke tone="noytral">Ikke satt opp</Merke>
+          <Merke tone="noytral">{t.tofaktorAv}</Merke>
         )}
       </div>
 
       <p className="text-[12.5px] text-dim leading-relaxed mb-4">
-        En engangskode fra mobilen i tillegg til passordet. Frivillig, men
-        anbefalt — kontoen gir tilgang til leverandørdata og kontrollhistorikk.
+        {t.tofaktorForklaring}
       </p>
 
       {aktiv.length > 0 && (
@@ -143,7 +145,7 @@ export function Tofaktor() {
               className="flex items-center justify-between gap-4 bg-canvas rounded-xl px-4 py-3"
             >
               <span className="text-[13px]">
-                {"Autentiseringsapp"}
+                {t.autentiseringsapp}
               </span>
               <button
                 type="button"
@@ -151,7 +153,7 @@ export function Tofaktor() {
                 onClick={() => slaAv(f.id)}
                 className="text-[12.5px] text-bad hover:underline disabled:opacity-40 disabled:no-underline"
               >
-                Slå av
+                {t.slaAv}
               </button>
             </div>
           ))}
@@ -160,28 +162,27 @@ export function Tofaktor() {
 
       {!aktiv.length && !qr && (
         <button type="button" onClick={start_registrering} className={KNAPP}>
-          Sett opp tofaktor
+          {t.settOpp}
         </button>
       )}
 
       {qr && (
         <div className="bg-canvas rounded-xl p-5">
           <p className="text-[13px] mb-3 leading-relaxed">
-            Skann koden med Google Authenticator, 1Password, Aegis eller en
-            annen autentiseringsapp.
+            {t.skannKoden}
           </p>
 
           {/* Supabase leverer QR-koden ferdig som SVG i en data-URI. */}
           <img
             src={qr}
-            alt="QR-kode for tofaktor"
+            alt={t.qrAlt}
             className="w-44 h-44 bg-surface rounded-xl p-2 mb-3"
           />
 
           {hemmelighet && (
             <details className="mb-4">
               <summary className="text-[12px] text-dim cursor-pointer">
-                Får du ikke skannet? Skriv inn nøkkelen manuelt
+                {t.fikkIkkeSkannet}
               </summary>
               <code className="block mt-2 text-[12px] font-mono bg-surface rounded-lg px-3 py-2 break-all">
                 {hemmelighet}
@@ -190,7 +191,7 @@ export function Tofaktor() {
           )}
 
           <label htmlFor="mfakode" className="block text-xs font-semibold mb-1.5">
-            Skriv inn koden appen viser
+            {t.skrivKoden}
           </label>
           <input
             id="mfakode"
@@ -213,7 +214,7 @@ export function Tofaktor() {
               disabled={venter || kode.length !== 6}
               className={KNAPP}
             >
-              {venter ? "Bekrefter …" : "Bekreft"}
+              {venter ? ordbok.auth.bekrefter : ordbok.auth.bekreft}
             </button>
             <button
               type="button"
@@ -225,7 +226,7 @@ export function Tofaktor() {
               }}
               className="text-sm text-dim hover:text-ink px-3 py-2.5 transition"
             >
-              Avbryt
+              {ordbok.felles.avbryt}
             </button>
           </div>
         </div>

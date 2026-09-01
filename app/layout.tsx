@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import { aktivtSprak } from "@/lib/sprak";
+import { aktivtSprak, ord } from "@/lib/sprak";
+import { Sprakgiver } from "@/components/Sprakgiver";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,7 +25,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang={aktivtSprak()} className={`${inter.variable} ${plexMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <Sprakgiver ordbok={ord()}>{children}</Sprakgiver>
+      </body>
     </html>
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { createPortal } from "react-dom";
 import type { Tone } from "@/components/ui";
+import { useOrd } from "@/components/Sprakgiver";
 
 type Svar = { ok: true } | { ok: false; feil: string };
 export type StatusVal = { verdi: string; tekst: string; tone?: Tone };
@@ -49,6 +50,7 @@ export function StatusMerke({
   /** For statuser satt av noen andre enn oss — da er merket bare et merke. */
   laast?: boolean;
 }) {
+  const ord = useOrd();
   const [apen, setApen] = useState(false);
   const [feil, setFeil] = useState("");
   const [venter, start] = useTransition();
@@ -113,12 +115,12 @@ export function StatusMerke({
         disabled={venter}
         aria-haspopup="listbox"
         aria-expanded={apen}
-        title="Klicka för att ändra status"
+        title={ord.felles.endreStatus}
         className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap transition
           hover:brightness-[0.96] active:scale-[0.97] disabled:opacity-50
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 ${TONER[tone]}`}
       >
-        {venter ? "Sparar …" : (na?.tekst ?? verdi)}
+        {venter ? ord.felles.lagrer : (na?.tekst ?? verdi)}
         <svg width="8" height="5" viewBox="0 0 8 5" aria-hidden="true" className="opacity-60">
           <path d="M1 1l3 3 3-3" stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round" />
         </svg>

@@ -1,13 +1,9 @@
+"use client";
+
+import { useOrd } from "@/components/Sprakgiver";
 import { FELT_FULL as INPUT } from "@/components/ui/felt";
 export { FELT_FULL as INPUT } from "@/components/ui/felt";
-export const STEGNAVN = [
-  "Selskap",
-  "Anskaffelse",
-  "Saksopplysninger",
-  "Tariff og HMS",
-  "Egenerklæring",
-  "Oppsummering",
-];
+
 
 /**
  * Framdriftsstripa øverst. Passerte steg er fylt, resten er tomme.
@@ -18,6 +14,7 @@ export const STEGNAVN = [
  * under.
  */
 export function Steg({ na }: { na: number }) {
+  const STEGNAVN = useOrd().veiviser.steg;
   return (
     <div className="mb-6 sm:mb-7">
       <div className="flex gap-1.5 sm:gap-2">
@@ -54,7 +51,7 @@ export function Foten({
   tilbake,
   hoppOver,
   neste,
-  nesteTekst = "Neste",
+  nesteTekst,
   nesteAv = false,
 }: {
   tilbake?: () => void;
@@ -63,6 +60,7 @@ export function Foten({
   nesteTekst?: string;
   nesteAv?: boolean;
 }) {
+  const ord = useOrd();
   return (
     <div className="flex items-center justify-between gap-2 mt-5">
       {tilbake ? (
@@ -71,7 +69,7 @@ export function Foten({
           onClick={tilbake}
           className="text-sm font-semibold px-4 py-2.5 rounded-xl bg-surface shadow-card hover:bg-surface2 active:scale-[0.97] transition"
         >
-          Tilbake
+          {ord.felles.tilbake}
         </button>
       ) : (
         <span />
@@ -83,7 +81,7 @@ export function Foten({
             onClick={hoppOver}
             className="text-sm text-dim hover:text-ink px-2.5 sm:px-3 py-2.5 transition whitespace-nowrap"
           >
-            Hopp over
+            {ord.felles.hoppOver}
           </button>
         )}
         {neste && (
@@ -93,7 +91,7 @@ export function Foten({
             disabled={nesteAv}
             className="bg-accent hover:bg-accent-hover active:scale-[0.97] transition text-white text-sm font-semibold px-4 sm:px-5 py-2.5 rounded-xl whitespace-nowrap disabled:opacity-40 disabled:pointer-events-none"
           >
-            {nesteTekst}
+            {nesteTekst ?? ord.felles.neste}
           </button>
         )}
       </span>

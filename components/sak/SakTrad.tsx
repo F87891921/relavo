@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Merke } from "@/components/ui";
+import { useOrd } from "@/components/Sprakgiver";
 import { StatusMerke, type StatusVal } from "@/components/ui/StatusMerke";
 import { FELT_FULL } from "@/components/ui/felt";
 import { KATEGORIER, STATUSER, kategoriTekst, statusTekst, statusTone } from "@/lib/sak";
@@ -37,6 +38,7 @@ const KNAPP =
 
 /** Skjema for å melde inn en ny sak. Bare kundesiden viser dette. */
 export function NySak() {
+  const t = useOrd();
   const [apen, setApen] = useState(false);
   const [feil, setFeil] = useState("");
   const [venter, start] = useTransition();
@@ -65,11 +67,11 @@ export function NySak() {
       }}
       className="bg-surface rounded-card border border-border shadow-card p-6 mb-5"
     >
-      <h2 className="text-[15px] font-semibold mb-4">Ny sak</h2>
+      <h2 className="text-[15px] font-semibold mb-4">{t.sak.nySak}</h2>
 
       <div className="mb-3.5">
         <label htmlFor="kategori" className="block text-xs font-semibold mb-1.5">
-          Hva gjelder det?
+          {t.sak.hvaGjelderDet}
         </label>
         <select id="kategori" name="kategori" className={FELT_FULL} defaultValue="data">
           {KATEGORIER.map((k) => (
@@ -88,21 +90,21 @@ export function NySak() {
           id="emne"
           name="emne"
           required
-          placeholder="Feil risikonivå på Solstrand Renhold"
+          placeholder={t.sak.emneEksempel}
           className={FELT_FULL}
         />
       </div>
 
       <div className="mb-3.5">
         <label htmlFor="melding" className="block text-xs font-semibold mb-1.5">
-          Beskriv saken
+          {t.sak.beskrivSaken}
         </label>
         <textarea
           id="melding"
           name="melding"
           required
           rows={5}
-          placeholder="Hva skjedde, og hva forventet du i stedet?"
+          placeholder={t.sak.meldingEksempel}
           className={`${FELT_FULL} max-w-none resize-y`}
         />
       </div>
@@ -115,7 +117,7 @@ export function NySak() {
           className="mt-0.5 accent-[#654b70] w-4 h-4 shrink-0"
         />
         <span className="text-[12.5px] text-dim leading-snug">
-          Send meg e-post når saken får svar eller endrer status.
+          {t.sak.varsleValg}
         </span>
       </label>
 
@@ -127,14 +129,14 @@ export function NySak() {
 
       <div className="flex gap-2.5">
         <button type="submit" disabled={venter} className={KNAPP}>
-          {venter ? "Sender …" : "Send inn"}
+          {venter ? t.felles.sender : t.sak.sendInn}
         </button>
         <button
           type="button"
           onClick={() => setApen(false)}
           className="text-sm text-dim hover:text-ink px-3 py-2.5 transition"
         >
-          Avbryt
+          {t.felles.avbryt}
         </button>
       </div>
     </form>
@@ -149,6 +151,7 @@ export function SakKort({
   sak: Sak;
   somRelavo?: boolean;
 }) {
+  const t = useOrd();
   const [apen, setApen] = useState(false);
   const [feil, setFeil] = useState("");
   const [venter, start] = useTransition();
@@ -184,7 +187,7 @@ export function SakKort({
           )}
         </span>
         <span className="text-[11.5px] text-faint whitespace-nowrap shrink-0">
-          {svar.length} {svar.length === 1 ? "melding" : "meldinger"}
+          {svar.length} {t.sak.meldinger}
         </span>
       </button>
 
@@ -243,7 +246,7 @@ export function SakKort({
             )}
             <div className="flex flex-wrap items-center gap-3 mt-3">
               <button type="submit" disabled={venter} className={KNAPP}>
-                {venter ? "Sender …" : "Send svar"}
+                {venter ? t.felles.sender : t.sak.sendSvar}
               </button>
               <StatusMerke
                 id={sak.id}
@@ -262,6 +265,7 @@ export function SakKort({
 
 
 function Varsling({ id, pa }: { id: string; pa: boolean }) {
+  const t = useOrd();
   const [venter, start] = useTransition();
   const [av, setAv] = useState(pa);
   return (
@@ -279,7 +283,7 @@ function Varsling({ id, pa }: { id: string; pa: boolean }) {
         }}
         className="accent-[#654b70] w-4 h-4"
       />
-      Varsle meg på e-post
+      {t.sak.varsleMeg}
     </label>
   );
 }

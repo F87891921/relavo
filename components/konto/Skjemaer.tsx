@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { FELT_FULL as INPUT } from "@/components/ui/felt";
 
 import { useState, useTransition, type ReactNode } from "react";
@@ -28,6 +30,7 @@ function Form({
   children: ReactNode;
   nullstill?: boolean;
 }) {
+  const t = useOrd().konto;
   const [feil, setFeil] = useState("");
   const [kvittering, setKvittering] = useState("");
   const [venter, start] = useTransition();
@@ -45,7 +48,7 @@ function Form({
           const res = await handling(fd);
           if (res.ok) {
             setFeil("");
-            setKvittering(res.melding ?? "Lagret.");
+            setKvittering(res.melding ?? t.lagret);
             if (nullstill) skjema.reset();
           } else {
             setKvittering("");
@@ -66,7 +69,7 @@ function Form({
         </div>
       )}
       <button type="submit" disabled={venter} className={KNAPP}>
-        {venter ? "Lagrer …" : knapp}
+        {venter ? useOrd().felles.lagrer : knapp}
       </button>
     </form>
   );
@@ -106,40 +109,44 @@ function Felt({
 }
 
 export function EgetNavn({ navn }: { navn: string }) {
+  const t = useOrd().konto;
   return (
     <Form handling={oppdaterEgetNavn} knapp="Lagre navn">
-      <Felt navn="navn" merke="Navn" standard={navn} krav />
+      <Felt navn="navn" merke={useOrd().ui.navn} standard={navn} krav />
     </Form>
   );
 }
 
 export function EgetPassord() {
+  const t = useOrd().konto;
   return (
     <Form handling={byttEgetPassord} knapp="Bytt passord" nullstill>
-      <Felt navn="nytt" merke="Nytt passord" type="password" krav />
-      <Felt navn="gjenta" merke="Gjenta passordet" type="password" krav />
+      <Felt navn="nytt" merke={t.nyttPassord} type="password" krav />
+      <Felt navn="gjenta" merke={t.gjentaPassordet} type="password" krav />
     </Form>
   );
 }
 
 export function Organisasjonen({ navn, orgNr }: { navn: string; orgNr: string }) {
+  const t = useOrd().konto;
   return (
     <Form handling={oppdaterOrganisasjon} knapp="Lagre">
-      <Felt navn="navn" merke="Navn på organisasjonen" standard={navn} krav />
+      <Felt navn="navn" merke={t.navnPaOrganisasjonen} standard={navn} krav />
       <Felt
         navn="org_nr"
-        merke="Organisasjonsnummer"
+        merke={t.organisasjonsnummer}
         standard={orgNr}
         plassholder="964 338 531"
       />
       <p className="text-[12px] text-faint mb-3.5 -mt-1">
-        Planen styres av abonnementet og kan ikke endres her.
+        {t.planStyres}
       </p>
     </Form>
   );
 }
 
 export function NyBrukerSkjema() {
+  const t = useOrd().konto;
   const [apen, setApen] = useState(false);
 
   if (!apen)
@@ -151,31 +158,30 @@ export function NyBrukerSkjema() {
 
   return (
     <div className="bg-canvas rounded-xl p-5 mb-5">
-      <h3 className="text-[14px] font-semibold mb-4">Ny bruker</h3>
+      <h3 className="text-[14px] font-semibold mb-4">{t.nyBruker}</h3>
       <Form handling={nyBruker} knapp="Opprett" nullstill>
         <div className="grid sm:grid-cols-2 gap-x-4">
-          <Felt navn="navn" merke="Navn" krav plassholder="Marit Aasen" />
+          <Felt navn="navn" merke={useOrd().ui.navn} krav plassholder="Marit Aasen" />
           <Felt
             navn="epost"
-            merke="E-post"
+            merke={useOrd().auth.epost}
             type="email"
             krav
             plassholder="navn@kommune.no"
           />
-          <Felt navn="passord" merke="Midlertidig passord" type="password" krav />
+          <Felt navn="passord" merke={t.midlertidigPassord} type="password" krav />
           <div className="mb-3.5">
             <label htmlFor="rolle" className="block text-xs font-semibold mb-1.5">
-              Rolle
+              {useOrd().ui.rolle}
             </label>
             <select id="rolle" name="rolle" defaultValue="bruker" className={INPUT}>
-              <option value="bruker">Bruker</option>
-              <option value="administrator">Administrator</option>
+              <option value="bruker">{t.bruker}</option>
+              <option value="administrator">{t.administrator}</option>
             </select>
           </div>
         </div>
         <p className="text-[12px] text-faint mb-3.5">
-          Brukeren logger inn med dette passordet og bør bytte det selv under
-          Kontoinnstillinger.
+          {t.passordHjelp}
         </p>
       </Form>
       <button
@@ -183,7 +189,7 @@ export function NyBrukerSkjema() {
         onClick={() => setApen(false)}
         className="text-sm text-dim hover:text-ink mt-2 transition"
       >
-        Avbryt
+        {useOrd().felles.avbryt}
       </button>
     </div>
   );
@@ -203,6 +209,7 @@ export function BrukerRad({
   kanEndre: boolean;
   felt: "rolle" | "fjern";
 }) {
+  const t = useOrd().konto;
   const [venter, start] = useTransition();
   const [feil, setFeil] = useState("");
 
@@ -225,8 +232,8 @@ export function BrukerRad({
         }
         className="text-[12px] px-2 py-1 rounded-lg border border-border bg-surface hover:border-border-strong transition disabled:opacity-50"
       >
-        <option value="bruker">Bruker</option>
-        <option value="administrator">Administrator</option>
+        <option value="bruker">{t.bruker}</option>
+        <option value="administrator">{t.administrator}</option>
       </select>
     );
   }

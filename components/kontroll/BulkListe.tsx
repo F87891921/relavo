@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { validerOrgnr, formaterOrgnr } from "@/lib/orgnr";
 import { Merke, Tabell } from "@/components/ui";
 import { FELT_FULL } from "@/components/ui/felt";
+import { useOrd } from "@/components/Sprakgiver";
 
 /**
  * Bulkkontroll. Nummerne valideres med modulus 11 med én gang, før noe
@@ -16,6 +17,7 @@ import { FELT_FULL } from "@/components/ui/felt";
  * maskinen når vi bare trenger ni siffer per rad.
  */
 export function BulkListe() {
+  const t = useOrd().bulk;
   const [tekst, setTekst] = useState("");
   const [filnavn, setFilnavn] = useState("");
   const [filfeil, setFilfeil] = useState("");
@@ -76,14 +78,14 @@ export function BulkListe() {
 
       if (!funnet.length) {
         setFilfeil(
-          "Fant ingen niesifrede tall i filen. Er organisasjonsnumrene delt over flere kolonner?",
+          t.ingenTall,
         );
         return;
       }
 
       setTekst(funnet.join("\n"));
     } catch {
-      setFilfeil("Kunne ikke lese filen. Er den skadet, eller passordbeskyttet?");
+      setFilfeil(t.kunneIkkeLese);
     } finally {
       setLeser(false);
     }
@@ -93,7 +95,7 @@ export function BulkListe() {
     <>
       <div className="bg-surface rounded-card border border-border shadow-card p-6 mb-5">
         <div className="mb-5">
-          <div className="text-xs font-semibold mb-1.5">Last opp en liste</div>
+          <div className="text-xs font-semibold mb-1.5">{t.lastOpp}</div>
           <div className="flex flex-wrap items-center gap-3">
             <input
               ref={filvelger}
@@ -112,16 +114,16 @@ export function BulkListe() {
               disabled={leser}
               className="text-sm font-semibold px-4 py-2.5 rounded-xl bg-canvas border border-border hover:border-border-strong active:scale-[0.97] transition disabled:opacity-60"
             >
-              {leser ? "Leser filen …" : "Velg fil"}
+              {leser ? t.leserFilen : t.velgFil}
             </button>
             <span className="text-[12px] text-faint">
               {filnavn ? (
                 <>
-                  <b className="text-ink">{filnavn}</b> — {linjer.length} numre
+                  <b className="text-ink">{filnavn}</b> — {linjer.length} {t.numre}
                   hentet
                 </>
               ) : (
-                "Excel, CSV eller tekst. Filen leses her i nettleseren og sendes ikke noe sted."
+                t.filhjelp
               )}
             </span>
           </div>
@@ -134,12 +136,12 @@ export function BulkListe() {
 
         <div className="flex items-center gap-3 mb-4">
           <span className="h-px flex-1 bg-border" />
-          <span className="text-[11px] text-faint">eller lim inn</span>
+          <span className="text-[11px] text-faint">{t.ellerLimInn}</span>
           <span className="h-px flex-1 bg-border" />
         </div>
 
         <label htmlFor="bulk" className="block text-xs font-semibold mb-1.5">
-          Organisasjonsnumre
+          {t.organisasjonsnumre}
         </label>
         <textarea
           id="bulk"
@@ -150,15 +152,14 @@ export function BulkListe() {
           className={`${FELT_FULL} max-w-none font-mono resize-y`}
         />
         <div className="text-[11.5px] text-faint mt-1.5">
-          Ett nummer per linje, eller skilt med komma. Kontrollsifferet
-          valideres med modulus 11 mens du skriver.
+          {t.limhjelp}
         </div>
 
         {linjer.length > 0 && (
           <div className="flex flex-wrap gap-2.5 mt-4">
-            <Merke tone="god">{gyldige.length} gyldige</Merke>
+            <Merke tone="god">{gyldige.length} {t.gyldige}</Merke>
             {ugyldige.length > 0 && (
-              <Merke tone="brudd">{ugyldige.length} ugyldige</Merke>
+              <Merke tone="brudd">{ugyldige.length} {t.ugyldige}</Merke>
             )}
             <button
               type="button"
@@ -169,7 +170,7 @@ export function BulkListe() {
               }}
               className="text-[12px] text-dim hover:text-ink transition"
             >
-              Tøm lista
+              {t.tomLista}
             </button>
           </div>
         )}
@@ -179,24 +180,23 @@ export function BulkListe() {
           disabled
           className="mt-5 bg-accent text-white text-sm font-semibold px-5 py-2.5 rounded-xl opacity-40 pointer-events-none"
         >
-          Kjør {gyldige.length || ""} kontroller
+          {t.kjor} {gyldige.length || ""} {t.kontroller}
         </button>
         <div className="text-[11.5px] text-faint mt-2">
-          Kjøringen krever en kø i bakgrunnen — hundre oppslag kan ikke gjøres
-          i én forespørsel. Ikke koblet på ennå.
+          {t.koHjelp}
         </div>
       </div>
 
       {linjer.length > 0 && (
         <div className="bg-surface rounded-card border border-border shadow-card overflow-hidden">
           <Tabell
-            kolonner={["Nummer", "Status"]}
+            kolonner={[t.nummer, useOrd().felles.status]}
             rader={sjekket.map((s) => [
               <span key="n" className="font-mono text-[12.5px]">
                 {s.res.ok ? formaterOrgnr(s.res.orgnr) : s.rå}
               </span>,
               s.res.ok ? (
-                <Merke key="s" tone="god">Klar for oppslag</Merke>
+                <Merke key="s" tone="god">{t.klarForOppslag}</Merke>
               ) : (
                 <span key="s" className="text-bad text-[12.5px]">{s.res.feil}</span>
               ),

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Tom } from "./Tom";
 
 /**
  * Ytterrammen på hver side. Bredden lå før på fire ulike verdier — tre
@@ -63,7 +64,7 @@ export function Kort({
 export function Tabell({
   kolonner,
   rader,
-  tom = "Ingenting her ennå.",
+  tom,
 }: {
   kolonner: string[];
   rader: ReactNode[][];
@@ -104,7 +105,7 @@ export function Tabell({
                 colSpan={kolonner.length}
                 className="px-4 sm:px-5 py-10 text-center text-dim text-sm"
               >
-                {tom}
+                {tom ?? <Tom />}
               </td>
             </tr>
           )}

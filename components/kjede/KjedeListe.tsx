@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Merke } from "@/components/ui";
+import { useOrd } from "@/components/Sprakgiver";
 
 /**
  * § 5k tillater høyst to ledd underleverandører i bygg, anlegg og renhold.
@@ -16,6 +17,8 @@ export type Kjede = {
 };
 
 export function KjedeListe({ kjeder }: { kjeder: Kjede[] }) {
+  const t = useOrd();
+  const k9 = t.kjede;
   const [bareBrudd, setBareBrudd] = useState(false);
   const [apne, setApne] = useState<Record<string, boolean>>({});
 
@@ -39,7 +42,7 @@ export function KjedeListe({ kjeder }: { kjeder: Kjede[] }) {
               !bareBrudd ? "bg-surface shadow-card" : "text-dim hover:text-ink"
             }`}
           >
-            Alle ({medStatus.length})
+            {k9.alle} ({medStatus.length})
           </button>
           <button
             type="button"
@@ -48,14 +51,14 @@ export function KjedeListe({ kjeder }: { kjeder: Kjede[] }) {
               bareBrudd ? "bg-surface shadow-card text-bad" : "text-dim hover:text-ink"
             }`}
           >
-            Over grensen ({brudd.length})
+            {k9.overGrensen} ({brudd.length})
           </button>
         </div>
 
         <span className="text-[12px] text-faint">
           {bareBrudd
-            ? "Viser bare kjeder med flere enn to ledd."
-            : "Klikk en kjede for å folde den sammen."}
+            ? k9.bareOver
+            : k9.klikkForAFolde}
         </span>
       </div>
 
@@ -79,13 +82,13 @@ export function KjedeListe({ kjeder }: { kjeder: Kjede[] }) {
                 <span className="flex items-center gap-3 min-w-0">
                   <span className="text-[13.5px] font-semibold truncate">{k.navn}</span>
                   {k.brudd ? (
-                    <Merke tone="brudd">{k.antall} ledd</Merke>
+                    <Merke tone="brudd">{k.antall} {k9.ledd}</Merke>
                   ) : (
-                    <Merke tone="god">{k.antall} ledd</Merke>
+                    <Merke tone="god">{k.antall} {k9.ledd}</Merke>
                   )}
                 </span>
                 <span className="text-[11.5px] text-faint shrink-0">
-                  {foldet ? "Vis" : "Skjul"}
+                  {foldet ? t.felles.vis : t.felles.skjul}
                 </span>
               </button>
 
@@ -123,7 +126,7 @@ export function KjedeListe({ kjeder }: { kjeder: Kjede[] }) {
                                 over ? "text-bad" : i === 0 ? "text-accent" : "text-faint"
                               }`}
                             >
-                              {i === 0 ? "Hovedleverandør" : `Ledd ${i}`}
+                              {i === 0 ? k9.hovedleverandor : `${k9.leddNr} ${i}`}
                             </div>
                             <div className="text-[11.5px] font-semibold mt-1 leading-tight">
                               {l.navn}
@@ -137,13 +140,11 @@ export function KjedeListe({ kjeder }: { kjeder: Kjede[] }) {
                   <div className="mt-4">
                     {k.brudd ? (
                       <div className="bg-bad-bg text-bad rounded-xl px-3.5 py-3 text-[12.5px] leading-relaxed">
-                        <b>Brudd på § 5k.</b> Kjeden har {k.antall} ledd, grensen
-                        er {GRENSE}. Enten kuttes det nederste leddet, eller så
-                        må oppdragsgiver gi dispensasjon og begrunne den i
-                        anskaffelsesprotokollen.
+                        <b>{k9.bruddTittel}</b> {k9.kjedenHar} {k.antall}{" "}
+                        {k9.grensenEr} {GRENSE}. {k9.bruddTekst}
                       </div>
                     ) : (
-                      <Merke tone="god">Innenfor grensen i § 5k</Merke>
+                      <Merke tone="god">{k9.innenfor}</Merke>
                     )}
                   </div>
                 </div>

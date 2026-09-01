@@ -52,9 +52,14 @@ export const krevProfil = cache(async () => {
     user,
     profil,
     organisasjonNavn: org?.navn ?? null,
-    // Profilen vinner over kapselen: valget skal følge personen, ikke
-    // maskinen de tilfeldigvis sitter ved.
-    sprak: aktivtSprak(profil.sprak),
-    t: ord(profil.sprak),
+    // Kapselen, ikke profilen.
+    //
+    // Profilen er der valget lagres varig, og middleware sår kapselen fra
+    // den når den mangler — på en ny maskin. Men i selve visningen må det
+    // være én kilde: rotoppsettet leser bare kapselen, siden det ikke kan
+    // slå opp i databasen. Lot vi profilen vinne her, kunne sidemenyen stå
+    // på svensk mens veiviseren inni sto på norsk.
+    sprak: aktivtSprak(),
+    t: ord(),
   };
 });

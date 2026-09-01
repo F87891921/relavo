@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { RelavoMark } from "@/components/RelavoMark";
 import { FELT_FULL } from "@/components/ui/felt";
+import { useOrd } from "@/components/Sprakgiver";
 
 /**
  * Steg to i innloggingen. Vises bare når kontoen har tofaktor slått på og
  * sesjonen ennå står på aal1 — altså passord bekreftet, engangskode ikke.
  */
 export default function TofaktorSide() {
+  const t = useOrd().auth;
   const router = useRouter();
   const supabase = createClient();
 
@@ -47,7 +49,7 @@ export default function TofaktorSide() {
         code: kode.replace(/\s/g, ""),
       });
       if (error) {
-        setFeil("Koden stemmer ikke. Prøv den som vises nå.");
+        setFeil(t.kodenStemmerIkke);
         setKode("");
         return;
       }
@@ -61,7 +63,7 @@ export default function TofaktorSide() {
       <div className="w-full max-w-[368px] bg-surface rounded-2xl shadow-lift overflow-hidden">
         <div className="px-6 pt-7 pb-1 text-center">
           <RelavoMark className="w-12 h-auto mx-auto mb-3 text-accent" />
-          <h1 className="text-[17px] font-semibold">Engangskode</h1>
+          <h1 className="text-[17px] font-semibold">{t.engangskodeTittel}</h1>
           <p className="text-[12.5px] text-dim mt-1.5 leading-relaxed">
             Skriv inn koden fra autentiseringsappen din.
           </p>
@@ -92,7 +94,7 @@ export default function TofaktorSide() {
             disabled={venter || kode.length !== 6}
             className="w-full bg-accent hover:bg-accent-hover active:scale-[0.97] transition text-white text-sm font-semibold py-2.5 rounded-xl mt-4 disabled:opacity-50"
           >
-            {venter ? "Bekrefter …" : "Fortsett"}
+            {venter ? t.bekrefter : t.fortsett}
           </button>
 
           <button

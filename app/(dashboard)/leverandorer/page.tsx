@@ -36,11 +36,7 @@ export default async function LeverandorerSide() {
     middels: "bg-warn-bg text-warn",
     hoy: "bg-bad-bg text-bad",
   };
-  const risikoTekst: Record<string, string> = {
-    lav: "Lav",
-    middels: "Middels",
-    hoy: "Høy",
-  };
+  
 
   return (
     <DashboardShell aktivtSteg="leverandorer">
@@ -54,19 +50,20 @@ export default async function LeverandorerSide() {
 
         {javPerLeverandor.size > 0 && (
           <div className="bg-bad-bg text-bad rounded-xl px-4 py-3 mb-4 text-[12.5px] leading-relaxed">
-            <b>Mulig interessekonflikt.</b> {javPerLeverandor.size}{" "}
-            {javPerLeverandor.size === 1 ? "leverandør har" : "leverandører har"}{" "}
-            personer i styret som også står registrert som deltakere i
-            anskaffelsen.{" "}
+            <b>{t.leverandorer.muligKonflikt}</b> {javPerLeverandor.size}{" "}
+            {javPerLeverandor.size === 1
+              ? t.leverandorer.harEn
+              : t.leverandorer.harFlere}{" "}
+            {t.leverandorer.styretDeltakere}{" "}
             <Link href="/jav" className="underline">
-              Se koblingene
+              {t.leverandorer.seKoblingene}
             </Link>
           </div>
         )}
 
         {error && (
           <div className="text-sm text-bad bg-bad-bg rounded-xl px-4 py-3 mb-4">
-            Kunne ikke hente leverandører: {error.message}
+            {t.leverandorer.kunneIkkeHente} {error.message}
           </div>
         )}
 
@@ -74,10 +71,10 @@ export default async function LeverandorerSide() {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-[11px] uppercase tracking-wide text-faint border-b border-border">
-                <th className="px-5 py-3 font-semibold">Selskap</th>
-                <th className="px-5 py-3 font-semibold">Bransje</th>
-                <th className="px-5 py-3 font-semibold">Risiko</th>
-                <th className="px-5 py-3 font-semibold">Sist kontrollert</th>
+                <th className="px-4 sm:px-5 py-3 font-semibold">{t.ui.selskap}</th>
+                <th className="px-4 sm:px-5 py-3 font-semibold">{t.ui.bransje}</th>
+                <th className="px-4 sm:px-5 py-3 font-semibold">{t.ui.risiko}</th>
+                <th className="px-4 sm:px-5 py-3 font-semibold">{t.ui.sistKontrollert}</th>
               </tr>
             </thead>
             <tbody>
@@ -92,7 +89,7 @@ export default async function LeverandorerSide() {
                           href="/jav"
                           className="inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-bad-bg text-bad hover:underline"
                         >
-                          Mulig interessekonflikt
+                          {t.leverandorer.muligKonfliktKort}
                         </Link>
                       )}
                     </td>
@@ -102,21 +99,21 @@ export default async function LeverandorerSide() {
                         <span
                           className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${risikoStil[l.risiko]}`}
                         >
-                          {risikoTekst[l.risiko]}
+                          {t.risiko[l.risiko as keyof typeof t.risiko] ?? l.risiko}
                         </span>
                       )}
                     </td>
                     <td className="px-5 py-3.5 text-dim">
                       {l.sist_kontrollert
                         ? new Date(l.sist_kontrollert).toLocaleDateString("nb-NO")
-                        : "Aldri"}
+                        : t.ui.aldri}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td colSpan={4} className="px-5 py-10 text-center text-dim text-sm">
-                    Ingen leverandører ennå. Kjør din første kontroll for å komme i gang.
+                    {t.leverandorer.ingenEnna}
                   </td>
                 </tr>
               )}
