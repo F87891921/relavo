@@ -195,7 +195,7 @@ export const en: Ordbok = {
   },
 
   landing: {
-    nav: { plattform: "Platform", regelverk: "The rules", priser: "Pricing", sporsmal: "Questions", loggInn: "Sign in", komIGang: "Get started" },
+    nav: { meny: "Menu", plattform: "Platform", regelverk: "The rules", priser: "Pricing", sporsmal: "Questions", loggInn: "Sign in", komIGang: "Get started" },
     hero: {
       nytt: "New",
       pille: "in force from 1 July 2026 →",

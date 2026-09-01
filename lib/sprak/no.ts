@@ -204,7 +204,7 @@ export const no = {
   },
 
   landing: {
-    nav: { plattform: "Plattform", regelverk: "Regelverk", priser: "Priser", sporsmal: "Spørsmål", loggInn: "Logg inn", komIGang: "Kom i gang" },
+    nav: { meny: "Meny", plattform: "Plattform", regelverk: "Regelverk", priser: "Priser", sporsmal: "Spørsmål", loggInn: "Logg inn", komIGang: "Kom i gang" },
     hero: {
       nytt: "Nytt",
       pille: "gjelder fra 1. juli 2026 →",

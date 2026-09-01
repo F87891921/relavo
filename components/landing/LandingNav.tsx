@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { RelavoLogo } from "@/components/RelavoLogo";
 import { Sprakvelger } from "@/components/Sprakvelger";
+import { LandingMeny } from "./LandingMeny";
 import { aktivtSprak, ord } from "@/lib/sprak";
 
 /**
@@ -26,23 +27,29 @@ export function LandingNav() {
         </div>
         <div className="nav-act">
           {/* Her møter den som ennå ikke har konto valget. Kapselen husker
-              det, og ved første innlogging følger det med på profilen. */}
-          <Sprakvelger na={sprak} variant="minimal" retning="ned" />
-          <Link href="/logg-inn" className="btn btn-quiet">
+              det, og ved første innlogging følger det med på profilen.
+              På telefon ligger den inne i menyen i stedet. */}
+          <span className="nav-bred">
+            <Sprakvelger na={sprak} variant="minimal" retning="ned" />
+          </span>
+          <Link href="/logg-inn" className="btn btn-quiet nav-bred">
             {t.nav.loggInn}
           </Link>
           <Link href="/registrer" className="btn btn-primary">
             {t.nav.komIGang}
           </Link>
+          <LandingMeny
+            sprak={sprak}
+            loggInn={t.nav.loggInn}
+            merke={t.nav.meny}
+            lenker={[
+              { href: "#plattform", tekst: t.nav.plattform },
+              { href: "#regelverk", tekst: t.nav.regelverk },
+              { href: "#priser", tekst: t.nav.priser },
+              { href: "#faq", tekst: t.nav.sporsmal },
+            ]}
+          />
         </div>
-      </div>
-      {/* Samme fire lenkene som .nav-links, men i en rullbar rad. Vises bare
-          under 820px, der .nav-links er skjult. */}
-      <div className="nav-mob">
-        <a href="#plattform">{t.nav.plattform}</a>
-        <a href="#regelverk">{t.nav.regelverk}</a>
-        <a href="#priser">{t.nav.priser}</a>
-        <a href="#faq">{t.nav.sporsmal}</a>
       </div>
     </nav>
   );

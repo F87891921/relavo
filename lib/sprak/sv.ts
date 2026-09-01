@@ -195,7 +195,7 @@ export const sv: Ordbok = {
   },
 
   landing: {
-    nav: { plattform: "Plattform", regelverk: "Regelverk", priser: "Priser", sporsmal: "Frågor", loggInn: "Logga in", komIGang: "Kom igång" },
+    nav: { meny: "Meny", plattform: "Plattform", regelverk: "Regelverk", priser: "Priser", sporsmal: "Frågor", loggInn: "Logga in", komIGang: "Kom igång" },
     hero: {
       nytt: "Nytt",
       pille: "gäller från 1 juli 2026 →",
