@@ -57,6 +57,9 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
                 {rad.pris}{" "}
                 <span className="text-[12px] font-medium text-dim">{p[i].enhet}</span>
               </div>
+              <div className="text-[10.5px] text-faint mt-0.5">
+                {o.internt.eksMva}
+              </div>
               <p className="text-[12px] text-dim leading-snug mt-2">
                 {p[i].beskrivelse}
               </p>

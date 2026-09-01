@@ -1,4 +1,5 @@
 import type { StatusVal } from "@/components/ui/StatusMerke";
+import type { Ordbok } from "@/lib/sprak/felles";
 
 /**
  * Prisene og regnestykket bak et tilbud.
@@ -13,12 +14,16 @@ export const PRIS: Record<string, { navn: string; mnd: number }> = {
   enterprise: { navn: "Enterprise", mnd: 12900 },
 };
 
-export const OFFERTSTATUS: StatusVal[] = [
-  { verdi: "utkast", tekst: "Utkast", tone: "noytral" },
-  { verdi: "skickad", tekst: "Skickad", tone: "advarsel" },
-  { verdi: "akseptert", tekst: "Accepterad", tone: "god" },
-  { verdi: "utgatt", tekst: "Utgången", tone: "brudd" },
-  { verdi: "forlorad", tekst: "Förlorad", tone: "brudd" },
+/**
+ * Statusene, oversatt. Lå før som faste svenske ord i lib/offert.ts, og sto
+ * dermed på svensk midt i et engelsk grensesnitt.
+ */
+export const offertstatus = (t: Ordbok): StatusVal[] => [
+  { verdi: "utkast", tekst: t.internt.statusUtkast, tone: "noytral" },
+  { verdi: "skickad", tekst: t.internt.statusSkickad, tone: "advarsel" },
+  { verdi: "akseptert", tekst: t.internt.statusAkseptert, tone: "god" },
+  { verdi: "utgatt", tekst: t.internt.statusUtgatt, tone: "brudd" },
+  { verdi: "forlorad", tekst: t.internt.statusForlorad, tone: "brudd" },
 ];
 
 export type Offertrad = {

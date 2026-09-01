@@ -41,7 +41,7 @@ export async function DashboardShell({
 }) {
   // krevProfil er cachet per forespørsel, så dette koster ingenting ekstra
   // selv om siden allerede har kalt den.
-  const { user, profil, organisasjonNavn, t } = await krevProfil();
+  const { user, profil, organisasjonNavn, t, sprak } = await krevProfil();
 
   const punkter = KUNDEMENY.map((s) => ({
     navn: t.meny[s.id as keyof Ordbok["meny"]],
@@ -65,6 +65,14 @@ export async function DashboardShell({
   // innhold i sidemenyen og i mobilskuffen — skrevet én gang, ikke to.
   const bunn = (
     <>
+      <Link
+        href="/konto"
+        className="flex items-center justify-between gap-2 text-[13px] px-3 py-2 rounded-lg text-dim hover:bg-canvas hover:text-ink transition"
+      >
+        {t.konto.sprakTittel}
+        <span className="text-[11.5px] font-semibold uppercase">{sprak}</span>
+      </Link>
+
       {ansatt && (
         <Link
           href="/internt"

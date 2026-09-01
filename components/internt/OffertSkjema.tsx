@@ -5,8 +5,13 @@ import { useOrd } from "@/components/Sprakgiver";
 import { useState, useTransition } from "react";
 import { FELT_FULL } from "@/components/ui/felt";
 import { formaterOrgnr } from "@/lib/orgnr";
-import { nyOfferte, type Kundetreff } from "@/app/internt/handlinger";
-import { PRIS, OFFERTSTATUS } from "@/lib/offert";
+import {
+  nyOfferte,
+  relaterteFor,
+  type Kundetreff,
+  type Relatert,
+} from "@/app/internt/handlinger";
+import { PRIS, offertstatus } from "@/lib/offert";
 
 const KNAPP =
   "bg-accent hover:bg-accent-hover active:scale-[0.97] transition text-white text-sm font-semibold px-5 py-2.5 rounded-xl disabled:opacity-50";
@@ -48,10 +53,8 @@ function Felt({
 }
 
 export function OffertSkjema({
-  leads,
   KundeSok,
 }: {
-  leads: { id: string; bolag: string }[];
   KundeSok: React.ComponentType<{
     navn?: string;
     merke?: string;
@@ -67,6 +70,11 @@ export function OffertSkjema({
   const [orgNr, setOrgNr] = useState("");
   const [kontakt, setKontakt] = useState("");
   const [epost, setEpost] = useState("");
+
+  // Alt vi har på det samme selskapet. Uten dette kunne man velge kunde
+  // Bergen og koble tilbudet til et lead i Trondheim — da pekte tilbudet to
+  // steder samtidig, og ingen av dem var feil hver for seg.
+  const [relatert, setRelatert] = useState<Relatert | null>(null);
 
   if (!apen)
     return (
@@ -98,11 +106,19 @@ export function OffertSkjema({
         <KundeSok
           navn="kund"
           merke={t.internt.kunde}
-          onValgt={(t) => {
-            // Fyll i det vi redan vet om dem.
-            if (t.org_nr) setOrgNr(formaterOrgnr(t.org_nr));
-            if (t.kontaktperson) setKontakt(t.kontaktperson);
-            if (t.kontakt_epost) setEpost(t.kontakt_epost);
+          onValgt={(valgt) => {
+            if (valgt.org_nr) setOrgNr(formaterOrgnr(valgt.org_nr));
+            if (valgt.kontaktperson) setKontakt(valgt.kontaktperson);
+            if (valgt.kontakt_epost) setEpost(valgt.kontakt_epost);
+            relaterteFor(valgt.navn).then((r) => {
+              setRelatert(r);
+              // Organisasjonsnummeret finnes ofte på en annen enhet i samme
+              // kommune selv om det ikke sto på den vi valgte.
+              if (!valgt.org_nr) {
+                const medNr = r.kontoer.find((k) => k.org_nr);
+                if (medNr?.org_nr) setOrgNr(formaterOrgnr(medNr.org_nr));
+              }
+            });
           }}
         />
 
@@ -134,16 +150,30 @@ export function OffertSkjema({
 
         <div className="mb-3.5">
           <label htmlFor="lead_id" className="block text-xs font-semibold mb-1.5">
-            {t.internt.koblTilLead}
+            {t.internt.leadKobling}
           </label>
-          <select id="lead_id" name="lead_id" className={FELT_FULL} defaultValue="">
-            <option value="">{t.internt.ingenKobling}</option>
-            {leads.map((l) => (
+          <select
+            id="lead_id"
+            name="lead_id"
+            className={FELT_FULL}
+            defaultValue=""
+            disabled={!relatert}
+          >
+            <option value="">
+              {relatert ? t.internt.ingenKobling : t.internt.velgKundeForst}
+            </option>
+            {(relatert?.leads ?? []).map((l) => (
               <option key={l.id} value={l.id}>
                 {l.bolag}
+                {l.kontakt ? ` — ${l.kontakt}` : ""}
               </option>
             ))}
           </select>
+          {relatert && relatert.leads.length === 0 && (
+            <div className="text-[11.5px] text-faint mt-1.5">
+              {t.internt.ingenLeadsPa}
+            </div>
+          )}
         </div>
       </div>
 
@@ -214,11 +244,31 @@ export function OffertSkjema({
       <div className="grid sm:grid-cols-2 gap-x-4 border-t border-border pt-4">
         <Felt navn="giltig_til" merke={t.internt.gyldigTil} type="date" />
         <div className="mb-3.5">
+          <label htmlFor="betalingsfrist" className="block text-xs font-semibold mb-1.5">
+            {t.internt.betalingsfristDager}
+          </label>
+          <select
+            id="betalingsfrist"
+            name="betalingsfrist"
+            defaultValue="30"
+            className={FELT_FULL}
+          >
+            {[10, 14, 20, 30, 45, 60].map((d) => (
+              <option key={d} value={d}>
+                {d} {t.internt.dager}
+              </option>
+            ))}
+          </select>
+          <div className="text-[11.5px] text-faint mt-1.5 leading-relaxed">
+            {t.internt.betalingsfristHjelp}
+          </div>
+        </div>
+        <div className="mb-3.5">
           <label htmlFor="status" className="block text-xs font-semibold mb-1.5">
             {t.felles.status}
           </label>
           <select id="status" name="status" defaultValue="utkast" className={FELT_FULL}>
-            {OFFERTSTATUS.map((s) => (
+            {offertstatus(t).map((s) => (
               <option key={s.verdi} value={s.verdi}>
                 {s.tekst}
               </option>

@@ -33,7 +33,7 @@ export async function StaffShell({
   aktivtSteg: string;
   children: React.ReactNode;
 }) {
-  const { profil, user, supabase, t } = await krevAnsatt();
+  const { profil, user, supabase, t, sprak } = await krevAnsatt();
   const superadmin = profil.ansatt_rolle === "superadmin";
   // Olästa notiser visas som en siffra vid «Att göra» — annars måste man gå
   // in på sidan för att få veta att det finns något där.
@@ -60,6 +60,16 @@ export async function StaffShell({
           {superadmin ? t.skall.superadmin : t.skall.personal}
         </div>
       </div>
+      {/* Kontopanelet har ingen egen kontoside. Uten denne fant ingen veien
+          til språkvalget herfra. */}
+      <Link
+        href="/konto"
+        className="flex items-center justify-between gap-2 text-[13px] px-3 py-2 rounded-lg text-white/60 hover:bg-white/10 hover:text-white transition"
+      >
+        {t.konto.sprakTittel}
+        <span className="text-[11.5px] font-semibold uppercase">{sprak}</span>
+      </Link>
+
       <Link
         href="/oversikt"
         className="text-[13px] px-3 py-2 rounded-lg text-white/60 hover:bg-white/10 hover:text-white transition block"

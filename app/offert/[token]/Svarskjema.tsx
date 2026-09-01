@@ -1,19 +1,27 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useOrd } from "@/components/Sprakgiver";
 import { FELT_FULL } from "@/components/ui/felt";
 import { svarPaOffert } from "./handlinger";
 
+type Valg = "akseptert" | "endring" | "avslatt";
+
 /**
- * Godta eller avslå.
+ * Tre svar, ikke to.
  *
- * Avslag åpner et felt for begrunnelse, og det er obligatorisk. Det er ikke
- * for å gjøre det vanskelig å si nei — det er fordi et nei uten grunn ikke
- * går an å gjøre noe med, og fordi det som regel ikke er et nei til Relavo,
- * men til akkurat dette oppsettet.
+ * «Prisen ligger over rammen vår, kom tilbake med to år i stedet» er ikke
+ * det samme som «vi går videre med noen andre» — men begge havnet på nei og
+ * låste tilbudet. Den første er en åpning, og skal ikke se ut som en dør som
+ * er lukket.
+ *
+ * Både endring og nei krever noen ord. Uten dem er det ingenting å gjøre
+ * noe med, og det er hele grunnen til at vi spør.
  */
 export function Svarskjema({ token }: { token: string }) {
-  const [valg, setValg] = useState<"akseptert" | "avslatt" | null>(null);
+  const o = useOrd().offertsvar;
+  const felles = useOrd().felles;
+  const [valg, setValg] = useState<Valg | null>(null);
   const [navn, setNavn] = useState("");
   const [kommentar, setKommentar] = useState("");
   const [feil, setFeil] = useState("");
@@ -30,17 +38,31 @@ export function Svarskjema({ token }: { token: string }) {
           onClick={() => setValg("akseptert")}
           className={`${KNAPP} bg-accent hover:bg-accent-hover text-white`}
         >
-          Godta tilbudet
+          {o.godtaTilbudet}
+        </button>
+        <button
+          type="button"
+          onClick={() => setValg("endring")}
+          className={`${KNAPP} bg-surface border border-border hover:border-border-strong`}
+        >
+          {o.beOmEndring}
         </button>
         <button
           type="button"
           onClick={() => setValg("avslatt")}
-          className={`${KNAPP} bg-surface border border-border hover:border-border-strong`}
+          className={`${KNAPP} text-dim hover:text-ink`}
         >
-          Takk, ikke nå
+          {o.ikkeAktuelt}
         </button>
       </div>
     );
+
+  const merke =
+    valg === "endring"
+      ? o.hvaSkalEndres
+      : valg === "avslatt"
+        ? o.hvaPassetIkke
+        : o.noeViBorVite;
 
   return (
     <form
@@ -55,7 +77,7 @@ export function Svarskjema({ token }: { token: string }) {
     >
       <div className="mb-3.5">
         <label htmlFor="navn" className="block text-xs font-semibold mb-1.5">
-          Navnet ditt
+          {o.navnetDitt}
         </label>
         <input
           id="navn"
@@ -69,9 +91,9 @@ export function Svarskjema({ token }: { token: string }) {
 
       <div className="mb-3.5">
         <label htmlFor="kommentar" className="block text-xs font-semibold mb-1.5">
-          {valg === "avslatt" ? "Hva passet ikke?" : "Noe vi bør vite?"}
+          {merke}
           {valg === "akseptert" && (
-            <span className="text-faint font-normal"> — valgfritt</span>
+            <span className="text-faint font-normal"> — {o.valgfritt}</span>
           )}
         </label>
         <textarea
@@ -79,18 +101,12 @@ export function Svarskjema({ token }: { token: string }) {
           rows={4}
           value={kommentar}
           onChange={(e) => setKommentar(e.target.value)}
-          required={valg === "avslatt"}
-          placeholder={
-            valg === "avslatt"
-              ? "For eksempel: prisen ligger over rammen vår for i år, eller vi trenger flere brukere enn planen gir."
-              : "Fakturareferanse, ønsket oppstart, eller noe annet."
-          }
+          required={valg !== "akseptert"}
           className={`${FELT_FULL} max-w-none resize-y`}
         />
-        {valg === "avslatt" && (
-          <p className="text-[11.5px] text-faint mt-1.5 leading-relaxed">
-            Vi bruker den til å komme tilbake med et annet oppsett — ikke til
-            å overtale.
+        {valg !== "akseptert" && (
+          <p className="text-[11.5px] text-faint mt-1.5 leading-relaxed max-w-[62ch]">
+            {valg === "endring" ? o.endringHjelp : o.avslagHjelp}
           </p>
         )}
       </div>
@@ -106,16 +122,18 @@ export function Svarskjema({ token }: { token: string }) {
           type="submit"
           disabled={venter}
           className={`${KNAPP} ${
-            valg === "akseptert"
-              ? "bg-accent hover:bg-accent-hover text-white"
-              : "bg-ink hover:opacity-90 text-white"
+            valg === "avslatt"
+              ? "bg-ink hover:opacity-90 text-white"
+              : "bg-accent hover:bg-accent-hover text-white"
           }`}
         >
           {venter
-            ? "Sender …"
+            ? felles.sender
             : valg === "akseptert"
-              ? "Bekreft at dere godtar"
-              : "Send svaret"}
+              ? o.bekreftGodta
+              : valg === "endring"
+                ? o.sendOnsket
+                : o.sendSvaret}
         </button>
         <button
           type="button"
@@ -125,7 +143,7 @@ export function Svarskjema({ token }: { token: string }) {
           }}
           className="text-sm text-dim hover:text-ink px-3 py-2.5 transition"
         >
-          Tilbake
+          {felles.tilbake}
         </button>
       </div>
     </form>

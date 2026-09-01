@@ -1,4 +1,9 @@
 /**
+ * MERK: feil-feltet er en nøkkel inn i ordboka, ikke ferdig tekst. Modulen
+ * brukes både på server og klient, og en fast norsk setning her ville stått
+ * på norsk midt i et engelsk skjema.
+ */
+/**
  * Validering av norske organisasjonsnummer, samme regel som i prototypen:
  * ni siffer der det siste er et kontrollsiffer beregnet med modulus 11.
  *
@@ -16,7 +21,7 @@ export function validerOrgnr(input: string): OrgnrSvar {
   const d = String(input).replace(/\D/g, "");
 
   if (d.length !== 9) {
-    return { ok: false, feil: "Organisasjonsnummeret må ha ni siffer." };
+    return { ok: false, feil: "orgnrNiSiffer" };
   }
 
   let sum = 0;
@@ -27,10 +32,10 @@ export function validerOrgnr(input: string): OrgnrSvar {
 
   // Kontrollsiffer 10 er ikke mulig å skrive med ett siffer, så slike
   // nummer deles aldri ut.
-  if (kontroll === 10) return { ok: false, feil: "Ugyldig organisasjonsnummer." };
+  if (kontroll === 10) return { ok: false, feil: "orgnrUgyldig" };
 
   if (kontroll !== Number(d[8])) {
-    return { ok: false, feil: "Kontrollsifferet stemmer ikke. Sjekk nummeret." };
+    return { ok: false, feil: "orgnrKontrollsiffer" };
   }
 
   return { ok: true, orgnr: d };

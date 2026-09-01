@@ -18,14 +18,17 @@ export type Svar = { ok: true } | { ok: false; feil: string };
  */
 export async function svarPaOffert(
   token: string,
-  svar: "akseptert" | "avslatt",
+  svar: "akseptert" | "endring" | "avslatt",
   kommentar: string,
   navn: string,
 ): Promise<Svar> {
-  if (svar === "avslatt" && !kommentar.trim())
+  if (svar !== "akseptert" && !kommentar.trim())
     return {
       ok: false,
-      feil: "Skriv gjerne kort hva som ikke passet. Da kan vi komme tilbake med noe annet.",
+      feil:
+        svar === "endring"
+          ? "Skriv kort hva som skal være annerledes, så kan vi gjøre noe med det."
+          : "Skriv gjerne kort hva som ikke passet. Vi bruker det til å forstå hva som ikke traff.",
     };
 
   const supabase = createClient();

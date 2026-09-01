@@ -3,7 +3,7 @@ import { StaffShell } from "@/components/StaffShell";
 import Link from "next/link";
 import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, NOK } from "@/components/ui";
 import { StatusMerke } from "@/components/ui/StatusMerke";
-import { PRIS, OFFERTSTATUS, regnUt } from "@/lib/offert";
+import { PRIS, offertstatus, regnUt } from "@/lib/offert";
 import { OffertSkjema } from "@/components/internt/OffertSkjema";
 import { KundeSok } from "@/components/internt/KundeSok";
 import { settOffertStatus } from "@/app/internt/handlinger";
@@ -12,18 +12,13 @@ import { formaterOrgnr } from "@/lib/orgnr";
 export default async function InterntOfferterSide() {
   const { supabase, t } = await krevAnsatt();
 
-  const [{ data: offerter }, { data: leads }] = await Promise.all([
+  const [{ data: offerter }] = await Promise.all([
     supabase
       .from("offerter")
       .select(
         "id, kund, org_nr, kontaktperson, kontakt_epost, plan, ar, rabatt, giltig_til, status, fritt_antall, fritt_pris, notat, opprettet, sendt, sett, svar",
       )
       .order("opprettet", { ascending: false }),
-    supabase
-      .from("leads")
-      .select("id, bolag")
-      .not("status", "in", '("vunnen","forlorad")')
-      .order("bolag"),
   ]);
 
   const rader = (offerter ?? []).map((o) => ({ ...o, ...regnUt(o) }));
@@ -52,7 +47,7 @@ export default async function InterntOfferterSide() {
           />
         </Rad>
 
-        <OffertSkjema leads={leads ?? []} KundeSok={KundeSok} />
+        <OffertSkjema KundeSok={KundeSok} />
 
         <Kort>
           <Tabell
@@ -101,7 +96,7 @@ export default async function InterntOfferterSide() {
                 <StatusMerke
                   id={o.id}
                   verdi={o.status}
-                  val={OFFERTSTATUS}
+                  val={offertstatus(t)}
                   handling={settOffertStatus}
                 />
                 {o.sendt && !o.svar && (

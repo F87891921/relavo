@@ -1,5 +1,6 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
+import { Fortnox } from "@/components/internt/Fortnox";
 import type { Ordbok } from "@/lib/sprak";
 import { Side, Sidehode, Kort, Tabell, Tall, Rad, NOK } from "@/components/ui";
 import { StatusMerke, type StatusVal } from "@/components/ui/StatusMerke";
@@ -17,6 +18,10 @@ const statusValg = (t: Ordbok): StatusVal[] => [
 export default async function InterntFaktureringSide() {
   const { supabase, t } = await krevAnsatt();
   const STATUS = statusValg(t);
+
+  const { data: integrasjon } = await supabase
+    .rpc("integrasjonsstatus", { p_navn: "fortnox" })
+    .maybeSingle();
 
   const { data: fakturaer } = await supabase
     .from("fakturaer")
@@ -40,6 +45,12 @@ export default async function InterntFaktureringSide() {
         <Sidehode
           tittel={t.ansattsider.fakturering.tittel}
           tekst={t.ansattsider.fakturering.tekst}
+        />
+
+        <Fortnox
+          koblet={Boolean((integrasjon as { koblet?: boolean } | null)?.koblet)}
+          sistSynk={(integrasjon as { sist_synk?: string } | null)?.sist_synk ?? null}
+          sistFeil={(integrasjon as { sist_feil?: string } | null)?.sist_feil ?? null}
         />
 
         <Rad>

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Offertdokument, type Offertdata } from "@/components/offert/Offertdokument";
 import { Svarskjema } from "./Svarskjema";
 import { RELAVO } from "@/lib/relavo";
+import { ord } from "@/lib/sprak";
 
 export const metadata: Metadata = {
   title: "Tilbud fra Relavo",
@@ -20,6 +21,7 @@ type Rad = Offertdata & {
 
 export default async function OffertLenke({ params }: { params: { token: string } }) {
   const supabase = createClient();
+  const o9 = ord().offertsvar;
 
   const { data } = await supabase.rpc("offert_ved_token", { t: params.token });
   const o = (Array.isArray(data) ? data[0] : null) as Rad | null;
@@ -27,11 +29,12 @@ export default async function OffertLenke({ params }: { params: { token: string 
   if (!o)
     return (
       <Ramme>
-        <h1 className="text-xl font-semibold mb-2">Vi finner ikke tilbudet</h1>
-        <p className="text-[13.5px] text-dim leading-relaxed">
-          Lenken kan være utløpt, eller tilbudet er ikke sendt ut ennå. Ta
-          kontakt på {RELAVO.epost}, så finner vi ut av det.
-        </p>
+        <div className="bg-surface rounded-card border border-border shadow-card px-6 py-6">
+          <h1 className="text-lg font-semibold mb-2">{o9.finnerIkke}</h1>
+          <p className="text-[13.5px] text-dim leading-relaxed">
+            {o9.finnerIkkeTekst} {RELAVO.epost}
+          </p>
+        </div>
       </Ramme>
     );
 
@@ -50,22 +53,30 @@ export default async function OffertLenke({ params }: { params: { token: string 
         {o.svar ? (
           <div
             className={`rounded-card px-6 py-5 ${
-              o.svar === "akseptert" ? "bg-good-bg text-good" : "bg-canvas text-dim"
+              o.svar === "akseptert"
+                ? "bg-good-bg text-good"
+                : o.svar === "endring"
+                  ? "bg-warn-bg text-warn"
+                  : "bg-canvas text-dim"
             }`}
           >
             <div className="text-[14px] font-semibold mb-1">
               {o.svar === "akseptert"
-                ? "Takk — tilbudet er godtatt."
-                : "Svaret er registrert."}
+                ? o9.takkGodtatt
+                : o.svar === "endring"
+                  ? o9.onsketRegistrert
+                  : o9.svaretRegistrert}
             </div>
             <p className="text-[12.5px] leading-relaxed">
               {o.svar === "akseptert"
-                ? "Vi tar kontakt med det praktiske. Trenger dere tilbudet som PDF, kan siden skrives ut."
-                : "Takk for at dere svarte. Vi bruker begrunnelsen til å se om noe annet passer bedre."}
+                ? o9.takkGodtattTekst
+                : o.svar === "endring"
+                  ? o9.onsketTekst
+                  : o9.svaretTekst}
             </p>
             {o.svar_navn && (
               <p className="text-[11.5px] mt-2 opacity-80">
-                Svart av {o.svar_navn}
+                {o9.svartAv} {o.svar_navn}
                 {o.svar_tid &&
                   ` · ${new Date(o.svar_tid).toLocaleDateString("nb-NO")}`}
               </p>
@@ -73,20 +84,16 @@ export default async function OffertLenke({ params }: { params: { token: string 
           </div>
         ) : utlopt ? (
           <div className="bg-warn-bg text-warn rounded-card px-6 py-5">
-            <div className="text-[14px] font-semibold mb-1">
-              Tilbudet er gått ut på dato
-            </div>
+            <div className="text-[14px] font-semibold mb-1">{o9.utlopt}</div>
             <p className="text-[12.5px] leading-relaxed">
-              Gyldighetsfristen var {o.giltig_til}. Ta kontakt på{" "}
-              {RELAVO.epost}, så sender vi et oppdatert tilbud.
+              {o9.utloptTekst} {o.giltig_til}. {o9.taKontakt} {RELAVO.epost}
             </p>
           </div>
         ) : (
           <div className="bg-surface rounded-card border border-border shadow-card px-6 py-5">
-            <div className="text-[14px] font-semibold mb-1">Hva sier dere?</div>
+            <div className="text-[14px] font-semibold mb-1">{o9.hvaSierDere}</div>
             <p className="text-[12.5px] text-dim leading-relaxed mb-4 max-w-[64ch]">
-              Svarer dere her, kommer det rett til oss. Vil dere ha tilbudet
-              som PDF først, kan siden skrives ut.
+              {o9.svarHer}
             </p>
             <Svarskjema token={params.token} />
           </div>

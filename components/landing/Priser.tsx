@@ -15,6 +15,9 @@ export function Priser() {
           <h2 className="statement">
             {t.tittel} <span>{t.undertittel}</span>
           </h2>
+          <p className="mono" style={{ fontSize: "12px", color: "var(--text-faint)", marginTop: "14px" }}>
+            {t.eksMva}
+          </p>
         </div>
         <div className="plans">
           {t.planer.map((plan, i) => (

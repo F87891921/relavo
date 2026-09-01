@@ -14,6 +14,12 @@ export function LoggUt({ tekst, venterTekst }: { tekst: string; venterTekst: str
       disabled={venter}
       onClick={() =>
         start(async () => {
+          // Språkkapselen tilhører personen, ikke maskinen. Blir den
+          // liggende, arver den neste som logger inn på samme nettleser
+          // språket til den forrige — og middleware sår bare fra profilen
+          // når kapselen mangler. Sivan har svensk på profilen og fikk
+          // norsk, fordi Fred hadde vært innom først.
+          document.cookie = "relavo_sprak=; path=/; max-age=0";
           await createClient().auth.signOut();
           router.push("/logg-inn");
           router.refresh();

@@ -12,6 +12,7 @@ export type Offertdata = Offertrad & {
   giltig_til: string | null;
   notat: string | null;
   opprettet: string;
+  betalingsfrist?: number | null;
 };
 
 const dato = (d: string | null) =>
@@ -19,7 +20,7 @@ const dato = (d: string | null) =>
 
 function Linje({ merke, verdi }: { merke: string; verdi: string }) {
   return (
-    <div className="flex justify-between gap-6 py-1.5 border-b border-border last:border-0">
+    <div className="grid grid-cols-[1fr_auto] gap-6 py-1.5 border-b border-border last:border-0">
       <span className="text-dim">{merke}</span>
       <span className="font-semibold text-right tabular-nums">{verdi}</span>
     </div>
@@ -69,7 +70,7 @@ export function Offertdokument({ o }: { o: Offertdata }) {
             </div>
           </div>
 
-          <div className="text-right">
+          <div className="text-left sm:text-right">
             <div className="text-[26px] font-semibold tracking-tight leading-none">
               Tilbud
             </div>
@@ -108,7 +109,7 @@ export function Offertdokument({ o }: { o: Offertdata }) {
             <span className="text-[15px] font-semibold">{r.planNavn}</span>
             {!r.fritt && r.manedspris > 0 && (
               <span className="text-[12px] text-dim tabular-nums">
-                {NOK(r.manedspris)} NOK/mnd
+                {NOK(r.manedspris)} NOK/mnd eks. mva
               </span>
             )}
           </div>
@@ -160,17 +161,21 @@ export function Offertdokument({ o }: { o: Offertdata }) {
           )}
         </div>
 
-        <div className="flex justify-between gap-6 items-baseline border-t-2 border-ink pt-3 mt-3 mb-8">
+        <div className="grid grid-cols-[1fr_auto] gap-6 items-baseline border-t-2 border-ink pt-3 mt-3">
           <span className="text-[13.5px] font-semibold">
             Samlet kontraktsverdi
+            <span className="block text-[11px] font-normal text-dim mt-0.5">
+              eks. mva
+            </span>
           </span>
-          <span className="text-[22px] font-bold tabular-nums tracking-tight">
+          <span className="text-[22px] font-bold tabular-nums tracking-tight text-right">
             {NOK(r.totalt)} NOK
           </span>
         </div>
 
-        <p className="text-[11.5px] text-faint mb-8">
-          Alle priser er oppgitt eksklusive merverdiavgift.
+        <p className="text-[11.5px] text-faint mt-3 mb-8">
+          Alle priser er oppgitt eksklusive merverdiavgift. Merverdiavgift
+          kommer i tillegg med gjeldende sats.
         </p>
 
         {o.notat && (
@@ -190,9 +195,9 @@ export function Offertdokument({ o }: { o: Offertdata }) {
             Vilkår
           </div>
           <p className="mb-2">
-            Fakturering skjer årlig på forskudd med 30 dagers betalingsfrist.
-            Avtalen forutsetter at kunden er en offentlig oppdragsgiver eller
-            leverandør til slike.
+            Fakturering skjer årlig på forskudd med{" "}
+            {o.betalingsfrist ?? 30} dagers betalingsfrist. Avtalen forutsetter
+            at kunden er en offentlig oppdragsgiver eller leverandør til slike.
           </p>
           <p>
             For øvrig gjelder Relavos alminnelige vilkår, som til enhver tid
