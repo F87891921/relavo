@@ -10,7 +10,7 @@ export default async function InterntTeamSide() {
   // till personal.
   const { data: alle } = await supabase
     .from("profiler")
-    .select("id, navn, rolle, ansatt, ansatt_rolle, opprettet, organisasjoner(navn)")
+    .select("id, navn, rolle, ansatt, ansatt_rolle, opprettet, organisasjoner!profiler_organisasjon_id_fkey(navn)")
     .order("opprettet");
 
   const profiler = alle ?? [];

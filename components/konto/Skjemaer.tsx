@@ -30,7 +30,8 @@ function Form({
   children: ReactNode;
   nullstill?: boolean;
 }) {
-  const t = useOrd().konto;
+  const ordbok = useOrd();
+  const t = ordbok.konto;
   const [feil, setFeil] = useState("");
   const [kvittering, setKvittering] = useState("");
   const [venter, start] = useTransition();
@@ -69,7 +70,7 @@ function Form({
         </div>
       )}
       <button type="submit" disabled={venter} className={KNAPP}>
-        {venter ? useOrd().felles.lagrer : knapp}
+        {venter ? ordbok.felles.lagrer : knapp}
       </button>
     </form>
   );
@@ -109,16 +110,18 @@ function Felt({
 }
 
 export function EgetNavn({ navn }: { navn: string }) {
-  const t = useOrd().konto;
+  const ordbok = useOrd();
+  const t = ordbok.konto;
   return (
     <Form handling={oppdaterEgetNavn} knapp={t.lagreNavn}>
-      <Felt navn="navn" merke={useOrd().ui.navn} standard={navn} krav />
+      <Felt navn="navn" merke={ordbok.ui.navn} standard={navn} krav />
     </Form>
   );
 }
 
 export function EgetPassord() {
-  const t = useOrd().konto;
+  const ordbok = useOrd();
+  const t = ordbok.konto;
   return (
     <Form handling={byttEgetPassord} knapp="Bytt passord" nullstill>
       <Felt navn="nytt" merke={t.nyttPassord} type="password" krav />
@@ -128,7 +131,8 @@ export function EgetPassord() {
 }
 
 export function Organisasjonen({ navn, orgNr }: { navn: string; orgNr: string }) {
-  const t = useOrd().konto;
+  const ordbok = useOrd();
+  const t = ordbok.konto;
   return (
     <Form handling={oppdaterOrganisasjon} knapp="Lagre">
       <Felt navn="navn" merke={t.navnPaOrganisasjonen} standard={navn} krav />
@@ -146,7 +150,8 @@ export function Organisasjonen({ navn, orgNr }: { navn: string; orgNr: string })
 }
 
 export function NyBrukerSkjema() {
-  const t = useOrd().konto;
+  const ordbok = useOrd();
+  const t = ordbok.konto;
   const [apen, setApen] = useState(false);
 
   if (!apen)
@@ -161,10 +166,10 @@ export function NyBrukerSkjema() {
       <h3 className="text-[14px] font-semibold mb-4">{t.nyBruker}</h3>
       <Form handling={nyBruker} knapp="Opprett" nullstill>
         <div className="grid sm:grid-cols-2 gap-x-4">
-          <Felt navn="navn" merke={useOrd().ui.navn} krav plassholder="Marit Aasen" />
+          <Felt navn="navn" merke={ordbok.ui.navn} krav plassholder="Marit Aasen" />
           <Felt
             navn="epost"
-            merke={useOrd().auth.epost}
+            merke={ordbok.auth.epost}
             type="email"
             krav
             plassholder="navn@kommune.no"
@@ -172,7 +177,7 @@ export function NyBrukerSkjema() {
           <Felt navn="passord" merke={t.midlertidigPassord} type="password" krav />
           <div className="mb-3.5">
             <label htmlFor="rolle" className="block text-xs font-semibold mb-1.5">
-              {useOrd().ui.rolle}
+              {ordbok.ui.rolle}
             </label>
             <select id="rolle" name="rolle" defaultValue="bruker" className={INPUT}>
               <option value="bruker">{t.bruker}</option>
@@ -189,7 +194,7 @@ export function NyBrukerSkjema() {
         onClick={() => setApen(false)}
         className="text-sm text-dim hover:text-ink mt-2 transition"
       >
-        {useOrd().felles.avbryt}
+        {ordbok.felles.avbryt}
       </button>
     </div>
   );
@@ -209,7 +214,8 @@ export function BrukerRad({
   kanEndre: boolean;
   felt: "rolle" | "fjern";
 }) {
-  const t = useOrd().konto;
+  const ordbok = useOrd();
+  const t = ordbok.konto;
   const [venter, start] = useTransition();
   const [feil, setFeil] = useState("");
 

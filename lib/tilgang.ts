@@ -25,7 +25,7 @@ export const krevProfil = cache(async () => {
 
   const { data: profil } = await supabase
     .from("profiler")
-    .select("organisasjon_id, navn, rolle, ansatt, ansatt_rolle, sprak, organisasjoner(navn)")
+    .select("organisasjon_id, navn, rolle, ansatt, ansatt_rolle, sprak, organisasjoner!profiler_organisasjon_id_fkey(navn, status, betalingsmate)")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -45,7 +45,30 @@ export const krevProfil = cache(async () => {
   )
     redirect("/tofaktor");
 
-  const org = profil.organisasjoner as unknown as { navn: string } | null;
+  const org = profil.organisasjoner as unknown as {
+    navn: string;
+    status: string;
+    betalingsmate: string | null;
+  } | null;
+
+  // Kontoen er ikke åpnet ennå. Har de ikke bestilt, mangler det et valg;
+  // har de bestilt, venter det på betaling eller på oss.
+  //
+  // Ansatte går alltid gjennom: de skal kunne se og behandle kontoer som
+  // står og venter, og uten dette ville de blitt låst ute av sin egen
+  // godkjenningsside.
+  const APEN_UTEN_AKTIV = ["/venter", "/betaling", "/tofaktor", "/konto"];
+  const dit = org?.betalingsmate ? "/venter" : "/betaling";
+  if (
+    sti &&
+    !profil.ansatt &&
+    org &&
+    org.status !== "aktiv" &&
+    sti !== dit &&
+    !APEN_UTEN_AKTIV.some((p) => sti === p || sti.startsWith(`${p}/`))
+  )
+    redirect(dit);
+
 
   return {
     supabase,

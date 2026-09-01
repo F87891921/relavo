@@ -37,10 +37,16 @@ export async function middleware(request: NextRequest) {
   }
 
   // Stien videresendes som header. Uten den vet ikke krevProfil hvor den
-  // står, og ville sendt folk til /konto fra /konto — en evig runddans.
-  request.headers.set("x-sti", sti);
+  // står, og sender folk til den siden de allerede er på — en evig runddans.
+  //
+  // Headers på en NextRequest er uforanderlige. request.headers.set() gjør
+  // ingenting og sier ingenting; headeren kom aldri fram, og gaten sendte
+  // /betaling til /betaling i det uendelige. Riktig vei er å bygge et nytt
+  // Headers-objekt og gi det til NextResponse.next().
+  const videre = new Headers(request.headers);
+  videre.set("x-sti", sti);
 
-  let response = NextResponse.next({ request });
+  let response = NextResponse.next({ request: { headers: videre } });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -52,7 +58,7 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request });
+          response = NextResponse.next({ request: { headers: videre } });
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           );
@@ -78,7 +84,7 @@ export async function middleware(request: NextRequest) {
       .maybeSingle();
     if (erSprak(data?.sprak)) {
       request.cookies.set(KAPSEL_SPRAK, data.sprak);
-      response = NextResponse.next({ request });
+      response = NextResponse.next({ request: { headers: videre } });
       response.cookies.set(KAPSEL_SPRAK, data.sprak, {
         path: "/",
         maxAge: 60 * 60 * 24 * 365,

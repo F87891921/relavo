@@ -17,7 +17,8 @@ import { useOrd } from "@/components/Sprakgiver";
  * maskinen når vi bare trenger ni siffer per rad.
  */
 export function BulkListe() {
-  const t = useOrd().bulk;
+  const ordbok = useOrd();
+  const t = ordbok.bulk;
   const [tekst, setTekst] = useState("");
   const [filnavn, setFilnavn] = useState("");
   const [filfeil, setFilfeil] = useState("");
@@ -190,7 +191,7 @@ export function BulkListe() {
       {linjer.length > 0 && (
         <div className="bg-surface rounded-card border border-border shadow-card overflow-hidden">
           <Tabell
-            kolonner={[t.nummer, useOrd().felles.status]}
+            kolonner={[t.nummer, ordbok.felles.status]}
             rader={sjekket.map((s) => [
               <span key="n" className="font-mono text-[12.5px]">
                 {s.res.ok ? formaterOrgnr(s.res.orgnr) : s.rå}

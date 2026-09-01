@@ -3,6 +3,7 @@ import { StaffShell } from "@/components/StaffShell";
 import type { Ordbok } from "@/lib/sprak";
 import { Side, Sidehode, Kort, Tabell, Merke, Stripe } from "@/components/ui";
 import { KONTON, PLANER } from "@/lib/demo/staff";
+import { Bestillinger, type Bestilling } from "@/components/internt/Bestillinger";
 
 /**
  * Uppstarten, steg för steg. Ett konto räknas som igång först när det kört
@@ -18,8 +19,16 @@ const stegNavn = (t: Ordbok) => [
 ];
 
 export default async function InterntOnboardingSide() {
-  const { t } = await krevAnsatt();
+  const { t, supabase } = await krevAnsatt();
   const STEG = stegNavn(t);
+
+  // Kontoer som venter på oss. Dette er ekte rader, ikke demodata —
+  // beslutningen om å åpne en konto tas her.
+  const { data: venter } = await supabase
+    .from("organisasjoner")
+    .select("id, navn, org_nr, plan, status, betalingsmate, forskuddsbetaling, bestilt")
+    .in("status", ["venter_kreditt", "venter_betaling"])
+    .order("bestilt", { ascending: true, nullsFirst: false });
 
   // Hur långt varje konto kommit utleds av demodatan: konton med
   // förbrukning har kört kontroller, konton med leverantörer har läst in dem.
@@ -37,6 +46,8 @@ export default async function InterntOnboardingSide() {
           tittel={t.ansattsider.onboarding.tittel}
           tekst={t.ansattsider.onboarding.tekst}
         />
+        <Bestillinger rader={(venter ?? []) as Bestilling[]} />
+
         <Kort note={t.internt.demodataStaff}>
           <Tabell
             kolonner={[t.internt.konto, t.internt.plan, t.internt.framdrift, t.internt.starPa, t.internt.kontaktKol, t.internt.statusKol]}

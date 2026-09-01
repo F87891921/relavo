@@ -397,3 +397,61 @@ export async function settAnsatt(
   revalidatePath("/internt/team");
   return { ok: true };
 }
+
+/* ---------------------------------------------------- Kontoer som venter */
+
+/**
+ * Åpne kontoen.
+ *
+ * For fakturakunder er dette punktet der kredittkontrollen er gjort og
+ * vurdert. Vi venter ikke på pengene: en kommune er ingen kredittrisiko, og
+ * fire ukers venting mister kunden. Vil vi likevel ha pengene først, settes
+ * forskudd i stedet — da åpnes kontoen av betalingMottatt().
+ */
+export async function godkjennKonto(id: string): Promise<Svar> {
+  const { supabase, user } = await krevAnsatt();
+  const { error } = await supabase
+    .from("organisasjoner")
+    .update({
+      status: "aktiv",
+      aktivert: new Date().toISOString(),
+      aktivert_av: user.id,
+      avslag_grunn: null,
+    })
+    .eq("id", id);
+  if (error) return { ok: false, feil: error.message };
+  revalidatePath("/internt/onboarding");
+  revalidatePath("/internt/attgora");
+  return { ok: true };
+}
+
+/** Vi vil ha pengene før kontoen åpnes. Brukes når kredittkontrollen skurrer. */
+export async function krevForskudd(id: string): Promise<Svar> {
+  const { supabase } = await krevAnsatt();
+  const { error } = await supabase
+    .from("organisasjoner")
+    .update({ forskuddsbetaling: true, status: "venter_betaling" })
+    .eq("id", id);
+  if (error) return { ok: false, feil: error.message };
+  revalidatePath("/internt/onboarding");
+  return { ok: true };
+}
+
+/** Forskuddsfakturaen er betalt. Nå åpnes kontoen. */
+export async function betalingMottatt(id: string): Promise<Svar> {
+  return godkjennKonto(id);
+}
+
+export async function avslaKonto(id: string, grunn: string): Promise<Svar> {
+  const { supabase } = await krevAnsatt();
+  if (!grunn.trim())
+    return { ok: false, feil: "Skriv hvorfor. Kunden får se begrunnelsen." };
+
+  const { error } = await supabase
+    .from("organisasjoner")
+    .update({ status: "avslatt", avslag_grunn: grunn.trim() })
+    .eq("id", id);
+  if (error) return { ok: false, feil: error.message };
+  revalidatePath("/internt/onboarding");
+  return { ok: true };
+}
