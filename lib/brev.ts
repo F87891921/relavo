@@ -25,18 +25,50 @@ export function virkedagerFram(antall: number, fra = new Date()): Date {
 export const somDato = (d: Date) => d.toISOString().slice(0, 10);
 
 /**
+ * Hilsen og underskrift.
+ *
+ * Brevene gikk før rett på «Vi viser til deres tilbud». Det er korrekt, og
+ * det leses som et vedtak. Disse brevene er de første kunden sender til en
+ * leverandør de kanskje skal jobbe med i fire år — de skal være tydelige,
+ * ikke kalde. Navn på begge sider koster ingenting og endrer tonen helt.
+ */
+function hilsen(navn?: string | null, selskap?: string | null): string {
+  if (navn?.trim()) return `Hei ${navn.trim()},`;
+  if (selskap?.trim()) return `Til ${selskap.trim()},`;
+  return "Hei,";
+}
+
+function underskrift(navn?: string | null, org?: string | null): string {
+  const linjer = ["Med vennlig hilsen", navn?.trim(), org?.trim()].filter(Boolean);
+  // Bare «Med vennlig hilsen» og ingenting under er verre enn ingen hilsen.
+  return linjer.length > 1 ? `\n\n${linjer.join("\n")}` : "";
+}
+
+export type Avsender = {
+  /** Den som sender — saksbehandleren, ikke Relavo. */
+  avsenderNavn?: string | null;
+  /** Oppdragsgiver. Kommunen eller fylkeskommunen. */
+  avsenderOrg?: string | null;
+};
+
+/**
  * Kravet etter § 24-9. Må være konkret om hva som skal forklares — et
  * generelt spørsmål om prisen oppfyller ikke plikten, og KOFA har underkjent
  * anskaffelser der kravet var for løst formulert.
  */
-export function redegjorelseBrev(o: {
-  leverandor: string;
-  anskaffelseRef: string;
-  anskaffelseNavn: string;
-  avvikProsent: number;
-  frist: string;
-}) {
-  return `Vi viser til deres tilbud i ${o.anskaffelseRef} — ${o.anskaffelseNavn}.
+export function redegjorelseBrev(
+  o: Avsender & {
+    leverandor: string;
+    mottakerNavn?: string | null;
+    anskaffelseRef: string;
+    anskaffelseNavn: string;
+    avvikProsent: number;
+    frist: string;
+  },
+) {
+  return `${hilsen(o.mottakerNavn, o.leverandor)}
+
+Vi viser til deres tilbud i ${o.anskaffelseRef} — ${o.anskaffelseNavn}.
 
 Tilbudssummen ligger ${Math.abs(o.avvikProsent)} % under medianen av de øvrige tilbudene. Før vi tar stilling til tilbudet ber vi om en redegjørelse etter anskaffelsesforskriften § 24-9, særlig om:
 
@@ -47,22 +79,38 @@ Tilbudssummen ligger ${Math.abs(o.avvikProsent)} % under medianen av de øvrige 
 
 Frist for svar er ${o.frist}.
 
-Manglende eller utilstrekkelig redegjørelse kan føre til at tilbudet avvises.`;
+Manglende eller utilstrekkelig redegjørelse kan føre til at tilbudet avvises.${underskrift(o.avsenderNavn, o.avsenderOrg)}`;
 }
 
-/** Forespørsel om ettersending av ESPD, etter § 23-5. */
-export function espdBrev(o: {
-  leverandor: string;
-  anskaffelseRef: string;
-  frist: string;
-}) {
-  return `Vi viser til deres tilbud i ${o.anskaffelseRef}.
+/**
+ * Forespørsel om ettersending av ESPD, etter § 23-5.
+ *
+ * Lenken går til en side der leverandøren laster opp erklæringen og
+ * bekrefter med navn og rolle. Uten den måtte de svare på e-post, og
+ * vedlegget havnet i en innboks i stedet for i saken.
+ */
+export function espdBrev(
+  o: Avsender & {
+    leverandor: string;
+    mottakerNavn?: string | null;
+    anskaffelseRef: string;
+    frist: string;
+    lenke?: string | null;
+  },
+) {
+  const opplasting = o.lenke
+    ? `\n\nErklæringen kan lastes opp her:\n${o.lenke}\n\nLenken gjelder bare denne forespørselen.`
+    : "";
 
-Vi kan ikke se at ESPD-egenerklæring er levert med tilbudet. Vi ber om at den ettersendes.
+  return `${hilsen(o.mottakerNavn, o.leverandor)}
+
+Vi viser til deres tilbud i ${o.anskaffelseRef}.
+
+Vi kan ikke se at ESPD-egenerklæring er levert med tilbudet, og ber om at den ettersendes.
 
 Manglende egenerklæring er normalt en mangel som kan rettes etter anskaffelsesforskriften § 23-5, i motsetning til innholdet i selve tilbudet.
 
-Frist for ettersending er ${o.frist}.`;
+Frist for ettersending er ${o.frist}.${opplasting}${underskrift(o.avsenderNavn, o.avsenderOrg)}`;
 }
 
 /**

@@ -2,7 +2,7 @@ import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode, Kort, Tabell, Merke, Stripe } from "@/components/ui";
 import { ANSKAFFELSER } from "@/lib/demo/app";
-import { redegjorelseBrev, virkedagerFram, somDato } from "@/lib/brev";
+import { virkedagerFram, somDato } from "@/lib/brev";
 import { NyRedegjorelse } from "@/components/brev/NyRedegjorelse";
 import { RedegjorelseKort, type Redegjorelse } from "@/components/brev/Redegjorelse";
 
@@ -21,7 +21,7 @@ const TILBUD = [
 const TERSKEL = -20;
 
 export default async function TilbudSide() {
-  const { supabase } = await krevProfil();
+  const { supabase, profil, organisasjonNavn } = await krevProfil();
 
   const { data: lagrede } = await supabase
     .from("redegjorelser")
@@ -102,13 +102,8 @@ export default async function TilbudSide() {
               median={median}
               avvik={l.avvik}
               frist={frist}
-              utkast={redegjorelseBrev({
-                leverandor: l.navn,
-                anskaffelseRef: ansk.id,
-                anskaffelseNavn: ansk.navn,
-                avvikProsent: l.avvik,
-                frist,
-              })}
+              avsenderNavn={profil.navn}
+              avsenderOrg={organisasjonNavn}
             />
           );
         })}

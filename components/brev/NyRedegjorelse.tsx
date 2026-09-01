@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { FELT_FULL } from "@/components/ui/felt";
 import { lagreRedegjorelse } from "@/app/(dashboard)/tilbud/handlinger";
+import { redegjorelseBrev } from "@/lib/brev";
 
 /**
  * Utkastet til § 24-9-kravet, klart til å lagres. Først når det er lagret
@@ -17,10 +18,29 @@ export function NyRedegjorelse(o: {
   median: number;
   avvik: number;
   frist: string;
-  utkast: string;
+  avsenderNavn: string | null;
+  avsenderOrg: string | null;
 }) {
   const [feil, setFeil] = useState("");
   const [venter, start] = useTransition();
+
+  // Navnet på den som skal lese brevet. Endres det, følger hilsenen med —
+  // helt til man har skrevet i selve brevet. Da står teksten i fred.
+  const [navn, setNavn] = useState("");
+  const [rort, setRort] = useState(false);
+  const [brev, setBrev] = useState("");
+
+  const mal = redegjorelseBrev({
+    leverandor: o.leverandor,
+    mottakerNavn: navn,
+    anskaffelseRef: o.anskaffelseRef,
+    anskaffelseNavn: o.anskaffelseNavn,
+    avvikProsent: o.avvik,
+    frist: o.frist,
+    avsenderNavn: o.avsenderNavn,
+    avsenderOrg: o.avsenderOrg,
+  });
+  const visBrev = rort ? brev : mal;
 
   return (
     <div className="bg-surface rounded-card border border-border shadow-card p-6 mb-5">
@@ -51,7 +71,19 @@ export function NyRedegjorelse(o: {
         <input type="hidden" name="median" value={o.median} />
         <input type="hidden" name="avvik_prosent" value={o.avvik} />
 
-        <div className="grid sm:grid-cols-2 gap-x-4">
+        <div className="grid sm:grid-cols-3 gap-x-4">
+          <div className="mb-3.5">
+            <label htmlFor="kontakt" className="block text-xs font-semibold mb-1.5">
+              Kontaktperson
+            </label>
+            <input
+              id="kontakt"
+              value={navn}
+              onChange={(e) => setNavn(e.target.value)}
+              placeholder="Kristian Holth"
+              className={FELT_FULL}
+            />
+          </div>
           <div className="mb-3.5">
             <label htmlFor="epost" className="block text-xs font-semibold mb-1.5">
               Leverandørens e-post
@@ -88,7 +120,11 @@ export function NyRedegjorelse(o: {
           id="utkast"
           name="utkast"
           rows={14}
-          defaultValue={o.utkast}
+          value={visBrev}
+          onChange={(e) => {
+            setBrev(e.target.value);
+            setRort(true);
+          }}
           className={`${FELT_FULL} max-w-none resize-y text-[12.5px] leading-relaxed`}
         />
 

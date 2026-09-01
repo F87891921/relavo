@@ -7,14 +7,24 @@ import { KAPSEL, avtrykk, likeStrenger } from "@/lib/portvakt";
  * uten dette blir folk logget ut midt i en økt selv om de er aktive.
  * Beskytter også /(dashboard)-rutene: ingen sesjon → send til innlogging.
  */
+/**
+ * Sider som er ment for noen utenfor Relavo og utenfor kundens organisasjon:
+ * leverandøren som skal ettersende en egenerklæring, og kunden som skal ta
+ * stilling til et tilbud. Begge kommer med et token i lenken, og token er
+ * nøkkelen — det er derfor de også må slippe forbi passordsperren. Møter
+ * mottakeren en passordrute, har lenken ingen hensikt.
+ */
+const TOKENSIDER = ["/offert", "/ettersending"];
+
 export async function middleware(request: NextRequest) {
   const sti = request.nextUrl.pathname;
+  const medToken = TOKENSIDER.some((p) => sti.startsWith(`${p}/`));
 
   // Portvakten kommer først av alt. Er SIDE_PASSORD satt, slipper ingen
   // inn noe sted uten kapselen — heller ikke forsiden, og heller ikke
   // API-rutene. Er variabelen ikke satt, er sperren av.
   const sidePassord = process.env.SIDE_PASSORD;
-  if (sidePassord && sti !== "/port") {
+  if (sidePassord && sti !== "/port" && !medToken) {
     const kapsel = request.cookies.get(KAPSEL)?.value ?? "";
     const forventet = await avtrykk(sidePassord);
     if (!likeStrenger(kapsel, forventet)) {
@@ -60,7 +70,16 @@ export async function middleware(request: NextRequest) {
   // /port må stå her. Uten den regnes sperresiden som beskyttet, sendes til
   // /logg-inn, som portvakten over fanger og sender tilbake til /port — en
   // evig runddans.
-  const APNE = ["/", "/port", "/logg-inn", "/tofaktor", "/kontakt", "/juridisk", "/auth/callback"];
+  const APNE = [
+    "/",
+    "/port",
+    "/logg-inn",
+    "/tofaktor",
+    "/kontakt",
+    "/juridisk",
+    "/auth/callback",
+    ...TOKENSIDER,
+  ];
   const apen = APNE.some((p) => sti === p || sti.startsWith(`${p}/`));
   const beskyttet = !apen;
 

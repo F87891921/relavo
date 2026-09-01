@@ -7,11 +7,14 @@ export const KATEGORIER = [
 ] as const;
 
 export const STATUSER = [
-  { verdi: "apen", tekst: "Åpen" },
-  { verdi: "venter_oss", tekst: "Venter på oss" },
-  { verdi: "venter_kunde", tekst: "Venter på kunden" },
-  { verdi: "lukket", tekst: "Lukket" },
+  { verdi: "apen", tekst: "Åpen", tone: "aksent" },
+  { verdi: "venter_oss", tekst: "Venter på oss", tone: "brudd" },
+  { verdi: "venter_kunde", tekst: "Venter på kunden", tone: "advarsel" },
+  { verdi: "lukket", tekst: "Lukket", tone: "noytral" },
 ] as const;
+
+export const statusTone = (v: string) =>
+  STATUSER.find((s) => s.verdi === v)?.tone ?? "noytral";
 
 export const KONTAKT_KATEGORIER = [
   { verdi: "demo", tekst: "Vil se en demo" },

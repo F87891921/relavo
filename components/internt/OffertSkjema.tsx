@@ -4,20 +4,7 @@ import { useState, useTransition } from "react";
 import { FELT_FULL } from "@/components/ui/felt";
 import { formaterOrgnr } from "@/lib/orgnr";
 import { nyOfferte, type Kundetreff } from "@/app/internt/handlinger";
-
-const PRIS: Record<string, { navn: string; mnd: number }> = {
-  engangs: { navn: "Leverandørkontroll", mnd: 0 },
-  standard: { navn: "Standard", mnd: 6900 },
-  enterprise: { navn: "Enterprise", mnd: 12900 },
-};
-
-const STATUS = [
-  { verdi: "utkast", tekst: "Utkast" },
-  { verdi: "skickad", tekst: "Skickad" },
-  { verdi: "akseptert", tekst: "Accepterad" },
-  { verdi: "utgatt", tekst: "Utgången" },
-  { verdi: "forlorad", tekst: "Förlorad" },
-];
+import { PRIS, OFFERTSTATUS } from "@/lib/offert";
 
 const KNAPP =
   "bg-accent hover:bg-accent-hover active:scale-[0.97] transition text-white text-sm font-semibold px-5 py-2.5 rounded-xl disabled:opacity-50";
@@ -228,7 +215,7 @@ export function OffertSkjema({
             Status
           </label>
           <select id="status" name="status" defaultValue="utkast" className={FELT_FULL}>
-            {STATUS.map((s) => (
+            {OFFERTSTATUS.map((s) => (
               <option key={s.verdi} value={s.verdi}>
                 {s.tekst}
               </option>

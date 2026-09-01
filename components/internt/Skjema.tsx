@@ -133,37 +133,3 @@ export function Felt({
     </div>
   );
 }
-
-/** Statusbytte rett i tabellen, uten å åpne noe skjema. */
-export function StatusVelger({
-  id,
-  status,
-  val,
-  handling,
-}: {
-  id: string;
-  status: string;
-  val: { verdi: string; tekst: string }[];
-  handling: (id: string, status: string) => Promise<Svar>;
-}) {
-  const [venter, start] = useTransition();
-  return (
-    <select
-      value={status}
-      disabled={venter}
-      onChange={(e) => {
-        const ny = e.target.value;
-        start(async () => {
-          await handling(id, ny);
-        });
-      }}
-      className="text-[12px] px-2 py-1 rounded-lg border border-border bg-surface hover:border-border-strong transition disabled:opacity-50"
-    >
-      {val.map((v) => (
-        <option key={v.verdi} value={v.verdi}>
-          {v.tekst}
-        </option>
-      ))}
-    </select>
-  );
-}

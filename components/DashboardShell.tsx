@@ -91,7 +91,7 @@ export async function DashboardShell({
     <div className="min-h-screen lg:flex">
       {/* Under lg ligger de samme punktene i MobilMeny. Sidemenyen tar 228 av
           375 piksler på en telefon — der må den bort, ikke bare krympes. */}
-      <aside className="hidden lg:flex w-[228px] shrink-0 border-r border-border bg-surface px-4 py-5 flex-col sticky top-0 h-screen">
+      <aside className="skjul-i-utskrift hidden lg:flex w-[228px] shrink-0 border-r border-border bg-surface px-4 py-5 flex-col sticky top-0 h-screen">
         <Link href="/oversikt" className="block px-1 mb-1" aria-label="Relavo">
           <RelavoLogo className="w-[86px] h-auto text-ink" />
         </Link>

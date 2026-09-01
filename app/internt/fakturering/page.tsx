@@ -1,23 +1,17 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, NOK, type Tone } from "@/components/ui";
-import { Skjema, Felt, StatusVelger } from "@/components/internt/Skjema";
+import { Side, Sidehode, Kort, Tabell, Tall, Rad, NOK } from "@/components/ui";
+import { StatusMerke, type StatusVal } from "@/components/ui/StatusMerke";
+import { Skjema, Felt } from "@/components/internt/Skjema";
 import { KundeSok } from "@/components/internt/KundeSok";
 import { nyFaktura, settFakturaStatus } from "@/app/internt/handlinger";
 
-const STATUS = [
-  { verdi: "obetald", tekst: "Obetald" },
-  { verdi: "betald", tekst: "Betald" },
-  { verdi: "forfallen", tekst: "Förfallen" },
-  { verdi: "kreditnota", tekst: "Kreditnota" },
+const STATUS: StatusVal[] = [
+  { verdi: "obetald", tekst: "Obetald", tone: "advarsel" },
+  { verdi: "betald", tekst: "Betald", tone: "god" },
+  { verdi: "forfallen", tekst: "Förfallen", tone: "brudd" },
+  { verdi: "kreditnota", tekst: "Kreditnota", tone: "noytral" },
 ];
-
-const TONE: Record<string, Tone> = {
-  obetald: "advarsel",
-  betald: "god",
-  forfallen: "brudd",
-  kreditnota: "noytral",
-};
 
 export default async function InterntFaktureringSide() {
   const { supabase } = await krevAnsatt();
@@ -103,12 +97,13 @@ export default async function InterntFaktureringSide() {
               >
                 {f.forfall}
               </span>,
-              <div key="s" className="flex items-center gap-2">
-                <Merke tone={TONE[f.status] ?? "noytral"}>
-                  {STATUS.find((s) => s.verdi === f.status)?.tekst ?? f.status}
-                </Merke>
-                <StatusVelger id={f.id} status={f.status} val={STATUS} handling={settFakturaStatus} />
-              </div>,
+              <StatusMerke
+                key="s"
+                id={f.id}
+                verdi={f.status}
+                val={STATUS}
+                handling={settFakturaStatus}
+              />,
             ])}
           />
         </Kort>

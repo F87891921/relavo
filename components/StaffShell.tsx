@@ -32,9 +32,18 @@ export async function StaffShell({
   aktivtSteg: string;
   children: React.ReactNode;
 }) {
-  const { profil, user } = await krevAnsatt();
+  const { profil, user, supabase } = await krevAnsatt();
   const superadmin = profil.ansatt_rolle === "superadmin";
-  const meny = ANSATTMENY.filter((s) => !s.bara || superadmin);
+  // Olästa notiser visas som en siffra vid «Att göra» — annars måste man gå
+  // in på sidan för att få veta att det finns något där.
+  const { count: olasta } = await supabase
+    .from("interne_varsler")
+    .select("id", { count: "exact", head: true })
+    .is("lest", null);
+
+  const meny = ANSATTMENY.filter((s) => !s.bara || superadmin).map((s) =>
+    s.navn === "Att göra" && olasta ? { ...s, merke: olasta } : s,
+  );
 
   // Samma botten i sidomenyn och i mobillådan.
   const botten = (
@@ -58,7 +67,7 @@ export async function StaffShell({
 
   return (
     <div className="min-h-screen lg:flex">
-      <aside className="hidden lg:flex w-[230px] shrink-0 border-r border-border bg-ink px-4 py-5 flex-col sticky top-0 h-screen">
+      <aside className="skjul-i-utskrift hidden lg:flex w-[230px] shrink-0 border-r border-border bg-ink px-4 py-5 flex-col sticky top-0 h-screen">
         <Link href="/internt" className="block px-1 mb-2" aria-label="Relavo internt">
           <RelavoLogo className="w-[86px] h-auto text-white" />
         </Link>
@@ -72,13 +81,18 @@ export async function StaffShell({
               key={s.href}
               href={s.href}
               aria-current={aktivtSteg === s.navn ? "page" : undefined}
-              className={`text-[13px] px-3 py-2 rounded-lg transition ${
+              className={`text-[13px] px-3 py-2 rounded-lg transition flex items-center gap-2 ${
                 aktivtSteg === s.navn
                   ? "bg-white/15 text-white font-semibold"
                   : "text-white/60 hover:bg-white/10 hover:text-white"
               }`}
             >
               {s.navn}
+              {"merke" in s && !!s.merke && (
+                <span className="ml-auto bg-accent text-white text-[10.5px] font-bold rounded-full px-1.5 min-w-[18px] text-center leading-[18px]">
+                  {s.merke}
+                </span>
+              )}
             </Link>
           ))}
         </nav>

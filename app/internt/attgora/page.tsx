@@ -3,6 +3,7 @@ import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
 import { Side, Sidehode, Kort, Tabell, Merke, NOK } from "@/components/ui";
 import { LARM } from "@/lib/demo/staff";
+import { Varsler, type Varsel } from "@/components/internt/Varsler";
 
 /**
  * Samlar det som faktiskt kräver en människa i dag, från de riktiga
@@ -14,7 +15,7 @@ export default async function InterntAttgoraSide() {
 
   const idag = new Date().toISOString().slice(0, 10);
 
-  const [{ data: fakturaer }, { data: leads }, { data: offerter }] =
+  const [{ data: fakturaer }, { data: leads }, { data: offerter }, { data: varsler }] =
     await Promise.all([
       supabase
         .from("fakturaer")
@@ -32,6 +33,11 @@ export default async function InterntAttgoraSide() {
         .eq("status", "skickad")
         .not("giltig_til", "is", null)
         .lte("giltig_til", idag),
+      supabase
+        .from("interne_varsler")
+        .select("id, slag, tittel, tekst, lenke, opprettet")
+        .is("lest", null)
+        .order("opprettet", { ascending: false }),
     ]);
 
   const poster: {
@@ -92,6 +98,8 @@ export default async function InterntAttgoraSide() {
           tittel="Att göra"
           tekst="Det som kräver en människa i dag, hämtat från fakturor, offerter, leads och källhälsa. Rött hastar."
         />
+        <Varsler varsler={(varsler ?? []) as Varsel[]} />
+
         <Kort note={`${poster.length} poster`}>
           <Tabell
             kolonner={["", "Vad", "Detalj", "Var", ""]}

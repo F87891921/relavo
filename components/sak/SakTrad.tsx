@@ -1,22 +1,16 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Merke, type Tone } from "@/components/ui";
+import { Merke } from "@/components/ui";
+import { StatusMerke, type StatusVal } from "@/components/ui/StatusMerke";
 import { FELT_FULL } from "@/components/ui/felt";
-import { KATEGORIER, STATUSER, kategoriTekst, statusTekst } from "@/lib/sak";
+import { KATEGORIER, STATUSER, kategoriTekst, statusTekst, statusTone } from "@/lib/sak";
 import {
   nySak,
   svarPaSak,
   settSakStatus,
   settVarsling,
 } from "@/app/(dashboard)/support/handlinger";
-
-const TONE: Record<string, Tone> = {
-  apen: "aksent",
-  venter_oss: "brudd",
-  venter_kunde: "advarsel",
-  lukket: "noytral",
-};
 
 export type SakSvar = {
   id: string;
@@ -173,7 +167,7 @@ export function SakKort({
         <span className="min-w-0">
           <span className="flex items-center gap-2.5 flex-wrap">
             <span className="text-[14px] font-semibold">{sak.emne}</span>
-            <Merke tone={TONE[sak.status] ?? "noytral"}>
+            <Merke tone={statusTone(sak.status)}>
               {statusTekst(sak.status)}
             </Merke>
             <span className="text-[11.5px] text-faint">
@@ -251,7 +245,12 @@ export function SakKort({
               <button type="submit" disabled={venter} className={KNAPP}>
                 {venter ? "Sender …" : "Send svar"}
               </button>
-              <StatusVelger id={sak.id} status={sak.status} />
+              <StatusMerke
+                id={sak.id}
+                verdi={sak.status}
+                val={STATUSER as unknown as StatusVal[]}
+                handling={settSakStatus}
+              />
               {!somRelavo && <Varsling id={sak.id} pa={sak.varsle_epost} />}
             </div>
           </form>
@@ -261,28 +260,6 @@ export function SakKort({
   );
 }
 
-function StatusVelger({ id, status }: { id: string; status: string }) {
-  const [venter, start] = useTransition();
-  return (
-    <select
-      value={status}
-      disabled={venter}
-      onChange={(e) => {
-        const ny = e.target.value;
-        start(async () => {
-          await settSakStatus(id, ny);
-        });
-      }}
-      className="text-[12px] px-2.5 py-1.5 rounded-lg border border-border bg-surface hover:border-border-strong transition disabled:opacity-50"
-    >
-      {STATUSER.map((s) => (
-        <option key={s.verdi} value={s.verdi}>
-          {s.tekst}
-        </option>
-      ))}
-    </select>
-  );
-}
 
 function Varsling({ id, pa }: { id: string; pa: boolean }) {
   const [venter, start] = useTransition();

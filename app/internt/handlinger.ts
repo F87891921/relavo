@@ -4,6 +4,9 @@ import { revalidatePath } from "next/cache";
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { validerOrgnr } from "@/lib/orgnr";
 import { kredittvurder } from "@/lib/kreditt";
+import { grunnUrl } from "@/lib/url";
+import { sendEpost, epostOppsatt } from "@/lib/epost";
+import { offertnummer, regnUt } from "@/lib/offert";
 
 export type Svar = { ok: true } | { ok: false; feil: string };
 
@@ -148,11 +151,119 @@ export async function sokKunder(q: string): Promise<Kundetreff[]> {
   return ut;
 }
 
+/**
+ * Send tilbudet.
+ *
+ * Kunden får en lenke til tilbudet, ikke et vedlegg. Da kan de svare der de
+ * leser det — og vi ser at det er lest, hva de svarte og hvorfor. Et pdf-
+ * vedlegg gir oss ingen av delene.
+ *
+ * Er ingen e-postleverandør koblet til, sendes ingenting. Da får personalen
+ * lenken og en mailto tilbake, og kan sende den fra sin egen post. Det som
+ * ikke skjer, er at grensesnittet sier «skickad» om et brev som aldri gikk.
+ */
+export type Sendesvar =
+  | { ok: true; lenke: string; epostSendt: boolean; grunn?: string }
+  | { ok: false; feil: string };
+
+export async function sendOfferte(id: string, epost: string): Promise<Sendesvar> {
+  const { supabase, user, profil } = await krevAnsatt();
+
+  const { data: o, error: hentFeil } = await supabase
+    .from("offerter")
+    .select(
+      "id, token, kund, kontaktperson, kontakt_epost, plan, ar, rabatt, fritt_antall, fritt_pris, giltig_til, opprettet, status",
+    )
+    .eq("id", id)
+    .maybeSingle();
+
+  if (hentFeil || !o) return { ok: false, feil: "Offerten finns inte." };
+
+  const mottaker = (epost || o.kontakt_epost || "").trim();
+
+  const { error } = await supabase
+    .from("offerter")
+    .update({
+      sendt: new Date().toISOString(),
+      sendt_av: user.id,
+      // Bare utkast går videre til skickad. Er den redan besvarad, skal et
+      // nytt utsendelse ikke sette den tilbake.
+      ...(o.status === "utkast" ? { status: "skickad" } : {}),
+      ...(mottaker && mottaker !== o.kontakt_epost ? { kontakt_epost: mottaker } : {}),
+    })
+    .eq("id", id);
+
+  if (error) return { ok: false, feil: error.message };
+
+  const lenke = `${grunnUrl()}/offert/${o.token}`;
+  revalidatePath("/internt/offerter");
+  revalidatePath(`/internt/offerter/${id}`);
+
+  if (!mottaker)
+    return { ok: true, lenke, epostSendt: false, grunn: "Ingen e-postadress angiven." };
+
+  if (!epostOppsatt())
+    return {
+      ok: true,
+      lenke,
+      epostSendt: false,
+      grunn: "Ingen e-postleverantör är kopplad. Skicka länken från din egen post.",
+    };
+
+  const r = regnUt(o);
+  const brev = `Hei${o.kontaktperson ? " " + o.kontaktperson : ""},
+
+Her er tilbudet fra Relavo på ${r.planNavn.toLowerCase()} — samlet kontraktsverdi ${new Intl.NumberFormat("nb-NO").format(r.totalt)} NOK eksklusive merverdiavgift.
+
+Tilbudet kan leses og besvares her:
+${lenke}
+${o.giltig_til ? `\nTilbudet er gyldig til ${o.giltig_til}.\n` : ""}
+Si fra om noe er uklart, så tar vi det derfra.
+
+Med vennlig hilsen
+${profil.navn ?? "Relavo"}
+Relavo`;
+
+  const sendt = await sendEpost({
+    til: mottaker,
+    emne: `Tilbud fra Relavo — ${offertnummer(o.id, o.opprettet)}`,
+    tekst: brev,
+  });
+
+  if (!sendt.ok) return { ok: true, lenke, epostSendt: false, grunn: sendt.feil };
+  return { ok: true, lenke, epostSendt: true };
+}
+
+/* -------------------------------------------------------------- Varsler */
+
+export async function markerVarselLest(id: string): Promise<Svar> {
+  const { supabase } = await krevAnsatt();
+  const { error } = await supabase
+    .from("interne_varsler")
+    .update({ lest: new Date().toISOString() })
+    .eq("id", id);
+  if (error) return { ok: false, feil: error.message };
+  revalidatePath("/internt/attgora");
+  return { ok: true };
+}
+
+export async function markerAlleVarslerLest(): Promise<Svar> {
+  const { supabase } = await krevAnsatt();
+  const { error } = await supabase
+    .from("interne_varsler")
+    .update({ lest: new Date().toISOString() })
+    .is("lest", null);
+  if (error) return { ok: false, feil: error.message };
+  revalidatePath("/internt/attgora");
+  return { ok: true };
+}
+
 export async function settOffertStatus(id: string, status: string): Promise<Svar> {
   const { supabase } = await krevAnsatt();
   const { error } = await supabase.from("offerter").update({ status }).eq("id", id);
   if (error) return { ok: false, feil: error.message };
   revalidatePath("/internt/offerter");
+  revalidatePath(`/internt/offerter/${id}`);
   return { ok: true };
 }
 

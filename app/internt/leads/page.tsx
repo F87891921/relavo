@@ -1,26 +1,18 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
-import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, type Tone } from "@/components/ui";
-import { Skjema, Felt, StatusVelger } from "@/components/internt/Skjema";
+import { Side, Sidehode, Kort, Tabell, Tall, Rad } from "@/components/ui";
+import { StatusMerke, type StatusVal } from "@/components/ui/StatusMerke";
+import { Skjema, Felt } from "@/components/internt/Skjema";
 import { nyttLead, settLeadStatus } from "@/app/internt/handlinger";
 
-const STATUS = [
-  { verdi: "ny", tekst: "Ny" },
-  { verdi: "kontaktad", tekst: "Kontaktad" },
-  { verdi: "demo", tekst: "Demo" },
-  { verdi: "offert", tekst: "Offert" },
-  { verdi: "vunnen", tekst: "Vunnen" },
-  { verdi: "forlorad", tekst: "Förlorad" },
+const STATUS: StatusVal[] = [
+  { verdi: "ny", tekst: "Ny", tone: "aksent" },
+  { verdi: "kontaktad", tekst: "Kontaktad", tone: "noytral" },
+  { verdi: "demo", tekst: "Demo", tone: "advarsel" },
+  { verdi: "offert", tekst: "Offert", tone: "advarsel" },
+  { verdi: "vunnen", tekst: "Vunnen", tone: "god" },
+  { verdi: "forlorad", tekst: "Förlorad", tone: "brudd" },
 ];
-
-const TONE: Record<string, Tone> = {
-  ny: "aksent",
-  kontaktad: "noytral",
-  demo: "advarsel",
-  offert: "advarsel",
-  vunnen: "god",
-  forlorad: "brudd",
-};
 
 export default async function InterntLeadsSide() {
   const { supabase } = await krevAnsatt();
@@ -98,17 +90,13 @@ export default async function InterntLeadsSide() {
               </span>,
               <span key="n" className="text-dim whitespace-nowrap">{l.nasta ?? "—"}</span>,
               <span key="no" className="text-dim max-w-[30ch] inline-block">{l.notis ?? "—"}</span>,
-              <div key="st" className="flex items-center gap-2">
-                <Merke tone={TONE[l.status] ?? "noytral"}>
-                  {STATUS.find((s) => s.verdi === l.status)?.tekst ?? l.status}
-                </Merke>
-                <StatusVelger
-                  id={l.id}
-                  status={l.status}
-                  val={STATUS}
-                  handling={settLeadStatus}
-                />
-              </div>,
+              <StatusMerke
+                key="st"
+                id={l.id}
+                verdi={l.status}
+                val={STATUS}
+                handling={settLeadStatus}
+              />,
             ])}
           />
         </Kort>

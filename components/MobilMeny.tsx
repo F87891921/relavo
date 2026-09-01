@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { RelavoLogo } from "./RelavoLogo";
 
-type Punkt = { navn: string; href: string };
+type Punkt = { navn: string; href: string; merke?: number };
 
 /**
  * Sidemenyen på små skjermer.
@@ -58,7 +58,7 @@ export function MobilMeny({
   return (
     <>
       <header
-        className={`lg:hidden sticky top-0 z-40 flex items-center gap-3 px-4 h-14 border-b ${topp}`}
+        className={`skjul-i-utskrift lg:hidden sticky top-0 z-40 flex items-center gap-3 px-4 h-14 border-b ${topp}`}
       >
         <button
           type="button"
@@ -150,7 +150,7 @@ export function MobilMeny({
                   key={p.href}
                   href={p.href}
                   aria-current={aktivtSteg === p.navn ? "page" : undefined}
-                  className={`text-[14px] px-3 py-2.5 rounded-lg transition ${
+                  className={`text-[14px] px-3 py-2.5 rounded-lg transition flex items-center gap-2 ${
                     aktivtSteg === p.navn
                       ? mork
                         ? "bg-white/15 text-white font-semibold"
@@ -161,6 +161,11 @@ export function MobilMeny({
                   }`}
                 >
                   {p.navn}
+                  {!!p.merke && (
+                    <span className="ml-auto bg-accent text-white text-[10.5px] font-bold rounded-full px-1.5 min-w-[18px] text-center leading-[18px]">
+                      {p.merke}
+                    </span>
+                  )}
                 </Link>
               ))}
             </div>

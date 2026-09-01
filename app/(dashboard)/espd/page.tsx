@@ -3,14 +3,16 @@ import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode, Tall, Rad } from "@/components/ui";
 import { EspdRad, type Espd } from "@/components/brev/EspdRad";
 import { dagerIgjen } from "@/lib/brev";
+import { grunnUrl } from "@/lib/url";
 
 export default async function EspdSide() {
-  const { supabase } = await krevProfil();
+  const { supabase, profil, organisasjonNavn } = await krevProfil();
+  const lenkebase = grunnUrl();
 
   const { data: erklaringer } = await supabase
     .from("espd_erklaringer")
     .select(
-      "id, status, fase, anskaffelse_ref, frist, etterspurt, mottaker_navn, mottaker_epost, leverandorer(navn, org_nr)",
+      "id, status, fase, anskaffelse_ref, frist, etterspurt, mottaker_navn, mottaker_epost, utkast, token, levert, levert_filnavn, signert_navn, signert_rolle, leverandorer(navn, org_nr)",
     )
     .order("frist", { ascending: true, nullsFirst: false });
 
@@ -79,7 +81,13 @@ export default async function EspdSide() {
             </div>
           )}
           {alle.map((e) => (
-            <EspdRad key={e.id} e={e} />
+            <EspdRad
+              key={e.id}
+              e={e}
+              lenkebase={lenkebase}
+              avsenderNavn={profil.navn}
+              avsenderOrg={organisasjonNavn}
+            />
           ))}
         </div>
       </Side>

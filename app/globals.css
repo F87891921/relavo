@@ -9,3 +9,19 @@
     @apply bg-surface text-ink antialiased;
   }
 }
+
+/* Utskrift. «Lagre som PDF» i nettleserens utskriftsdialog er hele
+   pdf-støtten — et pdf-bibliotek ville vært en avhengighet til, en font å
+   bygge inn, og et andre oppsett som før eller siden ser annerledes ut enn
+   skjermen. Da må skjermen tåle å bli skrevet ut. */
+@media print {
+  .skjul-i-utskrift {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+  @page {
+    margin: 16mm;
+  }
+}
