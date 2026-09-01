@@ -111,7 +111,7 @@ function Felt({
 export function EgetNavn({ navn }: { navn: string }) {
   const t = useOrd().konto;
   return (
-    <Form handling={oppdaterEgetNavn} knapp="Lagre navn">
+    <Form handling={oppdaterEgetNavn} knapp={t.lagreNavn}>
       <Felt navn="navn" merke={useOrd().ui.navn} standard={navn} krav />
     </Form>
   );

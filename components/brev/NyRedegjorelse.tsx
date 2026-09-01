@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { useState, useTransition } from "react";
 import { FELT_FULL } from "@/components/ui/felt";
 import { lagreRedegjorelse } from "@/app/(dashboard)/tilbud/handlinger";
@@ -10,7 +12,7 @@ import { redegjorelseBrev } from "@/lib/brev";
  * kan sending, svar og vurdering følges — og det er den kjeden som skal
  * kunne vises fram i anskaffelsesprotokollen.
  */
-export function NyRedegjorelse(o: {
+export function NyRedegjorelse(props: {
   leverandor: string;
   anskaffelseRef: string;
   anskaffelseNavn: string;
@@ -21,6 +23,8 @@ export function NyRedegjorelse(o: {
   avsenderNavn: string | null;
   avsenderOrg: string | null;
 }) {
+  const o = useOrd();
+  const p = props;
   const [feil, setFeil] = useState("");
   const [venter, start] = useTransition();
 
@@ -31,25 +35,25 @@ export function NyRedegjorelse(o: {
   const [brev, setBrev] = useState("");
 
   const mal = redegjorelseBrev({
-    leverandor: o.leverandor,
+    leverandor: p.leverandor,
     mottakerNavn: navn,
-    anskaffelseRef: o.anskaffelseRef,
-    anskaffelseNavn: o.anskaffelseNavn,
-    avvikProsent: o.avvik,
-    frist: o.frist,
-    avsenderNavn: o.avsenderNavn,
-    avsenderOrg: o.avsenderOrg,
+    anskaffelseRef: p.anskaffelseRef,
+    anskaffelseNavn: p.anskaffelseNavn,
+    avvikProsent: p.avvik,
+    frist: p.frist,
+    avsenderNavn: p.avsenderNavn,
+    avsenderOrg: p.avsenderOrg,
   });
   const visBrev = rort ? brev : mal;
 
   return (
     <div className="bg-surface rounded-card border border-border shadow-card p-6 mb-5">
       <div className="flex items-baseline justify-between gap-4 mb-1">
-        <h2 className="text-[15px] font-semibold">Krav om redegjørelse</h2>
+        <h2 className="text-[15px] font-semibold">{o.brev.kravRedegjorelse}</h2>
         <span className="text-[11.5px] text-faint">§ 24-9</span>
       </div>
       <p className="text-[12.5px] text-dim leading-relaxed mb-4 max-w-[70ch]">
-        Til <b className="text-ink">{o.leverandor}</b>. Kravet må være konkret
+        {o.brev.til} <b className="text-ink">{p.leverandor}</b>. Kravet må være konkret
         om hva som skal forklares — et generelt spørsmål om prisen oppfyller
         ikke plikten.
       </p>
@@ -64,12 +68,12 @@ export function NyRedegjorelse(o: {
           });
         }}
       >
-        <input type="hidden" name="leverandor_navn" value={o.leverandor} />
-        <input type="hidden" name="anskaffelse_ref" value={o.anskaffelseRef} />
-        <input type="hidden" name="anskaffelse_navn" value={o.anskaffelseNavn} />
-        <input type="hidden" name="tilbudssum" value={o.tilbudssum} />
-        <input type="hidden" name="median" value={o.median} />
-        <input type="hidden" name="avvik_prosent" value={o.avvik} />
+        <input type="hidden" name="leverandor_navn" value={p.leverandor} />
+        <input type="hidden" name="anskaffelse_ref" value={p.anskaffelseRef} />
+        <input type="hidden" name="anskaffelse_navn" value={p.anskaffelseNavn} />
+        <input type="hidden" name="tilbudssum" value={p.tilbudssum} />
+        <input type="hidden" name="median" value={p.median} />
+        <input type="hidden" name="avvik_prosent" value={p.avvik} />
 
         <div className="grid sm:grid-cols-3 gap-x-4">
           <div className="mb-3.5">
@@ -86,7 +90,7 @@ export function NyRedegjorelse(o: {
           </div>
           <div className="mb-3.5">
             <label htmlFor="epost" className="block text-xs font-semibold mb-1.5">
-              Leverandørens e-post
+              {o.brev.leverandorEpost}
             </label>
             <input
               id="epost"
@@ -98,23 +102,23 @@ export function NyRedegjorelse(o: {
           </div>
           <div className="mb-3.5">
             <label htmlFor="frist" className="block text-xs font-semibold mb-1.5">
-              Frist for svar
+              {o.brev.fristForSvar}
             </label>
             <input
               id="frist"
               name="frist"
               type="date"
-              defaultValue={o.frist}
+              defaultValue={p.frist}
               className={FELT_FULL}
             />
             <div className="text-[11.5px] text-faint mt-1.5">
-              Ti virkedager fram er vanlig.
+              {o.brev.tiVirkedagerFram}
             </div>
           </div>
         </div>
 
         <label htmlFor="utkast" className="block text-xs font-semibold mb-1.5">
-          Utkast
+          {o.brev.utkast}
         </label>
         <textarea
           id="utkast"
@@ -139,7 +143,7 @@ export function NyRedegjorelse(o: {
           disabled={venter}
           className="bg-accent hover:bg-accent-hover active:scale-[0.97] transition text-white text-sm font-semibold px-5 py-2.5 rounded-xl mt-4 disabled:opacity-50"
         >
-          {venter ? "Lagrer …" : "Lagre utkastet"}
+          {venter ? o.felles.lagrer : o.brev.lagreUtkastet}
         </button>
       </form>
     </div>

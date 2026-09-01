@@ -20,9 +20,9 @@ export default async function InterntLoggSide() {
           som valfritt.
         </div>
 
-        <Kort note="demodata från relavo-staff.html">
+        <Kort note={t.internt.demodataStaff}>
           <Tabell
-            kolonner={["Vem", "Konto", "Vad", "Gällde", "Anledning", "Tid"]}
+            kolonner={["Vem", t.internt.konto, t.internt.vad, t.internt.gjaldt, t.internt.begrunnelse, "Tid"]}
             rader={LOGG.map((l) => [
               <div key="v" className="flex items-center gap-2.5">
                 <span className="w-7 h-7 rounded-lg bg-surface2 text-accent text-[10px] font-bold flex items-center justify-center shrink-0">

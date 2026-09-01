@@ -52,7 +52,7 @@ export default async function InterntAttgoraSide() {
     const forfallen = f.status === "forfallen" || f.forfall < idag;
     poster.push({
       hastar: forfallen,
-      vad: `${forfallen ? "Förfallen" : "Obetald"} faktura ${f.nummer}`,
+      vad: `${forfallen ? t.internt.forfallenStatus : t.internt.obetald} faktura ${f.nummer}`,
       detalj: `${NOK(f.belopp)} kr`,
       var: `${f.kunde_navn} · förfaller ${f.forfall}`,
       lank: "/internt/fakturering",
@@ -63,7 +63,7 @@ export default async function InterntAttgoraSide() {
     poster.push({
       hastar: true,
       vad: `Offert till ${o.kund} har gått ut`,
-      detalj: "Skickad, men giltighetstiden är passerad",
+      detalj: t.internt.tilbudUtgatt,
       var: `gick ut ${o.giltig_til}`,
       lank: "/internt/offerter",
     });
@@ -73,7 +73,7 @@ export default async function InterntAttgoraSide() {
     poster.push({
       hastar: false,
       vad: `Följ upp ${l.bolag}`,
-      detalj: l.notis ?? "Nästa steg är passerat",
+      detalj: l.notis ?? t.internt.nesteStegPassert,
       var: `skulle följts upp ${l.nasta}`,
       lank: "/internt/leads",
     });
@@ -102,19 +102,19 @@ export default async function InterntAttgoraSide() {
 
         <Kort note={`${poster.length} poster`}>
           <Tabell
-            kolonner={["", "Vad", "Detalj", "Var", ""]}
-            tom="Ingenting brinner just nu."
+            kolonner={["", t.internt.vad, t.internt.detalj, t.internt.var, ""]}
+            tom={t.internt.ingentingBrenner}
             rader={poster.map((p) => [
               p.hastar ? (
-                <Merke key="h" tone="brudd">Hastar</Merke>
+                <Merke key="h" tone="brudd">{t.internt.haster}</Merke>
               ) : (
-                <Merke key="h" tone="noytral">Kan vänta</Merke>
+                <Merke key="h" tone="noytral">{t.internt.kanVente}</Merke>
               ),
               <span key="v" className="font-semibold whitespace-nowrap">{p.vad}</span>,
               <span key="d" className="text-dim">{p.detalj}</span>,
               <span key="s" className="text-faint whitespace-nowrap">{p.var}</span>,
               <Link key="l" href={p.lank} className="text-accent hover:underline whitespace-nowrap">
-                Öppna →
+                {t.internt.apne}
               </Link>,
             ])}
           />

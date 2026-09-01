@@ -44,18 +44,18 @@ export default async function KontoSide() {
         />
 
         <div className="grid lg:grid-cols-2 gap-4 mb-4">
-          <Kort tittel="Deg">
+          <Kort tittel={t.konto.kontoDeg}>
             <div className="px-5 py-5">
               <dl className="text-[13px] mb-5 space-y-2">
                 <div className="flex justify-between gap-4">
-                  <dt className="text-dim">E-post</dt>
+                  <dt className="text-dim">{t.auth.epost}</dt>
                   <dd className="font-semibold">{user.email}</dd>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <dt className="text-dim">Rolle</dt>
+                  <dt className="text-dim">{t.ui.rolle}</dt>
                   <dd>
                     <Merke tone={admin ? "aksent" : "noytral"}>
-                      {admin ? "Administrator" : "Bruker"}
+                      {admin ? t.internt.administrator : t.internt.anvandare}
                     </Merke>
                   </dd>
                 </div>
@@ -64,24 +64,23 @@ export default async function KontoSide() {
             </div>
           </Kort>
 
-          <Kort tittel="Bytt passord">
+          <Kort tittel={t.konto.byttPassord}>
             <div className="px-5 py-5">
               <p className="text-[12.5px] text-dim mb-4 leading-relaxed">
-                Minst {MIN_LENGDE} tegn, med stor og liten bokstav, tall og
-                spesialtegn. Kan ikke inneholde e-postadressen din.
+                {t.konto.passordkrav.replace("{n}", String(MIN_LENGDE))}
               </p>
               <EgetPassord />
             </div>
           </Kort>
         </div>
 
-        <Kort tittel="Tofaktor" note="engangskode fra mobilen" className="mb-4">
+        <Kort tittel={t.konto.kontoTofaktor} note={t.konto.engangskodeFraMobil} className="mb-4">
           <div className="px-5 py-5">
             <Tofaktor />
           </div>
         </Kort>
 
-        <Kort tittel="Organisasjonen" note={plan.navn} className="mb-4">
+        <Kort tittel={t.konto.organisasjonen} note={plan.navn} className="mb-4">
           <div className="px-5 py-5">
             <div className="mb-5">
               <div className="flex justify-between text-[12.5px] mb-1.5">
@@ -106,11 +105,11 @@ export default async function KontoSide() {
                   <dd className="font-semibold">{org?.navn}</dd>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <dt className="text-dim">Organisasjonsnummer</dt>
+                  <dt className="text-dim">{t.internt.organisasjonsnummer}</dt>
                   <dd>{org?.org_nr ?? "—"}</dd>
                 </div>
                 <p className="text-[12px] text-faint pt-2">
-                  Bare administrator kan endre disse.
+                  {t.konto.bareAdministrator}
                 </p>
               </dl>
             )}
@@ -118,14 +117,14 @@ export default async function KontoSide() {
         </Kort>
 
         <Kort
-          tittel="Tilgang"
+          tittel={t.konto.tilgang}
           note={`${brukt} av ${plan.brukere} plasser brukt`}
         >
           <div className="px-5 pt-5">
             {admin &&
               (fullt ? (
                 <div className="bg-warn-bg text-warn text-[12.5px] rounded-xl px-4 py-3 mb-5 leading-relaxed">
-                  <b>Planen er full.</b> {plan.navn} gir plass til{" "}
+                  <b>{t.konto.planenErFull}</b> {plan.navn} gir plass til{" "}
                   {plan.brukere} {plan.brukere === 1 ? "bruker" : "brukere"}.
                   Fjern noen, eller oppgrader for å legge til flere.
                 </div>
@@ -169,26 +168,26 @@ export default async function KontoSide() {
         {/* Lå før på en egen side som het Diagnostikk. Det er kontoopplysninger,
             ikke et eget verktøy — og «Diagnostikk» i kundens meny så ut som noe
             var i stykker. */}
-        <Kort tittel="Teknisk" note="oppgi disse ved kontakt med brukerstøtte" className="mt-4">
+        <Kort tittel={t.konto.teknisk} note={t.konto.oppgiDisse} className="mt-4">
           <Tabell
-            kolonner={["Opplysning", "Verdi"]}
+            kolonner={["Opplysning", t.internt.verdi]}
             rader={[
-              ["Leverandører lagret", String(antallLeverandorer ?? 0)],
-              ["Kontroller lagret", String(antallKontroller ?? 0)],
+              [t.konto.leverandorerLagret, String(antallLeverandorer ?? 0)],
+              [t.konto.kontrollerLagret, String(antallKontroller ?? 0)],
               [
-                "Organisasjons-id",
+                t.konto.organisasjonsId,
                 <span key="o" className="font-mono text-[11.5px]">
                   {profil.organisasjon_id}
                 </span>,
               ],
               [
-                "Din bruker-id",
+                t.konto.dinBrukerId,
                 <span key="u" className="font-mono text-[11.5px]">
                   {user.id}
                 </span>,
               ],
               [
-                "Opprettet",
+                t.internt.opprettet,
                 org?.opprettet
                   ? new Date(org.opprettet).toLocaleDateString("nb-NO")
                   : "—",

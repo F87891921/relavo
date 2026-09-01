@@ -1,12 +1,14 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { useState, useTransition } from "react";
 import { settAnsatt } from "@/app/internt/handlinger";
 
-const VAL = [
-  { verdi: "kund", tekst: "Kund" },
-  { verdi: "personal", tekst: "Personal" },
-  { verdi: "superadmin", tekst: "Superadmin" },
+const valFor = (t: ReturnType<typeof useOrd>) => [
+  { verdi: "kund", tekst: t.internt.kunde },
+  { verdi: "personal", tekst: t.skall.personal },
+  { verdi: "superadmin", tekst: t.skall.superadmin },
 ];
 
 export function PersonalVelger({
@@ -20,6 +22,8 @@ export function PersonalVelger({
   niva: string | null;
   erDegSelv: boolean;
 }) {
+  const t = useOrd();
+  const VAL = valFor(t);
   const [valgt, setValgt] = useState(ansatt ? (niva ?? "personal") : "kund");
   const [feil, setFeil] = useState("");
   const [venter, start] = useTransition();

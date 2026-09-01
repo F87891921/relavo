@@ -53,9 +53,6 @@ export async function StaffShell({
   // Samma botten i sidomenyn och i mobillådan.
   const botten = (
     <>
-      <div className="flex justify-end mb-1">
-        <Sprakvelger na={sprak} variant="mork" />
-      </div>
       <div className="px-3 py-2 border-t border-white/15">
         <div className="text-[12.5px] font-semibold text-white truncate">
           {profil.navn ?? user.email}
@@ -64,12 +61,17 @@ export async function StaffShell({
           {superadmin ? t.skall.superadmin : t.skall.personal}
         </div>
       </div>
-      <Link
-        href="/oversikt"
-        className="text-[13px] px-3 py-2 rounded-lg text-white/60 hover:bg-white/10 hover:text-white transition block"
-      >
-        {t.skall.tilbakeTilKunde}
-      </Link>
+      <div className="flex items-center justify-between gap-2">
+        <Link
+          href="/oversikt"
+          className="text-[13px] px-3 py-2 rounded-lg text-white/60 hover:bg-white/10 hover:text-white transition min-w-0 truncate"
+        >
+          {t.skall.tilbakeTilKunde}
+        </Link>
+        <span className="shrink-0">
+          <Sprakvelger na={sprak} variant="mork" />
+        </span>
+      </div>
     </>
   );
 

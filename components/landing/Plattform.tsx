@@ -13,6 +13,7 @@ const LOVKRAV = [
 ];
 
 export function Plattform() {
+  const s9 = ord().skjermbilde;
   const t = ord().landing.plattform;
 
   return (
@@ -97,12 +98,12 @@ export function Plattform() {
               <div className="tidslinje">
                 <div className="tl-r">
                   <span className="tl-d" />
-                  <span className="tl-t">Ny daglig leder registrert</span>
+                  <span className="tl-t">{s9.nyDagligLeder}</span>
                   <span className="tl-n">24. aug</span>
                 </div>
                 <div className="tl-r na">
                   <span className="tl-d" />
-                  <span className="tl-t">Tredje ledd lagt til i kjeden</span>
+                  <span className="tl-t">{s9.tredjeLedd}</span>
                   <span className="tl-n">i dag</span>
                 </div>
               </div>
@@ -117,16 +118,16 @@ export function Plattform() {
             <div className="feat-ui">
               <div className="rcpt">
                 <div className="rcpt-h">
-                  <b>Leverandørkontroll</b>
+                  <b>{s9.leverandorkontroll}</b>
                   <span className="mono rcpt-dato">29. aug 2026</span>
                 </div>
                 <div className="rcpt-r">
                   <span>Enhetsregisteret</span>
-                  <span>Svar</span>
+                  <span>{s9.svar}</span>
                 </div>
                 <div className="rcpt-r">
-                  <span>ESPD-egenerklæring</span>
-                  <span>Vedlegg</span>
+                  <span>{s9.espdEgenerklaering}</span>
+                  <span>{s9.vedlegg}</span>
                 </div>
               </div>
             </div>

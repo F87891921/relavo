@@ -1,20 +1,22 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
+import type { Ordbok } from "@/lib/sprak";
 import { Side, Sidehode, Kort, Tabell, Tall, Rad, NOK } from "@/components/ui";
 import { StatusMerke, type StatusVal } from "@/components/ui/StatusMerke";
 import { Skjema, Felt } from "@/components/internt/Skjema";
 import { KundeSok } from "@/components/internt/KundeSok";
 import { nyFaktura, settFakturaStatus } from "@/app/internt/handlinger";
 
-const STATUS: StatusVal[] = [
-  { verdi: "obetald", tekst: "Obetald", tone: "advarsel" },
-  { verdi: "betald", tekst: "Betald", tone: "god" },
-  { verdi: "forfallen", tekst: "Förfallen", tone: "brudd" },
-  { verdi: "kreditnota", tekst: "Kreditnota", tone: "noytral" },
+const statusValg = (t: Ordbok): StatusVal[] => [
+  { verdi: "obetald", tekst: t.internt.obetald, tone: "advarsel" },
+  { verdi: "betald", tekst: t.internt.betald, tone: "god" },
+  { verdi: "forfallen", tekst: t.internt.forfallenStatus, tone: "brudd" },
+  { verdi: "kreditnota", tekst: t.internt.kreditnota, tone: "noytral" },
 ];
 
 export default async function InterntFaktureringSide() {
   const { supabase, t } = await krevAnsatt();
+  const STATUS = statusValg(t);
 
   const { data: fakturaer } = await supabase
     .from("fakturaer")
@@ -41,44 +43,44 @@ export default async function InterntFaktureringSide() {
         />
 
         <Rad>
-          <Tall verdi={String(alle.length)} merke="fakturor" />
+          <Tall verdi={String(alle.length)} merke={t.internt.fakturor} />
           <Tall
             verdi={`${NOK(utestaende.reduce((s, f) => s + f.belopp, 0))} kr`}
-            merke="utestående"
+            merke={t.internt.utestaende}
           />
           <Tall
             verdi={String(forfallna.length)}
-            merke="förfallna"
+            merke={t.internt.forfalne}
             tone={forfallna.length ? "brudd" : undefined}
           />
           <Tall
             verdi={`${NOK(alle.filter((f) => f.status === "betald").reduce((s, f) => s + f.belopp, 0))} kr`}
-            merke="betalt"
+            merke={t.internt.betalt}
           />
         </Rad>
 
-        <Skjema knapp="+ Ny faktura" tittel="Ny faktura" handling={nyFaktura}>
-          <KundeSok navn="kunde_navn" merke="Kund" />
-          <Felt navn="org_nr" merke="Organisationsnummer" plassholder="964 338 531" />
-          <Felt navn="fakturaadresse" merke="Fakturaadress" plassholder="Postboks 7700, 5020 Bergen" />
-          <Felt navn="referanse" merke="Er referens" plassholder="K-2026-118" />
+        <Skjema knapp={`+ ${t.internt.nyFaktura}`} tittel={t.internt.nyFaktura} handling={nyFaktura}>
+          <KundeSok navn="kunde_navn" merke={t.internt.kunde} />
+          <Felt navn="org_nr" merke={t.internt.organisasjonsnummer} plassholder="964 338 531" />
+          <Felt navn="fakturaadresse" merke={t.internt.fakturaadresse} plassholder="Postboks 7700, 5020 Bergen" />
+          <Felt navn="referanse" merke={t.internt.deresReferanse} plassholder="K-2026-118" />
           <Felt
             navn="organisasjon_id"
-            merke="Koppla till konto"
+            merke={t.internt.koblTilKonto}
             val={[
-              { verdi: "", tekst: "Inget konto" },
+              { verdi: "", tekst: t.internt.ingenKonto },
               ...(organisasjoner ?? []).map((o) => ({ verdi: o.id, tekst: o.navn })),
             ]}
           />
-          <Felt navn="belopp" merke="Belopp i kr" krav type="number" plassholder="12900" />
-          <Felt navn="forfall" merke="Förfaller" krav type="date" />
-          <Felt navn="status" merke="Status" val={STATUS} standard="obetald" />
+          <Felt navn="belopp" merke={t.internt.belopIKr} krav type="number" plassholder="12900" />
+          <Felt navn="forfall" merke={t.internt.forfallsdato} krav type="date" />
+          <Felt navn="status" merke={t.internt.statusKol} val={STATUS} standard="obetald" />
         </Skjema>
 
         <Kort>
           <Tabell
-            kolonner={["Fakturanr", "Kund", "Belopp", "Förfaller", "Status"]}
-            tom="Inga fakturor ännu."
+            kolonner={[t.internt.fakturanr, t.internt.kunde, t.internt.belop, t.internt.forfallsdato, t.internt.statusKol]}
+            tom={t.internt.ingenFakturaer}
             rader={alle.map((f) => [
               <span key="n" className="font-mono text-[12px] text-accent">{f.nummer}</span>,
               <div key="k">

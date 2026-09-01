@@ -76,9 +76,6 @@ export async function DashboardShell({
       )}
 
       <div className="border-t border-border pt-2 mt-1">
-        <div className="flex justify-end mb-1">
-          <Sprakvelger na={sprak} />
-        </div>
         <Link
           href="/konto"
           aria-current={aktivtSteg === "Konto" ? "page" : undefined}
@@ -98,7 +95,10 @@ export async function DashboardShell({
             </span>
           </span>
         </Link>
-        <LoggUt tekst={t.skall.loggUt} venterTekst={t.skall.loggerUt} />
+        <div className="flex items-center justify-between gap-2">
+          <LoggUt tekst={t.skall.loggUt} venterTekst={t.skall.loggerUt} />
+          <Sprakvelger na={sprak} />
+        </div>
       </div>
     </>
   );

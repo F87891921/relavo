@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -22,6 +24,7 @@ const PLANER = [
 ];
 
 export default function VelkommenSide() {
+  const o = useOrd();
   const router = useRouter();
   const [navn, setNavn] = useState("");
   const [orgNr, setOrgNr] = useState("");
@@ -66,7 +69,7 @@ export default function VelkommenSide() {
         <div className="px-7 pt-7 pb-1 text-center">
           <RelavoMark className="w-12 h-auto mx-auto mb-3 text-accent" />
           <h1 className="text-[19px] font-semibold tracking-tight">
-            Opprett organisasjonen din
+            {o.oppstart.opprettOrganisasjonen}
           </h1>
           <p className="text-[13px] text-dim mt-2 leading-relaxed">
             Kontrollene, leverandørene og rapportene legges under selskapet —
@@ -77,7 +80,7 @@ export default function VelkommenSide() {
         <form onSubmit={opprett} className="px-7 pt-6 pb-7">
           <div className="mb-3.5">
             <label htmlFor="navn" className="block text-xs font-semibold mb-1.5">
-              Navn på organisasjonen
+              {o.konto.navnPaOrganisasjonen}
             </label>
             <input
               id="navn"
@@ -91,7 +94,7 @@ export default function VelkommenSide() {
 
           <div className="mb-3.5">
             <label htmlFor="orgnr" className="block text-xs font-semibold mb-1.5">
-              Organisasjonsnummer <span className="text-faint font-normal">— valgfritt</span>
+              {o.konto.organisasjonsnummer} <span className="text-faint font-normal">— valgfritt</span>
             </label>
             <input
               id="orgnr"
@@ -105,7 +108,7 @@ export default function VelkommenSide() {
 
           <div className="mb-3.5">
             <label htmlFor="brukernavn" className="block text-xs font-semibold mb-1.5">
-              Ditt navn
+              {o.oppstart.dittNavn}
             </label>
             <input
               id="brukernavn"
@@ -142,7 +145,7 @@ export default function VelkommenSide() {
             disabled={laster}
             className="w-full bg-accent hover:bg-accent-hover active:scale-[0.97] transition text-white text-sm font-semibold py-2.5 rounded-xl disabled:opacity-60"
           >
-            {laster ? "Oppretter …" : "Opprett organisasjon"}
+            {laster ? o.oppstart.oppretter : o.oppstart.opprettOrganisasjon}
           </button>
         </form>
       </div>

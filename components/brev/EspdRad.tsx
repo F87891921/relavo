@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { useState, useTransition } from "react";
 import { Merke, type Tone } from "@/components/ui";
 import { FELT_FULL } from "@/components/ui/felt";
@@ -17,13 +19,22 @@ const KNAPP =
 const KNAPP_LYS =
   "text-[12.5px] font-semibold px-3.5 py-2 rounded-lg bg-canvas border border-border hover:border-border-strong transition inline-block";
 
-const STATUS: Record<string, { tekst: string; tone: Tone }> = {
-  mottatt: { tekst: "Uten merknad", tone: "god" },
-  motstrid: { tekst: "Motstrid mot registrene", tone: "brudd" },
-  mangler: { tekst: "Ikke levert", tone: "brudd" },
-  sendt: { tekst: "Venter på svar", tone: "advarsel" },
-  utlopt: { tekst: "Fristen er ute", tone: "brudd" },
+const STATUSTONE: Record<string, Tone> = {
+  mottatt: "god",
+  motstrid: "brudd",
+  mangler: "brudd",
+  sendt: "advarsel",
+  utlopt: "brudd",
 };
+
+const statusTekst = (o: ReturnType<typeof useOrd>, v: string) =>
+  ({
+    mottatt: o.brev.utenMerknad,
+    motstrid: o.brev.motstrid,
+    mangler: o.brev.ikkeLevert,
+    sendt: o.brev.venterPaSvar,
+    utlopt: o.brev.fristenUte,
+  })[v] ?? v;
 
 export type Espd = {
   id: string;
@@ -55,12 +66,16 @@ export function EspdRad({
   avsenderNavn: string | null;
   avsenderOrg: string | null;
 }) {
+  const o = useOrd();
   const [apen, setApen] = useState(false);
   const [feil, setFeil] = useState("");
   const [kvittering, setKvittering] = useState("");
   const [venter, start] = useTransition();
 
-  const s = STATUS[e.status] ?? { tekst: e.status, tone: "noytral" as Tone };
+  const s = {
+    tekst: statusTekst(o, e.status),
+    tone: STATUSTONE[e.status] ?? ("noytral" as Tone),
+  };
   const igjen = dagerIgjen(e.frist);
   const forfalt = e.status === "sendt" && igjen !== null && igjen < 0;
   const naerFrist = e.status === "sendt" && igjen !== null && igjen >= 0 && igjen <= 3;
@@ -103,9 +118,9 @@ export function EspdRad({
             {e.leverandorer?.navn ?? "—"}
           </span>
           <Merke tone={forfalt ? "brudd" : s.tone}>
-            {forfalt ? "Fristen er ute" : s.tekst}
+            {forfalt ? o.brev.fristenUte : s.tekst}
           </Merke>
-          {e.levert && <Merke tone="god">Levert</Merke>}
+          {e.levert && <Merke tone="god">{o.brev.levert}</Merke>}
           {e.anskaffelse_ref && (
             <span className="font-mono text-[11.5px] text-faint">
               {e.anskaffelse_ref}
@@ -126,7 +141,7 @@ export function EspdRad({
           )}
         </span>
         <span className="text-[11.5px] text-faint shrink-0">
-          {apen ? "Skjul" : "Vis"}
+          {apen ? o.felles.skjul : o.felles.vis}
         </span>
       </button>
 
@@ -135,7 +150,7 @@ export function EspdRad({
           {/* ---------------------------------------- Levert erklæring --- */}
           {e.levert && (
             <div className="bg-good-bg text-good rounded-xl px-4 py-3.5 mb-4 text-[12.5px] leading-relaxed">
-              <b>Egenerklæringen er levert.</b>{" "}
+              <b>{o.brev.erklaeringLevert}</b>{" "}
               {e.signert_navn && (
                 <>
                   Bekreftet av {e.signert_navn}
@@ -189,7 +204,7 @@ export function EspdRad({
                 </div>
                 <div className="mb-3.5">
                   <label className="block text-xs font-semibold mb-1.5">
-                    Mottakerens e-post
+                    {o.brev.mottakerEpost}
                   </label>
                   <input
                     name="mottaker_epost"
@@ -201,7 +216,7 @@ export function EspdRad({
                 </div>
                 <div className="mb-3.5">
                   <label className="block text-xs font-semibold mb-1.5">
-                    Frist for ettersending
+                    {o.brev.fristEttersending}
                   </label>
                   <input
                     name="frist"
@@ -222,7 +237,7 @@ export function EspdRad({
               />
 
               <button type="submit" disabled={venter} className={`${KNAPP} mt-3`}>
-                {venter ? "Lagrer …" : "Be om ettersending"}
+                {venter ? o.felles.lagrer : o.brev.beOmEttersending}
               </button>
               <p className="text-[11.5px] text-faint mt-2.5 leading-relaxed max-w-[70ch]">
                 Navnet på kontaktpersonen brukes i hilsenen. Lenken i brevet
@@ -236,7 +251,7 @@ export function EspdRad({
           {(e.status === "sendt" || e.etterspurt) && (
             <>
               <div className="flex items-baseline justify-between gap-4 mb-2">
-                <span className="text-[12px] font-semibold">Forespørselen</span>
+                <span className="text-[12px] font-semibold">{o.brev.forespørselen}</span>
                 <span className="text-[11px] text-faint">
                   kan endres før den sendes
                 </span>
@@ -259,7 +274,7 @@ export function EspdRad({
                   })}
                   className={KNAPP_LYS}
                 >
-                  Åpne i e-post
+                  {o.brev.apneIEpost}
                 </a>
 
                 {visBrev !== lagretBrev && (
@@ -272,13 +287,13 @@ export function EspdRad({
                       fd.set("utkast", visBrev);
                       start(async () => {
                         const res = await lagreESPDUtkast(fd);
-                        if (res.ok) setKvittering("Brevet er lagret.");
+                        if (res.ok) setKvittering(o.brev.brevetLagret);
                         else setFeil(res.feil);
                       });
                     }}
                     className={KNAPP}
                   >
-                    Lagre endringene
+                    {o.brev.lagreEndringene}
                   </button>
                 )}
 
@@ -294,7 +309,7 @@ export function EspdRad({
                     }
                     className={KNAPP}
                   >
-                    Marker som sendt
+                    {o.brev.markerSendt}
                   </button>
                 )}
 
@@ -310,7 +325,7 @@ export function EspdRad({
                     }
                     className={KNAPP_LYS}
                   >
-                    Mottatt på annen måte
+                    {o.brev.mottattAnnet}
                   </button>
                 )}
               </div>
@@ -354,12 +369,13 @@ function Brevfelt({
   verdi: string;
   onEndre: (v: string) => void;
 }) {
+  const o = useOrd();
   return (
     <textarea
       rows={16}
       value={verdi}
       onChange={(e) => onEndre(e.target.value)}
-      aria-label="Brevet til leverandøren"
+      aria-label={o.brev.brevetTil}
       className={`${FELT_FULL} max-w-none resize-y text-[12.5px] leading-relaxed font-sans`}
     />
   );

@@ -35,18 +35,18 @@ export default async function InterntMarginalSide() {
         />
 
         <Rad>
-          <Tall verdi={`${NOK(sumIntakt)} kr`} merke="intäkt per månad" />
-          <Tall verdi={`${NOK(sumKostnad)} kr`} merke="uppslagskostnad" />
+          <Tall verdi={`${NOK(sumIntakt)} kr`} merke={t.internt.inntektPerManed} />
+          <Tall verdi={`${NOK(sumKostnad)} kr`} merke={t.internt.oppslagskostnad} />
           <Tall verdi={`${NOK(sumIntakt - sumKostnad)} kr`} merke="marginal" />
           <Tall
             verdi={`${Math.round(((sumIntakt - sumKostnad) / Math.max(1, sumIntakt)) * 100)} %`}
-            merke="marginal i procent"
+            merke={t.internt.marginIProsent}
           />
         </Rad>
 
-        <Kort note="demodata från relavo-staff.html">
+        <Kort note={t.internt.demodataStaff}>
           <Tabell
-            kolonner={["Konto", "Plan", "Uppslag", "Intäkt", "Kostnad", "Marginal", ""]}
+            kolonner={[t.internt.konto, t.internt.plan, t.internt.oppslag, t.internt.inntekt, t.internt.kostnad, t.internt.margin, ""]}
             rader={rader.map((r) => [
               <span key="n" className="font-semibold">{r.namn}</span>,
               <Merke key="p" tone={r.plan?.namn === "Enterprise" ? "aksent" : "noytral"}>

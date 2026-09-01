@@ -32,23 +32,23 @@ export default async function InterntKallorSide() {
           <Tall verdi={String(KALLOR.length)} merke="källor" />
           <Tall
             verdi={String(KALLOR.reduce((s, k) => s + k.anrop, 0))}
-            merke="anrop denna månad"
+            merke={t.internt.anropDenneManeden}
           />
           <Tall
             verdi={`${Math.round(KALLOR.reduce((s, k) => s + k.svar, 0) / KALLOR.length)} ms`}
-            merke="median svarstid"
+            merke={t.internt.medianSvartid}
           />
           <Tall
             verdi={String(aktivaLarm.length)}
-            merke="aktiva larm"
+            merke={t.internt.aktiveAlarmer}
             tone={aktivaLarm.length ? "brudd" : undefined}
           />
         </Rad>
 
         {aktivaLarm.length > 0 && (
-          <Kort tittel="Aktiva larm" className="mb-5">
+          <Kort tittel={t.internt.aktivaLarm} className="mb-5">
             <Tabell
-              kolonner={["Källa", "Regel", "Sedan", "Åtgärd"]}
+              kolonner={[t.internt.kilde, t.internt.regel, t.internt.siden, t.internt.tiltak]}
               rader={aktivaLarm.map((l) => [
                 <span key="k" className="font-semibold">{l.kalla}</span>,
                 <span key="r" className="text-dim">{l.regel}</span>,
@@ -59,9 +59,9 @@ export default async function InterntKallorSide() {
           </Kort>
         )}
 
-        <Kort tittel="Källor" className="mb-5">
+        <Kort tittel={t.internt.kilder} className="mb-5">
           <Tabell
-            kolonner={["Källa", "Vad den ger", "Anrop", "Fel", "Svarstid", "Kostnad/st", "Status"]}
+            kolonner={[t.internt.kilde, t.internt.hvaDenGir, t.internt.anrop, "Fel", t.internt.svartid, t.internt.kostnadPerStk, t.internt.statusKol]}
             rader={KALLOR.map((k) => [
               <span key="n" className="font-semibold">{k.n}</span>,
               <span key="d" className="text-dim">{k.d}</span>,
@@ -74,15 +74,15 @@ export default async function InterntKallorSide() {
                 {k.kostnad === 0 ? "gratis" : `${k.kostnad} kr`}
               </span>,
               <Merke key="st" tone={k.status === "ok" ? "god" : "advarsel"}>
-                {k.status === "ok" ? "Frisk" : k.status}
+                {k.status === "ok" ? t.internt.frisk : k.status}
               </Merke>,
             ])}
           />
         </Kort>
 
-        <Kort tittel="Nycklar och kvoter">
+        <Kort tittel={t.internt.nokler}>
           <Tabell
-            kolonner={["Källa", "Nyckel", "Kvot", "Använt", "Kostnad/st", "Roterad"]}
+            kolonner={[t.internt.kilde, t.internt.nokkel, "Kvot", t.internt.brukt, t.internt.kostnadPerStk, t.internt.rotert]}
             rader={NYCKLAR.map((n) => [
               <span key="k" className="font-semibold">{n.kalla}</span>,
               <span key="n" className="font-mono text-[11.5px] text-dim">{n.nyckel}</span>,

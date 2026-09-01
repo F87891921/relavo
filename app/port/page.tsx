@@ -1,3 +1,4 @@
+import { ord } from "@/lib/sprak";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { RelavoMark } from "@/components/RelavoMark";
@@ -13,6 +14,7 @@ export default function PortSide({
 }: {
   searchParams: { feil?: string; neste?: string };
 }) {
+  const o = ord();
   async function slippInn(formData: FormData) {
     "use server";
 
@@ -46,14 +48,14 @@ export default function PortSide({
           <RelavoMark className="w-12 h-auto mx-auto mb-3 text-accent" />
           <h1 className="text-[17px] font-semibold">Relavo</h1>
           <p className="text-[12.5px] text-dim mt-1.5 leading-relaxed">
-            Siden er under utvikling og ikke åpen ennå.
+            {o.auth.underUtvikling}
           </p>
         </div>
 
         <form action={slippInn} className="px-6 pt-5 pb-7">
           <input type="hidden" name="neste" value={searchParams.neste ?? "/"} />
           <label htmlFor="passord" className="block text-xs font-semibold mb-1.5">
-            Passord
+            {o.auth.passord}
           </label>
           <input
             id="passord"
@@ -65,13 +67,13 @@ export default function PortSide({
             className={FELT_FULL}
           />
           {searchParams.feil && (
-            <div className="text-xs text-bad mt-2.5">Feil passord.</div>
+            <div className="text-xs text-bad mt-2.5">{o.auth.feilPassord}</div>
           )}
           <button
             type="submit"
             className="w-full bg-accent hover:bg-accent-hover active:scale-[0.97] transition text-white text-sm font-semibold py-2.5 rounded-xl mt-4"
           >
-            Slipp meg inn
+            {o.auth.slippMegInn}
           </button>
         </form>
       </div>

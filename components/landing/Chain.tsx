@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { Fragment, useEffect, useRef, useState } from "react";
 
 /**
@@ -12,14 +14,22 @@ import { Fragment, useEffect, useRef, useState } from "react";
 
 // ­ er myk bindestrek: «Hovedleverandør» deles bare når det trengs,
 // og da på stavelsen — ikke midt i ordet slik overflow-wrap ville gjort.
-const LEDD = [
-  { label: "Hoved­leverandør", navn: "Nordvik Bygg", variant: "self" },
-  { label: "Ledd 1", navn: "Bergvik Anlegg", variant: "" },
-  { label: "Ledd 2", navn: "Fossen Grunn", variant: "" },
-  { label: "Ledd 3", navn: "HK Fasade", variant: "over" },
+const SELSKAP = [
+  { navn: "Nordvik Bygg", variant: "self" },
+  { navn: "Bergvik Anlegg", variant: "" },
+  { navn: "Fossen Grunn", variant: "" },
+  { navn: "HK Fasade", variant: "over" },
 ];
 
 export function Chain() {
+  const s9 = useOrd().skjermbilde;
+
+  // Selskapsnavnene er data og står som de er. Etikettene over dem er
+  // grensesnitt, og følger språkvalget.
+  const LEDD = SELSKAP.map((l, i) => ({
+    ...l,
+    label: i === 0 ? s9.hovedleverandor : `${s9.ledd} ${i}`,
+  }));
   const ref = useRef<HTMLDivElement>(null);
   const [brutt, setBrutt] = useState(false);
 
@@ -65,7 +75,7 @@ export function Chain() {
           {i < LEDD.length - 1 &&
             (LEDD[i + 1].variant === "over" ? (
               <span className="chain-k rev">
-                <span>Grense § 5k</span>
+                <span>{s9.grense5k}</span>
               </span>
             ) : (
               <span className="chain-k" />

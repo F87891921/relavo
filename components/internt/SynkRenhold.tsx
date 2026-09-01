@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
@@ -15,6 +17,7 @@ export function SynkRenhold({
   sistHentet: string | null;
   antall: number;
 }) {
+  const t = useOrd();
   const router = useRouter();
   const [venter, start] = useTransition();
   const [melding, setMelding] = useState("");
@@ -28,7 +31,7 @@ export function SynkRenhold({
         const svar = await fetch("/api/synk-renhold", { method: "POST" });
         const data = await svar.json();
         if (!svar.ok) {
-          setFeil(data.feil ?? "Hämtningen misslyckades.");
+          setFeil(data.feil ?? t.internt.hentingFeilet);
           return;
         }
         setMelding(
@@ -36,7 +39,7 @@ export function SynkRenhold({
         );
         router.refresh();
       } catch {
-        setFeil("Fick ingen kontakt med servern.");
+        setFeil(t.internt.ingenKontaktServer);
       }
     });
   }
@@ -44,7 +47,7 @@ export function SynkRenhold({
   return (
     <div className="bg-surface rounded-card border border-border shadow-card p-6 mb-5">
       <h2 className="text-[15px] font-semibold mb-1">
-        Arbeidstilsynets renholdsregister
+        {t.internt.renholdsregister}
       </h2>
       <p className="text-[12.5px] text-dim mb-4 leading-relaxed max-w-[70ch]">
         Sedan 2012 är det olagligt att köpa städtjänster från bolag som inte är
@@ -60,7 +63,7 @@ export function SynkRenhold({
           disabled={venter}
           className="bg-accent hover:bg-accent-hover active:scale-[0.97] transition text-white text-sm font-semibold px-5 py-2.5 rounded-xl disabled:opacity-50"
         >
-          {venter ? "Hämtar 22 MB …" : "Hämta registret nu"}
+          {venter ? t.internt.henter22 : t.internt.hentRegisteret}
         </button>
 
         <span className="text-[12.5px] text-dim">
@@ -73,7 +76,7 @@ export function SynkRenhold({
               · {antall} verksamheter
             </>
           ) : (
-            <b className="text-warn">Aldrig hämtat</b>
+            <b className="text-warn">{t.internt.aldriHentet}</b>
           )}
         </span>
       </div>

@@ -20,21 +20,21 @@ export default async function InterntKontonSide() {
         />
 
         <Rad>
-          <Tall verdi={String(KONTON.length)} merke="aktiva konton" />
-          <Tall verdi={`${NOK(mrr)} kr`} merke="månadsintäkt" />
+          <Tall verdi={String(KONTON.length)} merke={t.internt.aktiveKontoer} />
+          <Tall verdi={`${NOK(mrr)} kr`} merke={t.internt.manedsinntekt} />
           <Tall
             verdi={String(KONTON.reduce((s, k) => s + k.lev, 0))}
-            merke="leverantörer under kontroll"
+            merke={t.internt.underKontroll}
           />
           <Tall
             verdi={String(KONTON.reduce((s, k) => s + k.overvak, 0))}
-            merke="under löpande övervakning"
+            merke={t.internt.underOvervaking}
           />
         </Rad>
 
-        <Kort note="demodata från relavo-staff.html">
+        <Kort note={t.internt.demodataStaff}>
           <Tabell
-            kolonner={["Konto", "Enhet", "Plan", "Förbrukning", "Leverantörer", "Kontakt", "Avtal t.o.m.", "Senast"]}
+            kolonner={[t.internt.konto, t.internt.enhet, t.internt.plan, t.internt.forbruk, t.internt.leverantorerKol, t.internt.kontaktKol, t.internt.avtaleTom, t.internt.sist]}
             rader={KONTON.map((k) => {
               const plan = PLANER[k.plan as keyof typeof PLANER];
               const andel = plan ? Math.round((k.anvant / plan.kvot) * 100) : 0;

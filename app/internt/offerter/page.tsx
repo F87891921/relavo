@@ -40,15 +40,15 @@ export default async function InterntOfferterSide() {
           <Tall verdi={String(rader.length)} merke="offerter" />
           <Tall
             verdi={String(rader.filter((o) => o.status === "skickad").length)}
-            merke="väntar på svar"
+            merke={t.internt.venterPaSvar}
           />
           <Tall
             verdi={`${NOK(Math.round(rader.reduce((s, r) => s + r.totalt, 0)))} kr`}
-            merke="samlat kontraktsvärde"
+            merke={t.internt.samletVerdi}
           />
           <Tall
             verdi={String(rader.filter((o) => o.sendt && !o.svar).length)}
-            merke="skickade utan svar"
+            merke={t.internt.sendtUtenSvar}
           />
         </Rad>
 
@@ -56,8 +56,8 @@ export default async function InterntOfferterSide() {
 
         <Kort>
           <Tabell
-            kolonner={["Kund", "Upplägg", "Löptid", "Värde", "Giltig t.o.m.", "Status", ""]}
-            tom="Inga offerter ännu."
+            kolonner={[t.internt.kunde, t.internt.opplegg, t.internt.lopetid, t.internt.verdi, t.internt.gyldigTom, t.internt.statusKol, ""]}
+            tom={t.internt.ingenTilbud}
             rader={rader.map((o) => [
               <div key="k">
                 <Link
@@ -106,7 +106,7 @@ export default async function InterntOfferterSide() {
                 />
                 {o.sendt && !o.svar && (
                   <span className="text-[11px] text-faint whitespace-nowrap">
-                    {o.sett ? "Öppnad av kunden" : "Ej öppnad ännu"}
+                    {o.sett ? t.internt.apnetAvKunden : t.internt.ikkeApnet}
                   </span>
                 )}
               </div>,
@@ -115,7 +115,7 @@ export default async function InterntOfferterSide() {
                 href={`/internt/offerter/${o.id}`}
                 className="text-[12.5px] font-semibold text-accent hover:underline whitespace-nowrap"
               >
-                Visa →
+                {t.internt.visLenke}
               </Link>,
             ])}
           />

@@ -1,3 +1,4 @@
+import { ord } from "@/lib/sprak";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { RelavoLogo } from "@/components/RelavoLogo";
@@ -14,11 +15,12 @@ export default function KontaktSide({
 }: {
   searchParams: { om?: string };
 }) {
+  const o = ord();
   return (
     <div className="bg-surface min-h-screen">
       <header className="border-b border-border">
         <div className="max-w-[820px] mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" aria-label="Relavo, til forsiden">
+          <Link href="/" aria-label={o.oppstart.tilForsiden}>
             <RelavoLogo className="w-[92px] h-auto text-ink" />
           </Link>
           <Link href="/" className="text-[13px] text-dim hover:text-ink transition">

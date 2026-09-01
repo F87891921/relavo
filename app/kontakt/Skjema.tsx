@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { useState, useTransition } from "react";
 import { KONTAKT_KATEGORIER } from "@/lib/sak";
 import { sendHenvendelse } from "./handlinger";
@@ -8,6 +10,7 @@ const FELT =
   "w-full text-[14px] px-3.5 py-3 rounded-xl bg-canvas border border-border transition placeholder:text-faint focus:outline-none focus:bg-surface focus:border-accent focus:ring-[3px] focus:ring-accent-light hover:border-border-strong";
 
 export function KontaktSkjema({ forvalgt }: { forvalgt?: string }) {
+  const o = useOrd();
   const [sendt, setSendt] = useState(false);
   const [feil, setFeil] = useState("");
   const [venter, start] = useTransition();
@@ -15,9 +18,9 @@ export function KontaktSkjema({ forvalgt }: { forvalgt?: string }) {
   if (sendt)
     return (
       <div className="bg-good-bg text-good rounded-2xl px-6 py-8 text-center">
-        <div className="text-[17px] font-semibold mb-2">Takk — vi har fått den.</div>
+        <div className="text-[17px] font-semibold mb-2">{o.oppstart.takkFattDen}</div>
         <p className="text-[13.5px] leading-relaxed">
-          Vi svarer normalt innen én virkedag, på adressen du oppga.
+          {o.oppstart.svarerInnen}
         </p>
       </div>
     );
@@ -44,13 +47,13 @@ export function KontaktSkjema({ forvalgt }: { forvalgt?: string }) {
         </div>
         <div className="mb-4">
           <label htmlFor="epost" className="block text-xs font-semibold mb-1.5">
-            E-post
+            {o.auth.epost}
           </label>
           <input id="epost" name="epost" type="email" required className={FELT} />
         </div>
         <div className="mb-4">
           <label htmlFor="organisasjon" className="block text-xs font-semibold mb-1.5">
-            Organisasjon <span className="text-faint font-normal">— valgfritt</span>
+            {o.oppstart.organisasjonFelt} <span className="text-faint font-normal">— valgfritt</span>
           </label>
           <input
             id="organisasjon"
@@ -61,7 +64,7 @@ export function KontaktSkjema({ forvalgt }: { forvalgt?: string }) {
         </div>
         <div className="mb-4">
           <label htmlFor="telefon" className="block text-xs font-semibold mb-1.5">
-            Telefon <span className="text-faint font-normal">— valgfritt</span>
+            {o.oppstart.telefon} <span className="text-faint font-normal">— valgfritt</span>
           </label>
           <input id="telefon" name="telefon" className={FELT} />
         </div>
@@ -69,7 +72,7 @@ export function KontaktSkjema({ forvalgt }: { forvalgt?: string }) {
 
       <div className="mb-4">
         <label htmlFor="kategori" className="block text-xs font-semibold mb-1.5">
-          Hva gjelder det?
+          {o.oppstart.hvaGjelder}
         </label>
         <select
           id="kategori"
@@ -87,7 +90,7 @@ export function KontaktSkjema({ forvalgt }: { forvalgt?: string }) {
 
       <div className="mb-4">
         <label htmlFor="melding" className="block text-xs font-semibold mb-1.5">
-          Melding
+          {o.oppstart.meldingFelt}
         </label>
         <textarea
           id="melding"
@@ -116,7 +119,7 @@ export function KontaktSkjema({ forvalgt }: { forvalgt?: string }) {
         disabled={venter}
         className="bg-accent hover:bg-accent-hover active:scale-[0.97] transition text-white text-[14px] font-semibold px-6 py-3 rounded-xl disabled:opacity-50"
       >
-        {venter ? "Sender …" : "Send melding"}
+        {venter ? o.felles.sender : "Send melding"}
       </button>
 
       <p className="text-[12px] text-faint mt-4 leading-relaxed">

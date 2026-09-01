@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { useState, useTransition } from "react";
 import { FELT_FULL } from "@/components/ui/felt";
 import { formaterOrgnr } from "@/lib/orgnr";
@@ -56,6 +58,7 @@ export function OffertSkjema({
     onValgt?: (t: Kundetreff) => void;
   }>;
 }) {
+  const t = useOrd();
   const [apen, setApen] = useState(false);
   const [fritt, setFritt] = useState(false);
   const [feil, setFeil] = useState("");
@@ -89,12 +92,12 @@ export function OffertSkjema({
       }}
       className="bg-surface rounded-card border border-border shadow-card p-6 mb-5"
     >
-      <h2 className="text-[15px] font-semibold mb-4">Ny offert</h2>
+      <h2 className="text-[15px] font-semibold mb-4">{t.internt.nyOfferte}</h2>
 
       <div className="grid sm:grid-cols-2 gap-x-4">
         <KundeSok
           navn="kund"
-          merke="Kund"
+          merke={t.internt.kunde}
           onValgt={(t) => {
             // Fyll i det vi redan vet om dem.
             if (t.org_nr) setOrgNr(formaterOrgnr(t.org_nr));
@@ -105,36 +108,36 @@ export function OffertSkjema({
 
         <Felt
           navn="org_nr"
-          merke="Organisationsnummer"
+          merke={t.konto.organisasjonsnummer}
           plassholder="964 338 531"
           verdi={orgNr}
           onEndre={setOrgNr}
         />
         <Felt
           navn="kontaktperson"
-          merke="Kontaktperson"
+          merke={t.internt.kontaktperson}
           verdi={kontakt}
           onEndre={setKontakt}
         />
         <Felt
           navn="kontakt_epost"
-          merke="E-post"
+          merke={t.auth.epost}
           type="email"
           verdi={epost}
           onEndre={setEpost}
         />
         <Felt
           navn="fakturaadresse"
-          merke="Fakturaadress"
+          merke={t.internt.fakturaadresse}
           plassholder="Postboks 7700, 5020 Bergen"
         />
 
         <div className="mb-3.5">
           <label htmlFor="lead_id" className="block text-xs font-semibold mb-1.5">
-            Koppla till lead
+            {t.internt.koblTilLead}
           </label>
           <select id="lead_id" name="lead_id" className={FELT_FULL} defaultValue="">
-            <option value="">Ingen koppling</option>
+            <option value="">{t.internt.ingenKobling}</option>
             {leads.map((l) => (
               <option key={l.id} value={l.id}>
                 {l.bolag}
@@ -153,7 +156,7 @@ export function OffertSkjema({
             className="mt-0.5 accent-[#654b70] w-4 h-4 shrink-0"
           />
           <span className="text-[12.5px] leading-snug">
-            <b>Fritt erbjudande</b>
+            <b>{t.internt.frittTilbud}</b>
             <span className="block text-dim">
               Ett avtalat antal kontroller till ett avtalat pris, utanför
               planerna.
@@ -165,13 +168,13 @@ export function OffertSkjema({
           <div className="grid sm:grid-cols-2 gap-x-4">
             <Felt
               navn="fritt_antall"
-              merke="Antal kontroller"
+              merke={t.internt.antallKontroller}
               type="number"
               plassholder="250"
             />
             <Felt
               navn="fritt_pris"
-              merke="Totalpris i NOK"
+              merke={t.internt.totalpris}
               type="number"
               plassholder="180000"
             />
@@ -183,7 +186,7 @@ export function OffertSkjema({
                 id="notat"
                 name="notat"
                 rows={3}
-                placeholder="Vad som ingår, och varför priset avviker från planen."
+                placeholder={t.internt.notatHjelp}
                 className={`${FELT_FULL} max-w-none resize-y`}
               />
             </div>
@@ -192,7 +195,7 @@ export function OffertSkjema({
           <div className="grid sm:grid-cols-2 gap-x-4">
             <div className="mb-3.5">
               <label htmlFor="plan" className="block text-xs font-semibold mb-1.5">
-                Plan
+                {t.internt.plan}
               </label>
               <select id="plan" name="plan" defaultValue="standard" className={FELT_FULL}>
                 {Object.entries(PRIS).map(([v, p]) => (
@@ -202,17 +205,17 @@ export function OffertSkjema({
                 ))}
               </select>
             </div>
-            <Felt navn="ar" merke="Löptid i år" type="number" standard="1" />
-            <Felt navn="rabatt" merke="Rabatt i procent" type="number" standard="0" />
+            <Felt navn="ar" merke={t.internt.lopetidAr} type="number" standard="1" />
+            <Felt navn="rabatt" merke={t.internt.rabatt} type="number" standard="0" />
           </div>
         )}
       </div>
 
       <div className="grid sm:grid-cols-2 gap-x-4 border-t border-border pt-4">
-        <Felt navn="giltig_til" merke="Giltig till" type="date" />
+        <Felt navn="giltig_til" merke={t.internt.gyldigTil} type="date" />
         <div className="mb-3.5">
           <label htmlFor="status" className="block text-xs font-semibold mb-1.5">
-            Status
+            {t.felles.status}
           </label>
           <select id="status" name="status" defaultValue="utkast" className={FELT_FULL}>
             {OFFERTSTATUS.map((s) => (
@@ -232,14 +235,14 @@ export function OffertSkjema({
 
       <div className="flex gap-2.5">
         <button type="submit" disabled={venter} className={KNAPP}>
-          {venter ? "Sparar …" : "Spara offert"}
+          {venter ? t.felles.lagrer : t.internt.lagreTilbud}
         </button>
         <button
           type="button"
           onClick={() => setApen(false)}
           className="text-sm text-dim hover:text-ink px-3 py-2.5 transition"
         >
-          Avbryt
+          {t.felles.avbryt}
         </button>
       </div>
     </form>

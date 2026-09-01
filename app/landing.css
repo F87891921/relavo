@@ -54,7 +54,11 @@ html{scroll-behavior:smooth}
 /* ---------- Nav ---------- */
 .nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.82);backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid var(--border)}
 .nav-in{max-width:1120px;margin:0 auto;padding:13px 26px;display:flex;align-items:center;gap:30px}
-.nav svg{width:96px;display:block}
+/* Bare logoen. Uten .logo traff regelen alle svg-er i navigasjonen, og
+   kloden i språkvelgeren ble strukket til 96 piksler — ikonet sto igjen til
+   venstre i sin egen tomme boks, og det så ut som et layoutfeil mellom
+   kloden og språkkoden. */
+.nav .logo svg{width:96px;display:block}
 .nav-links{display:flex;gap:24px;font-size:13.5px;color:var(--text-dim);font-weight:500}
 .nav-links a{transition:color 140ms var(--ease-out)}
 .nav-links a:hover{color:var(--text)}

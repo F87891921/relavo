@@ -29,15 +29,15 @@ export default async function SupportSide() {
         />
 
         <Rad>
-          <Tall verdi={String(alle.length)} merke="saker totalt" />
-          <Tall verdi={String(apne.length)} merke="åpne" />
+          <Tall verdi={String(alle.length)} merke={t.internt.sakerTotalt} />
+          <Tall verdi={String(apne.length)} merke={t.internt.apneSaker} />
           <Tall
             verdi={String(alle.filter((s) => s.status === "venter_oss").length)}
-            merke="venter på oss"
+            merke={t.internt.venterPaOss}
           />
           <Tall
             verdi={String(alle.filter((s) => s.status === "venter_kunde").length)}
-            merke="venter på deg"
+            merke={t.internt.venterPaDeg}
             tone={alle.some((s) => s.status === "venter_kunde") ? "advarsel" : undefined}
           />
         </Rad>
@@ -47,7 +47,7 @@ export default async function SupportSide() {
         <div className="space-y-3">
           {alle.length === 0 && (
             <div className="bg-surface rounded-card border border-border shadow-card px-5 py-10 text-center text-dim text-sm">
-              Ingen saker ennå. Meld inn en med knappen over.
+              {t.internt.ingenSakerKunde}
             </div>
           )}
           {alle.map((s) => (

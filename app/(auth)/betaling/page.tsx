@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { useState } from "react";
 import Link from "next/link";
 import { RelavoMark } from "@/components/RelavoMark";
@@ -40,6 +42,7 @@ const PLANER = [
 ];
 
 export default function BetalingSide() {
+  const o = useOrd();
   const [valgt, setValgt] = useState("standard");
   const plan = PLANER.find((p) => p.verdi === valgt)!;
 
@@ -48,14 +51,14 @@ export default function BetalingSide() {
       <div className="w-full max-w-[720px] mx-auto">
         <div className="text-center mb-7">
           <RelavoMark className="w-12 h-auto mx-auto mb-3 text-accent" />
-          <h1 className="text-[22px] font-semibold tracking-tight">Velg plan</h1>
+          <h1 className="text-[22px] font-semibold tracking-tight">{o.oppstart.velgPlan}</h1>
           <p className="text-[13px] text-dim mt-2">
-            Du kan bytte eller si opp når som helst.
+            {o.oppstart.kanByttes}
           </p>
         </div>
 
         <div className="bg-warn-bg text-warn text-[12.5px] rounded-xl px-4 py-3 mb-6 leading-relaxed">
-          <b>Ikke i drift ennå.</b> Denne siden viser hvordan betalingen skal se
+          <b>{o.oppstart.ikkeIDrift}</b> Denne siden viser hvordan betalingen skal se
           ut. Ingen betaling gjennomføres, og kortfeltene under er slått av.
         </div>
 
@@ -76,7 +79,7 @@ export default function BetalingSide() {
               >
                 {p.anbefalt && (
                   <span className="absolute -top-2.5 left-5 bg-accent text-white text-[10.5px] font-bold px-2.5 py-0.5 rounded-full">
-                    Vanligst
+                    {o.oppstart.vanligst}
                   </span>
                 )}
                 <div className="text-[13.5px] font-semibold text-dim">{p.navn}</div>
@@ -93,15 +96,15 @@ export default function BetalingSide() {
         </div>
 
         <div className="bg-surface rounded-2xl shadow-card p-6">
-          <h2 className="text-[15px] font-semibold mb-1">Betalingsdetaljer</h2>
+          <h2 className="text-[15px] font-semibold mb-1">{o.oppstart.betalingsdetaljer}</h2>
           <p className="text-[12.5px] text-dim mb-5">
-            Kobles til betalingsleverandør senere. Feltene er deaktivert.
+            {o.oppstart.koblesSenere}
           </p>
 
           <fieldset disabled className="opacity-45 pointer-events-none select-none">
             <div className="mb-3.5">
               <label className="block text-xs font-semibold mb-1.5">
-                Kortnummer
+                {o.oppstart.kortnummer}
               </label>
               <div className="w-full text-[13.5px] px-3 py-2.5 rounded-xl border border-border-strong bg-canvas text-faint">
                 •••• •••• •••• ••••
@@ -109,7 +112,7 @@ export default function BetalingSide() {
             </div>
             <div className="grid sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold mb-1.5">Utløper</label>
+                <label className="block text-xs font-semibold mb-1.5">{o.oppstart.utloper}</label>
                 <div className="w-full text-[13.5px] px-3 py-2.5 rounded-xl border border-border-strong bg-canvas text-faint">
                   MM / ÅÅ
                 </div>
@@ -125,14 +128,14 @@ export default function BetalingSide() {
 
           <div className="border-t border-border mt-6 pt-5 flex items-center justify-between gap-4 flex-wrap">
             <div className="text-[13px] text-dim">
-              Valgt: <b className="text-ink">{plan.navn}</b> — {plan.pris}{" "}
+              {o.oppstart.valgt} <b className="text-ink">{plan.navn}</b> — {plan.pris}{" "}
               {plan.enhet}
             </div>
             <Link
               href={`/velkommen?plan=${plan.verdi}`}
               className="bg-accent hover:bg-accent-hover active:scale-[0.97] transition text-white text-sm font-semibold px-5 py-2.5 rounded-xl"
             >
-              Fortsett uten betaling
+              {o.oppstart.fortsettUten}
             </Link>
           </div>
         </div>

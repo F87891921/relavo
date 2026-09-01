@@ -25,29 +25,29 @@ export default async function InterntTeamSide() {
         />
 
         <Rad>
-          <Tall verdi={String(ansatte.length)} merke="anställda" />
+          <Tall verdi={String(ansatte.length)} merke={t.internt.ansatte} />
           <Tall
             verdi={String(ansatte.filter((p) => p.ansatt_rolle === "superadmin").length)}
-            merke="superadmin"
+            merke={t.internt.superadminAntal}
           />
           <Tall
             verdi={String(ansatte.filter((p) => p.ansatt_rolle === "personal").length)}
-            merke="personal"
+            merke={t.internt.personalAntal}
           />
-          <Tall verdi={String(profiler.length - ansatte.length)} merke="kundanvändare" />
+          <Tall verdi={String(profiler.length - ansatte.length)} merke={t.internt.kundanvandare} />
         </Rad>
 
         <div className="bg-canvas text-dim text-[12.5px] rounded-xl px-4 py-3 mb-5 leading-relaxed border border-border">
-          <b className="text-ink">Superadmin</b> ser marginaler per konto,
+          <b className="text-ink">{t.internt.superadminRolle}</b> ser marginaler per konto,
           åtkomstloggen och den här sidan.{" "}
-          <b className="text-ink">Personal</b> ser det dagliga: support, leads,
+          <b className="text-ink">{t.internt.personalRolle}</b> ser det dagliga: support, leads,
           offerter, fakturering, onboarding och kreditkontroll. Den som svarar
           på support behöver inte veta vad varje kund kostar oss.
         </div>
 
-        <Kort tittel="Alla användare" note="markera vilka som är personal">
+        <Kort tittel={t.internt.alleBrukere} note={t.internt.merkPersonal}>
           <Tabell
-            kolonner={["Namn", "Organisation", "Roll hos kunden", "Hos oss", ""]}
+            kolonner={["Namn", t.internt.organisasjon, t.internt.rolleHosKunden, t.internt.hosOss, ""]}
             rader={profiler.map((p) => {
               const org = p.organisasjoner as unknown as { navn: string } | null;
               return [
@@ -61,14 +61,14 @@ export default async function InterntTeamSide() {
                   {org?.navn ?? "—"}
                 </span>,
                 <span key="r" className="text-dim">
-                  {p.rolle === "administrator" ? "Administrator" : "Användare"}
+                  {p.rolle === "administrator" ? t.internt.administrator : t.internt.anvandare}
                 </span>,
                 p.ansatt ? (
                   <Merke key="a" tone={p.ansatt_rolle === "superadmin" ? "aksent" : "god"}>
-                    {p.ansatt_rolle === "superadmin" ? "Superadmin" : "Personal"}
+                    {p.ansatt_rolle === "superadmin" ? t.internt.superadminRolle : t.internt.personalRolle}
                   </Merke>
                 ) : (
-                  <span key="a" className="text-faint">Kund</span>
+                  <span key="a" className="text-faint">{t.internt.kunde}</span>
                 ),
                 <PersonalVelger
                   key="v"

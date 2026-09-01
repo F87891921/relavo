@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import Link from "next/link";
 import { useTransition } from "react";
 import { markerVarselLest, markerAlleVarslerLest } from "@/app/internt/handlinger";
@@ -21,6 +23,7 @@ export type Varsel = {
  * en notis per sak vi själva klickade fram är brus, inte information.
  */
 export function Varsler({ varsler }: { varsler: Varsel[] }) {
+  const t = useOrd();
   const [venter, start] = useTransition();
 
   if (!varsler.length) return null;
@@ -37,7 +40,7 @@ export function Varsler({ varsler }: { varsler: Varsel[] }) {
           onClick={() => start(async () => void (await markerAlleVarslerLest()))}
           className="text-[12px] text-dim hover:text-ink transition disabled:opacity-50"
         >
-          Markera alla som lästa
+          {t.internt.merkAlleLest}
         </button>
       </div>
 
@@ -67,7 +70,7 @@ export function Varsler({ varsler }: { varsler: Varsel[] }) {
                   href={v.lenke}
                   className="text-[12.5px] font-semibold text-accent hover:underline whitespace-nowrap"
                 >
-                  Öppna →
+                  {t.internt.apne}
                 </Link>
               )}
               <button
@@ -75,7 +78,7 @@ export function Varsler({ varsler }: { varsler: Varsel[] }) {
                 disabled={venter}
                 onClick={() => start(async () => void (await markerVarselLest(v.id)))}
                 className="text-[12px] text-faint hover:text-ink transition disabled:opacity-50"
-                title="Markera som läst"
+                title={t.internt.merkLest}
               >
                 ✕
               </button>

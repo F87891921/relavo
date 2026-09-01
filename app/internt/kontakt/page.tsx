@@ -24,26 +24,26 @@ export default async function InterntKontaktSide() {
         />
 
         <Rad>
-          <Tall verdi={String(alle.length)} merke="meddelanden totalt" />
+          <Tall verdi={String(alle.length)} merke={t.internt.meldingerTotalt} />
           <Tall
             verdi={String(nya.length)}
-            merke="obehandlade"
+            merke={t.internt.ubehandlet}
             tone={nya.length ? "brudd" : undefined}
           />
           <Tall
             verdi={String(alle.filter((h) => h.kategori === "demo").length)}
-            merke="vill se demo"
+            merke={t.internt.vilSeDemo}
           />
           <Tall
             verdi={String(alle.filter((h) => h.kategori === "priser").length)}
-            merke="frågar om pris"
+            merke={t.internt.sporOmPris}
           />
         </Rad>
 
         <Kort>
           <Tabell
-            kolonner={["Avsändare", "Gäller", "Meddelande", "Inkom", ""]}
-            tom="Inga meddelanden ännu."
+            kolonner={[t.internt.avsender, t.internt.gjelder, t.internt.melding, t.internt.inn, ""]}
+            tom={t.internt.ingenMeldinger}
             rader={alle.map((h) => [
               <div key="a">
                 <div className="font-semibold">{h.navn}</div>

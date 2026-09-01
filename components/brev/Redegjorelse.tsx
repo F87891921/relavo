@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { useState, useTransition } from "react";
 import { Merke } from "@/components/ui";
 import { FELT_FULL } from "@/components/ui/felt";
@@ -39,6 +41,7 @@ export type Redegjorelse = {
  * deres arkiv. Svaret ville også kommet til oss i stedet for til dem.
  */
 export function RedegjorelseKort({ r }: { r: Redegjorelse }) {
+  const o = useOrd();
   const [apen, setApen] = useState(!r.sendt);
   const [feil, setFeil] = useState("");
   const [venter, start] = useTransition();
@@ -46,12 +49,12 @@ export function RedegjorelseKort({ r }: { r: Redegjorelse }) {
   const emne = `Krav om redegjørelse etter § 24-9 — ${r.anskaffelse_ref ?? ""}`.trim();
 
   const steg = r.vurdering
-    ? { tekst: "Vurdert", tone: "god" as const }
+    ? { tekst: o.brev.vurdert, tone: "god" as const }
     : r.svar
-      ? { tekst: "Svar mottatt — ikke vurdert", tone: "advarsel" as const }
+      ? { tekst: o.brev.svarIkkeVurdert, tone: "advarsel" as const }
       : r.sendt
-        ? { tekst: "Sendt, venter på svar", tone: "advarsel" as const }
-        : { tekst: "Utkast", tone: "noytral" as const };
+        ? { tekst: o.brev.sendtVenter, tone: "advarsel" as const }
+        : { tekst: o.brev.utkast, tone: "noytral" as const };
 
   return (
     <div className="bg-surface rounded-card border border-border shadow-card overflow-hidden">
@@ -74,7 +77,7 @@ export function RedegjorelseKort({ r }: { r: Redegjorelse }) {
           )}
         </span>
         <span className="text-[11.5px] text-faint shrink-0">
-          {apen ? "Skjul" : "Vis"}
+          {apen ? o.felles.skjul : o.felles.vis}
         </span>
       </button>
 
@@ -82,7 +85,7 @@ export function RedegjorelseKort({ r }: { r: Redegjorelse }) {
         <div className="border-t border-border px-5 py-5 space-y-5">
           {/* Steg 1 — brevet */}
           <div>
-            <div className="text-[12px] font-semibold mb-2">Brevet</div>
+            <div className="text-[12px] font-semibold mb-2">{o.brev.brevet}</div>
             <div className="bg-canvas rounded-xl px-4 py-3.5 text-[12.5px] leading-relaxed text-dim whitespace-pre-line">
               {r.utkast}
             </div>
@@ -97,14 +100,14 @@ export function RedegjorelseKort({ r }: { r: Redegjorelse }) {
                   })}
                   className={KNAPP_LYS}
                 >
-                  Åpne i e-post
+                  {o.brev.apneIEpost}
                 </a>
                 <button
                   type="button"
                   onClick={() => navigator.clipboard?.writeText(r.utkast)}
                   className={KNAPP_LYS}
                 >
-                  Kopier teksten
+                  {o.brev.kopierTeksten}
                 </button>
                 <button
                   type="button"
@@ -117,7 +120,7 @@ export function RedegjorelseKort({ r }: { r: Redegjorelse }) {
                   }
                   className={KNAPP}
                 >
-                  Marker som sendt
+                  {o.brev.markerSendt}
                 </button>
               </div>
             )}
@@ -133,7 +136,7 @@ export function RedegjorelseKort({ r }: { r: Redegjorelse }) {
           {r.sendt && (
             <div className="border-t border-border pt-5">
               <div className="text-[12px] font-semibold mb-2">
-                Svar fra leverandøren
+                {o.brev.svarFraLeverandoren}
               </div>
               {r.svar ? (
                 <div className="bg-canvas rounded-xl px-4 py-3.5 text-[12.5px] leading-relaxed whitespace-pre-line">
@@ -155,11 +158,11 @@ export function RedegjorelseKort({ r }: { r: Redegjorelse }) {
                     name="svar"
                     rows={4}
                     required
-                    placeholder="Lim inn svaret dere fikk …"
+                    placeholder={o.brev.limInnSvaret}
                     className={`${FELT_FULL} max-w-none resize-y`}
                   />
                   <button type="submit" disabled={venter} className={`${KNAPP} mt-3`}>
-                    Lagre svaret
+                    {o.brev.lagreSvaret}
                   </button>
                 </form>
               )}
@@ -169,7 +172,7 @@ export function RedegjorelseKort({ r }: { r: Redegjorelse }) {
           {/* Steg 3 — vurderingen */}
           {r.svar && (
             <div className="border-t border-border pt-5">
-              <div className="text-[12px] font-semibold mb-1">Vurdering</div>
+              <div className="text-[12px] font-semibold mb-1">{o.brev.vurdering}</div>
               <p className="text-[11.5px] text-faint mb-3 leading-relaxed max-w-[70ch]">
                 § 24-9 krever at dere tar stilling til om forklaringen holder,
                 og at vurderingen kan dokumenteres i anskaffelsesprotokollen.
@@ -179,8 +182,8 @@ export function RedegjorelseKort({ r }: { r: Redegjorelse }) {
                 <div>
                   <Merke tone={r.vurdering === "tilstrekkelig" ? "god" : "brudd"}>
                     {r.vurdering === "tilstrekkelig"
-                      ? "Tilstrekkelig forklart"
-                      : "Utilstrekkelig — grunnlag for avvisning"}
+                      ? o.brev.tilstrekkelig
+                      : o.brev.utilstrekkelig}
                   </Merke>
                   <p className="text-[12.5px] text-dim mt-2 leading-relaxed whitespace-pre-line">
                     {r.vurdering_begrunnelse}
@@ -199,21 +202,21 @@ export function RedegjorelseKort({ r }: { r: Redegjorelse }) {
                 >
                   <input type="hidden" name="id" value={r.id} />
                   <select name="vurdering" defaultValue="" className={`${FELT_FULL} mb-3`}>
-                    <option value="">Velg …</option>
-                    <option value="tilstrekkelig">Tilstrekkelig forklart</option>
+                    <option value="">{o.veiviser.velg}</option>
+                    <option value="tilstrekkelig">{o.brev.tilstrekkelig}</option>
                     <option value="utilstrekkelig">
-                      Utilstrekkelig — grunnlag for avvisning
+                      {o.brev.utilstrekkelig}
                     </option>
                   </select>
                   <textarea
                     name="begrunnelse"
                     rows={3}
                     required
-                    placeholder="Hvorfor holder forklaringen, eller hvorfor ikke?"
+                    placeholder={o.brev.hvorforHolder}
                     className={`${FELT_FULL} max-w-none resize-y`}
                   />
                   <button type="submit" disabled={venter} className={`${KNAPP} mt-3`}>
-                    Lagre vurderingen
+                    {o.brev.lagreVurderingen}
                   </button>
                 </form>
               )}

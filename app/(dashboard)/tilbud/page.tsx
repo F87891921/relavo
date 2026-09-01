@@ -57,7 +57,7 @@ export default async function TilbudSide() {
           className="mb-5"
         >
           <Tabell
-            kolonner={["Tilbyder", "Tilbudssum", "Avvik mot median", "", "Vurdering"]}
+            kolonner={[t.internt.tilbyder, t.internt.tilbudssum, t.internt.avvikMotMedian, "", t.brev.vurdering]}
             rader={rader.map((r) => [
               <span key="n" className={r.lav ? "font-semibold" : "text-dim"}>
                 {r.navn}
@@ -79,9 +79,9 @@ export default async function TilbudSide() {
                 />
               </div>,
               r.lav ? (
-                <Merke key="v" tone="brudd">Undersøkelsesplikt</Merke>
+                <Merke key="v" tone="brudd">{t.internt.undersokelsesplikt}</Merke>
               ) : (
-                <Merke key="v" tone="god">Normalt</Merke>
+                <Merke key="v" tone="god">{t.internt.normalt}</Merke>
               ),
             ])}
           />
@@ -111,7 +111,7 @@ export default async function TilbudSide() {
         {(lagrede ?? []).length > 0 && (
           <div className="space-y-3 mt-5">
             <div className="text-[12px] font-semibold text-dim">
-              Krav om redegjørelse
+              {t.brev.kravRedegjorelse}
             </div>
             {(lagrede as unknown as Redegjorelse[]).map((r) => (
               <RedegjorelseKort key={r.id} r={r} />

@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { useEffect, useRef, useState } from "react";
 import { FELT_FULL } from "@/components/ui/felt";
 import { formaterOrgnr } from "@/lib/orgnr";
@@ -13,7 +15,7 @@ import { sokKunder, type Kundetreff } from "@/app/internt/handlinger";
  */
 export function KundeSok({
   navn = "kund",
-  merke = "Kund",
+  merke,
   standard = "",
   onValgt,
 }: {
@@ -22,6 +24,7 @@ export function KundeSok({
   standard?: string;
   onValgt?: (t: Kundetreff) => void;
 }) {
+  const t = useOrd();
   const [tekst, setTekst] = useState(standard);
   const [treff, setTreff] = useState<Kundetreff[]>([]);
   const [apen, setApen] = useState(false);
@@ -65,36 +68,36 @@ export function KundeSok({
           setValgt(null);
         }}
         onFocus={() => treff.length && setApen(true)}
-        placeholder="Börja skriv namnet …"
+        placeholder={t.internt.begynnASkrive}
         className={FELT_FULL}
       />
 
       {valgt && (
         <div className="text-[11.5px] text-faint mt-1.5">
-          {valgt.kilde === "kunde" ? "Befintligt konto" : "Lead"}
+          {valgt.kilde === "kunde" ? t.internt.eksisterendeKonto : "Lead"}
           {valgt.org_nr && ` · ${formaterOrgnr(valgt.org_nr)}`}
         </div>
       )}
 
       {apen && treff.length > 0 && (
         <ul className="absolute z-20 left-0 right-0 mt-1 bg-surface border border-border-strong rounded-xl shadow-lift overflow-hidden max-h-64 overflow-y-auto">
-          {treff.map((t) => (
-            <li key={`${t.kilde}-${t.navn}`}>
+          {treff.map((rad) => (
+            <li key={`${rad.kilde}-${rad.navn}`}>
               <button
                 type="button"
                 onClick={() => {
-                  setTekst(t.navn);
-                  setValgt(t);
+                  setTekst(rad.navn);
+                  setValgt(rad);
                   setApen(false);
-                  onValgt?.(t);
+                  onValgt?.(rad);
                 }}
                 className="w-full text-left px-3.5 py-2.5 hover:bg-canvas transition"
               >
-                <span className="block text-[13px] font-semibold">{t.navn}</span>
+                <span className="block text-[13px] font-semibold">{rad.navn}</span>
                 <span className="block text-[11.5px] text-faint">
-                  {t.kilde === "kunde" ? "Konto" : "Lead"}
-                  {t.org_nr && ` · ${formaterOrgnr(t.org_nr)}`}
-                  {t.kontaktperson && ` · ${t.kontaktperson}`}
+                  {rad.kilde === "kunde" ? t.internt.konto : "Lead"}
+                  {rad.org_nr && ` · ${formaterOrgnr(rad.org_nr)}`}
+                  {rad.kontaktperson && ` · ${rad.kontaktperson}`}
                 </span>
               </button>
             </li>

@@ -3,9 +3,11 @@ import { StaffShell } from "@/components/StaffShell";
 import { Side, Sidehode, Kort, Merke, Tall, Rad, type Tone } from "@/components/ui";
 import { Kredittsjekk } from "@/components/internt/Kredittsjekk";
 import { formaterOrgnr } from "@/lib/orgnr";
+import type { Ordbok } from "@/lib/sprak";
 
 const TONE: Record<string, Tone> = { lav: "god", middels: "advarsel", hoy: "brudd" };
-const TEKST: Record<string, string> = { lav: "Låg risk", middels: "Medelrisk", hoy: "Hög risk" };
+const tekstFor = (t: Ordbok, v: string) =>
+  ({ lav: t.internt.lavRisiko, middels: t.internt.middelsRisiko, hoy: t.internt.hoyRisiko })[v] ?? v;
 
 const PUNKT_TONE: Record<string, Tone> = {
   ok: "god",
@@ -36,17 +38,17 @@ export default async function InterntKredittSide() {
         />
 
         <Rad>
-          <Tall verdi={String(alle.length)} merke="kontroller körda" />
+          <Tall verdi={String(alle.length)} merke={t.internt.kontrollerKjort} />
           <Tall
             verdi={String(alle.filter((s) => s.vurdering === "hoy").length)}
-            merke="med hög risk"
+            merke={t.internt.medHoyRisiko}
             tone={alle.some((s) => s.vurdering === "hoy") ? "brudd" : undefined}
           />
           <Tall
             verdi={String(alle.filter((s) => s.vurdering === "middels").length)}
-            merke="med medelrisk"
+            merke={t.internt.medMiddels}
           />
-          <Tall verdi="2 av 4" merke="register påkopplade" />
+          <Tall verdi="2 av 4" merke={t.internt.registrePakoblet} />
         </Rad>
 
         <Kredittsjekk />
@@ -55,7 +57,7 @@ export default async function InterntKredittSide() {
           {alle.length === 0 && (
             <Kort>
               <div className="px-5 py-10 text-center text-dim text-sm">
-                Inga kontroller körda ännu. Skriv ett organisationsnummer ovan.
+                {t.internt.ingenKredittsjekk}
               </div>
             </Kort>
           )}
@@ -69,7 +71,7 @@ export default async function InterntKredittSide() {
               <div className="px-5 py-4">
                 <div className="mb-4">
                   <Merke tone={TONE[s.vurdering] ?? "noytral"}>
-                    {TEKST[s.vurdering] ?? s.vurdering}
+                    {tekstFor(t, s.vurdering) ?? s.vurdering}
                   </Merke>
                 </div>
                 <dl className="divide-y divide-border">
@@ -83,10 +85,10 @@ export default async function InterntKredittSide() {
                         {p.status === "ok"
                           ? "OK"
                           : p.status === "advarsel"
-                            ? "Varning"
+                            ? t.internt.advarsel
                             : p.status === "brudd"
-                              ? "Allvarligt"
-                              : "Ej kontrollerad"}
+                              ? t.internt.alvorlig
+                              : t.internt.ikkeKontrollert}
                       </Merke>
                     </div>
                   ))}

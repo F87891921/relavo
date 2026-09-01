@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { FELT_FULL as INPUT } from "@/components/ui/felt";
 export { FELT_FULL as INPUT } from "@/components/ui/felt";
 
@@ -23,6 +25,7 @@ export function Skjema({
   handling: (fd: FormData) => Promise<Svar>;
   children: ReactNode;
 }) {
+  const t = useOrd();
   const [apen, setApen] = useState(false);
   const [feil, setFeil] = useState("");
   const [venter, start] = useTransition();
@@ -69,7 +72,7 @@ export function Skjema({
               disabled={venter}
               className="bg-accent hover:bg-accent-hover active:scale-[0.97] transition text-white text-sm font-semibold px-5 py-2.5 rounded-xl disabled:opacity-50"
             >
-              {venter ? "Sparar …" : "Spara"}
+              {venter ? t.felles.lagrer : t.felles.lagre}
             </button>
             <button
               type="button"
@@ -79,7 +82,7 @@ export function Skjema({
               }}
               className="text-sm text-dim hover:text-ink px-3 py-2.5 transition"
             >
-              Avbryt
+              {t.felles.avbryt}
             </button>
           </div>
         </form>

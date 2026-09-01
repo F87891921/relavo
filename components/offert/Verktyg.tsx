@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { useState, useTransition } from "react";
 import { FELT_FULL } from "@/components/ui/felt";
 import { sendOfferte } from "@/app/internt/handlinger";
@@ -24,6 +26,8 @@ export function Verktyg({
   redanSand: boolean;
   lenke: string;
 }) {
+  const o = useOrd();
+  const t = useOrd();
   const [til, setTil] = useState(epost ?? "");
   const [svar, setSvar] = useState<{ bra: boolean; tekst: string } | null>(null);
   const [kopierad, setKopierad] = useState(false);
@@ -51,7 +55,7 @@ export function Verktyg({
       setKopierad(true);
       setTimeout(() => setKopierad(false), 2000);
     } catch {
-      setSvar({ bra: false, tekst: "Kunde inte kopiera. Markera länken nedan." });
+      setSvar({ bra: false, tekst: o.internt.kunneIkkeKopiere });
     }
   }
 
@@ -60,7 +64,7 @@ export function Verktyg({
       <div className="flex flex-wrap items-end gap-2.5">
         <div className="grow min-w-[220px]">
           <label htmlFor="til" className="block text-xs font-semibold mb-1.5">
-            Skicka till
+            {o.internt.skickaTill}
           </label>
           <input
             id="til"
@@ -72,13 +76,13 @@ export function Verktyg({
           />
         </div>
         <button type="button" onClick={skicka} disabled={venter} className={`${KNAPP} mb-[1px]`}>
-          {venter ? "Skickar …" : redanSand ? "Skicka igen" : "Skicka offerten"}
+          {venter ? t.felles.sender : redanSand ? o.internt.sendIgjen : o.internt.sendTilbudet}
         </button>
         <button type="button" onClick={() => window.print()} className={`${KNAPP_LYS} mb-[1px]`}>
-          Skriv ut / spara PDF
+          {o.internt.skrivUt}
         </button>
         <button type="button" onClick={kopiera} className={`${KNAPP_LYS} mb-[1px]`}>
-          {kopierad ? "Kopierad ✓" : "Kopiera länk"}
+          {kopierad ? o.internt.kopiert : o.internt.kopierLenke}
         </button>
       </div>
 

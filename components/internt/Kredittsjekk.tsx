@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { validerOrgnr, formaterOrgnr } from "@/lib/orgnr";
@@ -7,6 +9,7 @@ import { kjorKredittsjekk } from "@/app/internt/handlinger";
 import { INPUT } from "@/components/internt/Skjema";
 
 export function Kredittsjekk() {
+  const t = useOrd();
   const router = useRouter();
   const [tekst, setTekst] = useState("");
   const [feil, setFeil] = useState("");
@@ -20,7 +23,7 @@ export function Kredittsjekk() {
     if (!sifre.length) return "Ni siffer. Kontrollsifferet valideres med modulus 11.";
     if (!full) return `${sifre.length} av 9 siffer — ${9 - sifre.length} igjen.`;
     if (!validering.ok) return validering.feil;
-    return "Klar för kontroll.";
+    return t.internt.klarForKontroll;
   }
 
   function kjor() {
@@ -39,7 +42,7 @@ export function Kredittsjekk() {
 
   return (
     <div className="bg-surface rounded-card shadow-card p-6 mb-5">
-      <h2 className="text-[15px] font-semibold mb-1">Kör kreditkontroll</h2>
+      <h2 className="text-[15px] font-semibold mb-1">{t.internt.kjorKredittkontroll}</h2>
       <p className="text-[12.5px] text-dim mb-4 leading-relaxed max-w-[64ch]">
         Hämtar selskapsdata från Enhetsregisteret och senaste årsredovisning
         från Regnskapsregisteret. Båda är öppna och gratis. Betalningsanmärkningar
@@ -78,7 +81,7 @@ export function Kredittsjekk() {
           disabled={!validering.ok || venter}
           className="bg-accent hover:bg-accent-hover active:scale-[0.97] transition text-white text-sm font-semibold px-5 py-2.5 rounded-xl disabled:opacity-40 disabled:pointer-events-none"
         >
-          {venter ? "Kontrollerar …" : "Kör kontroll"}
+          {venter ? t.internt.kontrollerer : t.internt.kjorKontroll}
         </button>
       </div>
 

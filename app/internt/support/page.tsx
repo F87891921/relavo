@@ -28,15 +28,15 @@ export default async function InterntSupportSide() {
         />
 
         <Rad>
-          <Tall verdi={String(alle.length)} merke="ärenden totalt" />
+          <Tall verdi={String(alle.length)} merke={t.internt.sakerTotalt} />
           <Tall
             verdi={String(venterPaOss.length)}
-            merke="väntar på oss"
+            merke={t.internt.venterPaOss}
             tone={venterPaOss.length ? "brudd" : undefined}
           />
           <Tall
             verdi={String(alle.filter((s) => s.status === "venter_kunde").length)}
-            merke="väntar på kunden"
+            merke={t.internt.venterPaKunden}
           />
           <Tall
             verdi={String(alle.filter((s) => s.status === "lukket").length)}
@@ -47,7 +47,7 @@ export default async function InterntSupportSide() {
         <div className="space-y-3">
           {alle.length === 0 && (
             <div className="bg-surface rounded-card border border-border shadow-card px-5 py-10 text-center text-dim text-sm">
-              Inga ärenden ännu.
+              {t.internt.ingenSaker}
             </div>
           )}
           {alle.map((s) => (

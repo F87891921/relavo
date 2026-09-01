@@ -1,5 +1,7 @@
 "use client";
 
+import { useOrd } from "@/components/Sprakgiver";
+
 import { useState, useTransition } from "react";
 import { Merke } from "@/components/ui";
 import { settBehandlet } from "@/app/internt/handlinger";
@@ -11,6 +13,7 @@ export function MarkerBehandlet({
   id: string;
   behandlet: boolean;
 }) {
+  const t = useOrd();
   const [av, setAv] = useState(behandlet);
   const [venter, start] = useTransition();
 
@@ -26,9 +29,9 @@ export function MarkerBehandlet({
           })
         }
         className="disabled:opacity-50"
-        title="Ångra"
+        title={t.internt.angre}
       >
-        <Merke tone="god">Behandlad</Merke>
+        <Merke tone="god">{t.internt.behandlet}</Merke>
       </button>
     );
 
@@ -44,7 +47,7 @@ export function MarkerBehandlet({
       }
       className="text-[12.5px] text-accent hover:underline disabled:opacity-50 whitespace-nowrap"
     >
-      {venter ? "Sparar …" : "Markera behandlad"}
+      {venter ? t.felles.lagrer : t.internt.merkBehandlet}
     </button>
   );
 }

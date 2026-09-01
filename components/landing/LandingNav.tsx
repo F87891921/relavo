@@ -15,7 +15,7 @@ export function LandingNav() {
   return (
     <nav className="nav">
       <div className="nav-in">
-        <Link href="/" className="logo" aria-label="Relavo, til forsiden">
+        <Link href="/" className="logo" aria-label={ord().internt.tilForsiden}>
           <RelavoLogo />
         </Link>
         <div className="nav-links">

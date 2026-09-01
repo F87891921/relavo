@@ -1,5 +1,6 @@
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
+import type { Ordbok } from "@/lib/sprak";
 import { Side, Sidehode, Kort, Tabell, Merke, Stripe } from "@/components/ui";
 import { KONTON, PLANER } from "@/lib/demo/staff";
 
@@ -8,10 +9,17 @@ import { KONTON, PLANER } from "@/lib/demo/staff";
  * sin första kontroll — inte när avtalet är påskrivet. Det är den enda
  * mätpunkten som säger något om kunden faktiskt kommit igång.
  */
-const STEG = ["Avtal", "Konto skapat", "Användare inbjudna", "Leverantörer inlästa", "Första kontrollen"];
+const stegNavn = (t: Ordbok) => [
+  t.internt.avtale,
+  t.internt.kontoOpprettet,
+  t.internt.brukereInvitert,
+  t.internt.leverandorerLest,
+  t.internt.forsteKontrollen,
+];
 
 export default async function InterntOnboardingSide() {
   const { t } = await krevAnsatt();
+  const STEG = stegNavn(t);
 
   // Hur långt varje konto kommit utleds av demodatan: konton med
   // förbrukning har kört kontroller, konton med leverantörer har läst in dem.
@@ -29,9 +37,9 @@ export default async function InterntOnboardingSide() {
           tittel={t.ansattsider.onboarding.tittel}
           tekst={t.ansattsider.onboarding.tekst}
         />
-        <Kort note="demodata från relavo-staff.html">
+        <Kort note={t.internt.demodataStaff}>
           <Tabell
-            kolonner={["Konto", "Plan", "Framdrift", "Står på", "Kontakt", "Status"]}
+            kolonner={[t.internt.konto, t.internt.plan, t.internt.framdrift, t.internt.starPa, t.internt.kontaktKol, t.internt.statusKol]}
             rader={rader.map((r) => [
               <span key="n" className="font-semibold whitespace-nowrap">{r.namn}</span>,
               <Merke key="p" tone={r.plan === "enterprise" ? "aksent" : "noytral"}>
@@ -51,9 +59,9 @@ export default async function InterntOnboardingSide() {
               </span>,
               <span key="k" className="text-dim whitespace-nowrap">{r.kontakt}</span>,
               r.klar ? (
-                <Merke key="st" tone="god">Igång</Merke>
+                <Merke key="st" tone="god">{t.internt.igang}</Merke>
               ) : (
-                <Merke key="st" tone="advarsel">Under uppstart</Merke>
+                <Merke key="st" tone="advarsel">{t.internt.underOppstart}</Merke>
               ),
             ])}
           />
