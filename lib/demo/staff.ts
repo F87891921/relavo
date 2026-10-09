@@ -36,7 +36,7 @@ export const KONTON = [
   },
   {
     "id": "nordvest",
-    "namn": "Nordvest Entreprenør AS",
+    "namn": "Demo Entreprenør AS",
     "enhet": "Innkjøp",
     "plan": "standard",
     "anvant": 94,
@@ -142,7 +142,7 @@ export const LOGG = [
     "namn": "Fred Smith",
     "konto": "Askøy kommune",
     "vad": "öppnade leverantörsrapport",
-    "ref": "Solstrand Renhold AS",
+    "ref": "Testrenhold AS",
     "tid": "i dag 09:14",
     "varfor": "Supportärende #204 — kunden såg fel risknivå"
   },
@@ -167,7 +167,7 @@ export const LOGG = [
   {
     "vem": "FS",
     "namn": "Fred Smith",
-    "konto": "Nordvest Entreprenør AS",
+    "konto": "Demo Entreprenør AS",
     "vad": "öppnade kontrollhistorik",
     "ref": "12 kontroller",
     "tid": "26 aug 14:20",
@@ -180,7 +180,7 @@ export const ARENDEN = [
     "id": "S-2041",
     "konto": "bergen",
     "kategori": "Data",
-    "emne": "Feil risikonivå på Solstrand Renhold",
+    "emne": "Feil risikonivå på Testrenhold",
     "innsyn": true,
     "status": "besvarad",
     "vantat": 0,
@@ -452,7 +452,7 @@ export const LEADS = [
   },
   {
     "id": "L-037",
-    "bolag": "Veidekke Entreprenør AS",
+    "bolag": "Eksempel Entreprenør AS",
     "kontakt": "Marte Lunde",
     "epost": "marte.lunde@veidekke.no",
     "kalla": "Mässa",
@@ -518,7 +518,7 @@ export const OFFERTER = [
   },
   {
     "id": "O-015",
-    "kund": "Veidekke Entreprenør AS",
+    "kund": "Eksempel Entreprenør AS",
     "plan": "enterprise",
     "ar": 4,
     "rabatt": 0,

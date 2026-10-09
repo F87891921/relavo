@@ -421,7 +421,7 @@ export const en: Ordbok = {
     nySak: "New ticket",
     hvaGjelderDet: "What is it about?",
     beskrivSaken: "Describe the issue",
-    emneEksempel: "Wrong risk level on Solstrand Renhold",
+    emneEksempel: "Wrong risk level on Testrenhold AS",
     meldingEksempel: "What happened, and what did you expect instead?",
     varsleValg: "Email me when the ticket is answered or changes status.",
     sendInn: "Send",

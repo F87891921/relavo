@@ -430,7 +430,7 @@ export const no = {
     nySak: "Ny sak",
     hvaGjelderDet: "Hva gjelder det?",
     beskrivSaken: "Beskriv saken",
-    emneEksempel: "Feil risikonivå på Solstrand Renhold",
+    emneEksempel: "Feil risikonivå på Testrenhold AS",
     meldingEksempel: "Hva skjedde, og hva forventet du i stedet?",
     varsleValg: "Send meg e-post når saken får svar eller endrer status.",
     sendInn: "Send inn",

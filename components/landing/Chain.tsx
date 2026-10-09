@@ -15,10 +15,10 @@ import { Fragment, useEffect, useRef, useState } from "react";
 // ­ er myk bindestrek: «Hovedleverandør» deles bare når det trengs,
 // og da på stavelsen — ikke midt i ordet slik overflow-wrap ville gjort.
 const SELSKAP = [
-  { navn: "Nordvik Bygg", variant: "self" },
-  { navn: "Bergvik Anlegg", variant: "" },
-  { navn: "Fossen Grunn", variant: "" },
-  { navn: "HK Fasade", variant: "over" },
+  { navn: "Demobygg", variant: "self" },
+  { navn: "Demoanlegg", variant: "" },
+  { navn: "Prøvegrunn", variant: "" },
+  { navn: "Prøvefasade", variant: "over" },
 ];
 
 export function Chain() {

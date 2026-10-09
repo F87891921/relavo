@@ -10,7 +10,7 @@
 export const SUPPLIERS = [
   {
     "org": "924118504",
-    "name": "Nordvik Bygg AS",
+    "name": "Demobygg AS",
     "risk": "hoy",
     "bransje": "Bygg og anlegg",
     "last": "12. aug 2026",
@@ -57,7 +57,7 @@ export const SUPPLIERS = [
   },
   {
     "org": "918774203",
-    "name": "Bergvik Anlegg AS",
+    "name": "Demoanlegg AS",
     "risk": "middels",
     "bransje": "Bygg og anlegg",
     "last": "12. aug 2026",
@@ -103,7 +103,7 @@ export const SUPPLIERS = [
   },
   {
     "org": "913550870",
-    "name": "Solstrand Renhold AS",
+    "name": "Testrenhold AS",
     "risk": "hoy",
     "bransje": "Renhold",
     "last": "4. jul 2026",
@@ -150,7 +150,7 @@ export const SUPPLIERS = [
   },
   {
     "org": "916204337",
-    "name": "Fjellheim Entreprenør AS",
+    "name": "Prøve Entreprenør AS",
     "risk": "lav",
     "bransje": "Bygg og anlegg",
     "last": "26. aug 2026",
@@ -195,7 +195,7 @@ export const SUPPLIERS = [
   },
   {
     "org": "927331659",
-    "name": "Fossen Grunn AS",
+    "name": "Prøvegrunn AS",
     "risk": "middels",
     "bransje": "Grunnarbeid",
     "last": "19. aug 2026",
@@ -241,7 +241,7 @@ export const SUPPLIERS = [
   },
   {
     "org": "911776049",
-    "name": "Hardanger Elektro AS",
+    "name": "Demo Elektro AS",
     "risk": "lav",
     "bransje": "Elektro",
     "last": "21. aug 2026",
@@ -286,7 +286,7 @@ export const SUPPLIERS = [
   },
   {
     "org": "922401772",
-    "name": "Clean Nord AS",
+    "name": "Demoservice ANS",
     "risk": "middels",
     "bransje": "Renhold",
     "last": "2. mai 2026",
@@ -332,7 +332,7 @@ export const SUPPLIERS = [
   },
   {
     "org": "930662119",
-    "name": "Sotra Ventilasjon AS",
+    "name": "Prøveventilasjon AS",
     "risk": "lav",
     "bransje": "VVS",
     "last": "27. aug 2026",
@@ -630,7 +630,7 @@ export const SAKER = [
   {
     "id": "S-2041",
     "kategori": "Data",
-    "emne": "Feil risikonivå på Solstrand Renhold",
+    "emne": "Feil risikonivå på Testrenhold",
     "gjelder": "913550870",
     "innsyn": true,
     "status": "apen",

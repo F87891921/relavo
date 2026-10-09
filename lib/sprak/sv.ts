@@ -421,7 +421,7 @@ export const sv: Ordbok = {
     nySak: "Nytt ärende",
     hvaGjelderDet: "Vad gäller det?",
     beskrivSaken: "Beskriv ärendet",
-    emneEksempel: "Fel risknivå på Solstrand Renhold",
+    emneEksempel: "Fel risknivå på Testrenhold AS",
     meldingEksempel: "Vad hände, och vad förväntade du dig i stället?",
     varsleValg: "Skicka e-post till mig när ärendet får svar eller byter status.",
     sendInn: "Skicka in",

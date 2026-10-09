@@ -75,7 +75,7 @@ export type Likhet =
 
 /**
  * Sammenligner to navn. Rekkefølgen på fornavn og etternavn ignoreres —
- * registrene skriver «Grongstad, Morten», folk skriver «Morten Grongstad».
+ * registrene skriver «Nordmann, Kari», folk skriver «Kari Nordmann».
  *
  * Krever at hvert ord finner sin make. Uten det ville «Anne Berg» og
  * «Anne Bergersen Lie» blitt regnet som samme person.

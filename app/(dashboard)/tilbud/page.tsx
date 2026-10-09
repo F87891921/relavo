@@ -12,8 +12,8 @@ import { RedegjorelseKort, type Redegjorelse } from "@/components/brev/Redegjore
  * oppdragsgivers eget estimat.
  */
 const TILBUD = [
-  { navn: "Solstrand Renhold AS", sum: 21_400_000 },
-  { navn: "Clean Nord AS", sum: 33_800_000 },
+  { navn: "Testrenhold AS", sum: 21_400_000 },
+  { navn: "Demoservice ANS", sum: 33_800_000 },
   { navn: "Vestlandsrenhold AS", sum: 35_200_000 },
   { navn: "Fjordservice AS", sum: 36_900_000 },
 ];

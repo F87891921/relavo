@@ -76,12 +76,12 @@ export function Plattform() {
             <div className="feat-ui">
               <div className="bud">
                 <div className="bud-r lav">
-                  <span className="bud-n">Solstrand Renhold</span>
+                  <span className="bud-n">Testrenhold</span>
                   <span className="bud-s mono">21,4 mill</span>
                   <span className="bud-a">−39 %</span>
                 </div>
                 <div className="bud-r">
-                  <span className="bud-n">Clean Nord</span>
+                  <span className="bud-n">Demoservice</span>
                   <span className="bud-s mono">33,8 mill</span>
                   <span className="bud-a" />
                 </div>
