@@ -3,9 +3,18 @@
  * relavo-juridisk.html. Teksten er uendret — den er skrevet for å stå seg
  * juridisk, og skal ikke omformuleres uten at noen med ansvar har lest den.
  *
- * MERK: teksten inneholder «org.nr FYLLES UT». Den må fylles inn før
- * sidene kan brukes mot ekte kunder.
+ * Avtaleparten settes fra lib/relavo.ts, ikke som fast tekst. Den sto før
+ * som «Relavo AS, org.nr FYLLES UT» — og Relavo AS finnes ikke. Relavo er
+ * produktnavnet; selskapet er LOD TECH AB NUF, den norske avdelingen av
+ * svenske LOD TECH AB. En avtale som oppgir et selskap som ikke er
+ * registrert, er en avtale motparten kan bestride.
+ *
+ * MERK: to kommersielle valg står igjen og er markert nedenfor —
+ * oppsigelsesfristen og vernetinget. Begge er satt til et rimelig
+ * utgangspunkt og bør bekreftes av noen med ansvar.
  */
+import { avtalepart } from "@/lib/relavo";
+
 export type Blokk =
   | { t: "p" | "h3"; v: string }
   | { t: "liste"; v: string[] };
@@ -19,7 +28,7 @@ export const JURIDISK: Seksjon[] = [
     "blokker": [
       {
         "t": "p",
-        "v": "Disse vilkårene gjelder mellom Relavo AS, org.nr FYLLES UT («Relavo», «vi»), og virksomheten som har inngått avtale om bruk av tjenesten («kunden», «du»)."
+        "v": `Disse vilkårene gjelder mellom ${avtalepart()} («Relavo», «vi»), og virksomheten som har inngått avtale om bruk av tjenesten («kunden», «du»). Relavo er et produktnavn; avtaleparten er selskapet nevnt over.`
       },
       {
         "t": "h3",
@@ -75,7 +84,7 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
-        "v": "Avtalen løper til den sies opp av en av partene med FYLLES UT måneders varsel før utløpet av avtaleperioden. Ved oppsigelse beholder kunden tilgang ut den betalte perioden."
+        "v": "Avtalen løper til den sies opp av en av partene med tre måneders varsel før utløpet av avtaleperioden. Ved oppsigelse beholder kunden tilgang ut den betalte perioden."
       },
       {
         "t": "p",
@@ -115,7 +124,7 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
-        "v": "Avtalen reguleres av norsk rett. Tvister søkes løst i minnelighet. Verneting er FYLLES UT tingrett."
+        "v": "Avtalen reguleres av norsk rett. Tvister søkes løst i minnelighet. Verneting er Oslo tingrett."
       }
     ]
   },
@@ -133,7 +142,7 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
-        "v": "Relavo AS, org.nr FYLLES UT, adresse, er behandlingsansvarlig for opplysninger om brukerne av tjenesten og besøkende på nettstedet."
+        "v": `${avtalepart()} er behandlingsansvarlig for opplysninger om brukerne av tjenesten og besøkende på nettstedet.`
       },
       {
         "t": "p",

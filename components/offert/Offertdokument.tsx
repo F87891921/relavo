@@ -49,22 +49,14 @@ export function Offertdokument({ o }: { o: Offertdata }) {
         <div className="flex items-start justify-between gap-6 flex-wrap mb-9">
           <div>
             <RelavoLogo className="w-[104px] h-auto text-ink mb-3" />
+            {/* Relavo er produktnavnet. Det som skal stå på et tilbud er
+                selskapet som faktisk blir part. */}
             <div className="text-[11.5px] text-dim leading-relaxed">
               {RELAVO.navn}
               <br />
-              {orgnr ? (
-                <>Org.nr {orgnr}</>
-              ) : (
-                <span className="text-bad font-semibold">
-                  Org.nr mangler — sett NEXT_PUBLIC_RELAVO_ORG_NR
-                </span>
-              )}
-              {RELAVO.adresse && (
-                <>
-                  <br />
-                  {RELAVO.adresse}
-                </>
-              )}
+              Org.nr {orgnr}
+              <br />
+              {RELAVO.adresse}
               <br />
               {RELAVO.epost} · {RELAVO.nett}
             </div>
