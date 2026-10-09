@@ -911,6 +911,15 @@ export const no = {
     valgfritt: "valgfritt",
   },
   nesteSteg: {
+    endringKrav: "Gjort når dere har tatt stilling til om kontrakten kan fortsette, og ført vurderingen i protokollen. En konkurs hos leverandøren er en avvisningsgrunn etter § 24-2, ikke noe som ordner seg.",
+    seEndringen: "Se endringen",
+    endringAnnet: "Noe har endret seg siden i går.",
+    endring: {
+      konkurs: "Er registrert konkurs siden i går.",
+      tvangsavvikling: "Er satt under tvangsavvikling.",
+      slettet_fra_register: "Finnes ikke lenger i Enhetsregisteret.",
+      renhold_mistet_godkjenning: "Har mistet godkjenningen i renholdsregisteret. Det er ikke lov å kjøpe renholdstjenester herfra.",
+    },
     overskrift: "Neste steg",
     vurderSvar: "Svaret på kravet om redegjørelse er kommet, men ikke vurdert.",
     vurderSvarKrav: "Gjort når dere har tatt stilling skriftlig. § 24-9 krever en vurdering — til den finnes kan tilbudet verken avvises eller tildeles.",

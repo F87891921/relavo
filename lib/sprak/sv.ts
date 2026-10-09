@@ -902,6 +902,15 @@ export const sv: Ordbok = {
     valgfritt: "valfritt",
   },
   nesteSteg: {
+    endringKrav: "Klart när ni tagit ställning till om kontraktet kan fortsätta och fört bedömningen i protokollet. En konkurs hos leverantören är en förkastandegrund enligt § 24-2, inte något som löser sig.",
+    seEndringen: "Se ändringen",
+    endringAnnet: "Något har ändrats sedan i går.",
+    endring: {
+      konkurs: "Är registrerat i konkurs sedan i går.",
+      tvangsavvikling: "Har satts under tvångslikvidation.",
+      slettet_fra_register: "Finns inte längre i Enhetsregisteret.",
+      renhold_mistet_godkjenning: "Har förlorat godkännandet i städregistret. Det är inte tillåtet att köpa städtjänster härifrån.",
+    },
     overskrift: "Nästa steg",
     vurderSvar: "Svaret på kravet om redogörelse har kommit men är inte bedömt.",
     vurderSvarKrav: "Klart när ni tagit ställning skriftligt. § 24-9 kräver en bedömning — tills den finns kan anbudet varken förkastas eller tilldelas.",

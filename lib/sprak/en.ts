@@ -902,6 +902,15 @@ export const en: Ordbok = {
     valgfritt: "optional",
   },
   nesteSteg: {
+    endringKrav: "Done when you have decided whether the contract can continue and recorded that in the procurement record. A supplier bankruptcy is a ground for exclusion under § 24-2, not something that resolves itself.",
+    seEndringen: "See the change",
+    endringAnnet: "Something changed since yesterday.",
+    endring: {
+      konkurs: "Was registered bankrupt since yesterday.",
+      tvangsavvikling: "Has been placed under compulsory liquidation.",
+      slettet_fra_register: "No longer exists in the Norwegian company register.",
+      renhold_mistet_godkjenning: "Has lost its approval in the cleaning register. Buying cleaning services from them is not permitted.",
+    },
     overskrift: "Next step",
     vurderSvar: "The response to the request for explanation has arrived but has not been assessed.",
     vurderSvarKrav: "Done when you have taken a written position. § 24-9 requires an assessment — until it exists the tender can neither be rejected nor awarded.",

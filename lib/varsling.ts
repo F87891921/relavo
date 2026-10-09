@@ -109,3 +109,64 @@ ${o.melding}
 ${grunnUrl()}/internt/kontakt`,
   });
 }
+
+/* ------------------------------------------------------------ Overvåking */
+
+const TEKST: Record<string, string> = {
+  konkurs: "er registrert konkurs",
+  tvangsavvikling: "er under tvangsavvikling",
+  under_avvikling: "er under avvikling",
+  slettet_fra_register: "finnes ikke lenger i Enhetsregisteret",
+  renhold_mistet_godkjenning: "har mistet godkjenningen i renholdsregisteret",
+  renhold_godkjent: "er godkjent i renholdsregisteret",
+  ny_daglig_leder: "har fått ny daglig leder",
+  styreendring: "har endret styre",
+  navneendring: "har byttet navn",
+  nytt_regnskap: "har levert nytt årsregnskap",
+};
+
+/**
+ * Ett varsel per organisasjon per kjøring, ikke ett per hendelse.
+ *
+ * Endrer ti leverandører seg samme natt, er ti e-poster en måte å få folk
+ * til å lage en regel som arkiverer alt vi sender.
+ *
+ * Bare kritiske og advarsler utløser e-post. «Har byttet navn» er verdt å
+ * se i oversikten, ikke verdt å bli vekket av.
+ */
+export async function varsleOmHendelser(
+  organisasjonId: string,
+  hendelser: { navn: string; slag: string; alvor: string }[],
+) {
+  const verdt = hendelser.filter((h) => h.alvor !== "info");
+  if (!verdt.length) return;
+
+  const db = admin();
+  const { data: mottakere } = await db
+    .from("profiler")
+    .select("id")
+    .eq("organisasjon_id", organisasjonId)
+    .eq("rolle", "administrator");
+
+  if (!mottakere?.length) return;
+
+  const kritiske = verdt.filter((h) => h.alvor === "kritisk");
+  const linjer = verdt
+    .map((h) => `  ${h.alvor === "kritisk" ? "!" : "·"} ${h.navn} ${TEKST[h.slag] ?? h.slag}`)
+    .join("\n");
+
+  const emne = kritiske.length
+    ? `Endring som krever handling — ${kritiske[0].navn}`
+    : `${verdt.length} endring${verdt.length === 1 ? "" : "er"} hos leverandørene dere følger`;
+
+  const tekst = `Den daglige overvåkingen fant dette siden i går:
+
+${linjer}
+
+${kritiske.length ? "Linjene med utropstegn er avvisningsgrunner etter § 24-2, eller gjør det ulovlig å kjøpe tjenesten. De bør ses på i dag.\n\n" : ""}${grunnUrl()}/oversikt`;
+
+  for (const m of mottakere) {
+    const til = await epostTil(m.id);
+    await prov({ til, emne, tekst });
+  }
+}

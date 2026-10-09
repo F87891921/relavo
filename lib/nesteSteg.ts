@@ -44,8 +44,14 @@ export const nesteSteg = cache(async (): Promise<Steg> => {
   const t = ord().nesteSteg;
   const idag = new Date().toISOString().slice(0, 10);
 
-  const [{ data: uvurdert }, { data: espd }, { data: ubesvart }, { data: jav },
+  const [{ data: kritiske }, { data: uvurdert }, { data: espd }, { data: ubesvart }, { data: jav },
          { count: antLev }, { count: antKontroll }] = await Promise.all([
+    supabase
+      .from("overvakning_hendelser")
+      .select("id, slag, leverandorer(navn)")
+      .eq("alvor", "kritisk")
+      .is("lest", null)
+      .order("oppdaget", { ascending: false }),
     supabase
       .from("redegjorelser")
       .select("id, leverandor_navn, frist")
@@ -72,6 +78,22 @@ export const nesteSteg = cache(async (): Promise<Steg> => {
 
   const navn = (r: { leverandorer?: unknown }) =>
     (r.leverandorer as { navn?: string } | null)?.navn ?? "—";
+
+  // 0 — noe har endret seg i natt som i seg selv er en avvisningsgrunn.
+  // Det går foran alt annet: de andre punktene handler om saker vi
+  // allerede visste om.
+  if (kritiske?.length) {
+    const k = kritiske[0];
+    return {
+      tittel: navn(k),
+      detalj: t.endring[k.slag as keyof typeof t.endring] ?? t.endringAnnet,
+      kriterium: t.endringKrav,
+      href: "/leverandorer",
+      knapp: t.seEndringen,
+      tone: "brudd",
+      kø: kritiske.length - 1,
+    };
+  }
 
   // 1 — svar som venter på en vurdering
   if (uvurdert?.length) {
