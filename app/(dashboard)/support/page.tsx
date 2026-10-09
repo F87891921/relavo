@@ -2,9 +2,11 @@ import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode, Tall, Rad } from "@/components/ui";
 import { NySak, SakKort, type Sak } from "@/components/sak/SakTrad";
+import { epostOppsatt } from "@/lib/epost";
 
 export default async function SupportSide() {
   const { supabase, t } = await krevProfil();
+  const epostPa = epostOppsatt();
 
   const { data: saker } = await supabase
     .from("saker")
@@ -51,7 +53,7 @@ export default async function SupportSide() {
             </div>
           )}
           {alle.map((s) => (
-            <SakKort key={s.id} sak={s} />
+            <SakKort key={s.id} sak={s} epostPa={epostPa} />
           ))}
         </div>
       </Side>

@@ -418,6 +418,7 @@ export const en: Ordbok = {
     qrAlt: "QR code for two-factor",
   },
   sak: {
+    ingenEpost: "Notifications are not switched on at our end yet, so no email is sent. Follow the ticket here in the meantime.",
     nySak: "New ticket",
     hvaGjelderDet: "What is it about?",
     beskrivSaken: "Describe the issue",

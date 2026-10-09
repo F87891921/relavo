@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { varsleOssOmHenvendelse } from "@/lib/varsling";
 
 export type Svar = { ok: true } | { ok: false; feil: string };
 
@@ -38,5 +39,17 @@ export async function sendHenvendelse(fd: FormData): Promise<Svar> {
   });
 
   if (error) return { ok: false, feil: "Kunne ikke sende inn. Prøv igjen." };
+
+  // Henvendelsen er lagret uansett. Varselet er for at noen skal se den i
+  // dag og ikke neste gang noen åpner lista.
+  await varsleOssOmHenvendelse({
+    navn,
+    epost,
+    organisasjon: t(fd, "organisasjon") || null,
+    telefon: t(fd, "telefon") || null,
+    kategori: t(fd, "kategori") || "annet",
+    melding,
+  });
+
   return { ok: true };
 }

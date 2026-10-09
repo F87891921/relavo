@@ -418,6 +418,7 @@ export const sv: Ordbok = {
     qrAlt: "QR-kod för tvåfaktor",
   },
   sak: {
+    ingenEpost: "Avisering är inte påslagen hos oss ännu, så inget mejl går ut. Ärendet följs här under tiden.",
     nySak: "Nytt ärende",
     hvaGjelderDet: "Vad gäller det?",
     beskrivSaken: "Beskriv ärendet",

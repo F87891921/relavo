@@ -2,13 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { krevProfil } from "@/lib/tilgang";
+import { varsleKundeOmSvar, varsleOssOmSak } from "@/lib/varsling";
 
 export type Svar = { ok: true; id?: string } | { ok: false; feil: string };
 
 const t = (fd: FormData, n: string) => String(fd.get(n) ?? "").trim();
 
 export async function nySak(fd: FormData): Promise<Svar> {
-  const { supabase, user, profil } = await krevProfil();
+  const { supabase, user, profil, organisasjonNavn } = await krevProfil();
 
   const emne = t(fd, "emne");
   const melding = t(fd, "melding");
@@ -40,13 +41,22 @@ export async function nySak(fd: FormData): Promise<Svar> {
 
   if (svarFeil) return { ok: false, feil: svarFeil.message };
 
+  // Varselet sendes etter at saken er lagret, ikke før. Går det ikke
+  // fram, er saken fortsatt opprettet.
+  await varsleOssOmSak({
+    emne,
+    organisasjon: organisasjonNavn,
+    tekst: melding,
+    nySak: true,
+  });
+
   revalidatePath("/support");
   revalidatePath("/internt/support");
   return { ok: true, id: sak.id };
 }
 
 export async function svarPaSak(fd: FormData): Promise<Svar> {
-  const { supabase, user, profil } = await krevProfil();
+  const { supabase, user, profil, organisasjonNavn } = await krevProfil();
 
   const sakId = t(fd, "sak_id");
   const tekst = t(fd, "tekst");
@@ -72,6 +82,33 @@ export async function svarPaSak(fd: FormData): Promise<Svar> {
       oppdatert: new Date().toISOString(),
     })
     .eq("id", sakId);
+
+  const { data: sak } = await supabase
+    .from("saker")
+    .select("emne, varsle_epost, opprettet_av")
+    .eq("id", sakId)
+    .maybeSingle();
+
+  if (sak) {
+    if (fraRelavo) {
+      // Bare hvis kunden har bedt om varsling, og aldri til den som nettopp
+      // skrev svaret selv.
+      if (sak.varsle_epost && sak.opprettet_av && sak.opprettet_av !== user.id)
+        await varsleKundeOmSvar({
+          tilBrukerId: sak.opprettet_av,
+          emne: sak.emne,
+          svarFra: profil.navn ?? "Relavo",
+          tekst,
+        });
+    } else {
+      await varsleOssOmSak({
+        emne: sak.emne,
+        organisasjon: organisasjonNavn,
+        tekst,
+        nySak: false,
+      });
+    }
+  }
 
   revalidatePath("/support");
   revalidatePath("/internt/support");

@@ -147,9 +147,12 @@ export function NySak() {
 export function SakKort({
   sak,
   somRelavo = false,
+  epostPa = false,
 }: {
   sak: Sak;
   somRelavo?: boolean;
+  /** Om det i det hele tatt finnes en e-postleverandør å varsle med. */
+  epostPa?: boolean;
 }) {
   const t = useOrd();
   const [apen, setApen] = useState(false);
@@ -254,7 +257,9 @@ export function SakKort({
                 val={STATUSER as unknown as StatusVal[]}
                 handling={settSakStatus}
               />
-              {!somRelavo && <Varsling id={sak.id} pa={sak.varsle_epost} />}
+              {!somRelavo && (
+                <Varsling id={sak.id} pa={sak.varsle_epost} epostPa={epostPa} />
+              )}
             </div>
           </form>
         </div>
@@ -264,26 +269,50 @@ export function SakKort({
 }
 
 
-function Varsling({ id, pa }: { id: string; pa: boolean }) {
+/**
+ * Avkryssingsfeltet for varsling.
+ *
+ * Er ingen e-postleverandør koblet til, sier feltet det i stedet for å
+ * love noe som ikke skjer. Et hake man setter og aldri hører noe fra er
+ * verre enn ingen hake.
+ */
+function Varsling({
+  id,
+  pa,
+  epostPa,
+}: {
+  id: string;
+  pa: boolean;
+  epostPa: boolean;
+}) {
   const t = useOrd();
   const [venter, start] = useTransition();
   const [av, setAv] = useState(pa);
+
   return (
-    <label className="flex items-center gap-2 text-[12px] text-dim cursor-pointer">
-      <input
-        type="checkbox"
-        checked={av}
-        disabled={venter}
-        onChange={(e) => {
-          const ny = e.target.checked;
-          setAv(ny);
-          start(async () => {
-            await settVarsling(id, ny);
-          });
-        }}
-        className="accent-[#654b70] w-4 h-4"
-      />
-      {t.sak.varsleMeg}
-    </label>
+    <span className="flex flex-col gap-1">
+      <label className="flex items-center gap-2 text-[12px] text-dim cursor-pointer">
+        <input
+          type="checkbox"
+          checked={av}
+          disabled={venter}
+          onChange={(e) => {
+            const ny = e.target.checked;
+            setAv(ny);
+            start(async () => {
+              await settVarsling(id, ny);
+            });
+          }}
+          className="accent-[#654b70] w-4 h-4"
+        />
+        {t.sak.varsleMeg}
+      </label>
+
+      {av && !epostPa && (
+        <span className="text-[11px] text-warn leading-snug max-w-[46ch]">
+          {t.sak.ingenEpost}
+        </span>
+      )}
+    </span>
   );
 }

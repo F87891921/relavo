@@ -427,6 +427,7 @@ export const no = {
     qrAlt: "QR-kode for tofaktor",
   },
   sak: {
+    ingenEpost: "Varsling er ikke slått på hos oss ennå, så det går ingen e-post ut. Saken følges her i mellomtiden.",
     nySak: "Ny sak",
     hvaGjelderDet: "Hva gjelder det?",
     beskrivSaken: "Beskriv saken",
