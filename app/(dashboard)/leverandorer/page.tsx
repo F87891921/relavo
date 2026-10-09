@@ -2,6 +2,7 @@ import Link from "next/link";
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
 import { Side } from "@/components/ui";
+import { Flikar } from "@/components/ui/Flikar";
 
 /**
  * Erstatter prototypens hardkodede SUPPLIERS-array med et ekte spørring mot
@@ -44,9 +45,16 @@ export default async function LeverandorerSide() {
         <h1 className="text-xl sm:text-2xl font-semibold tracking-tight mb-1">
           {t.sider.leverandorer.tittel}
         </h1>
-        <p className="text-sm text-dim mb-6 max-w-[68ch] leading-relaxed">
+        <p className="text-sm text-dim mb-5 max-w-[68ch] leading-relaxed">
           {t.sider.leverandorer.tekst}
         </p>
+
+        <Flikar
+          flikar={[
+            { navn: t.meny.leverandorer, href: "/leverandorer", aktiv: true },
+            { navn: t.meny.anskaffelser, href: "/anskaffelser", aktiv: false },
+          ]}
+        />
 
         {javPerLeverandor.size > 0 && (
           <div className="bg-bad-bg text-bad rounded-xl px-4 py-3 mb-4 text-[12.5px] leading-relaxed">

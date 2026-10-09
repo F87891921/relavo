@@ -1,6 +1,7 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode, Kort, Tabell, Merke } from "@/components/ui";
+import { Flikar } from "@/components/ui/Flikar";
 import { ANSKAFFELSER } from "@/lib/demo/app";
 
 export default async function AnskaffelserSide() {
@@ -13,6 +14,14 @@ export default async function AnskaffelserSide() {
           tittel={t.sider.anskaffelser.tittel}
           tekst={t.sider.anskaffelser.tekst}
         />
+
+        <Flikar
+          flikar={[
+            { navn: t.meny.leverandorer, href: "/leverandorer", aktiv: false },
+            { navn: t.meny.anskaffelser, href: "/anskaffelser", aktiv: true },
+          ]}
+        />
+
         <Kort note={t.ui.demodata}>
           <Tabell
             kolonner={[

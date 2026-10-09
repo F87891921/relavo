@@ -17,15 +17,21 @@ import type { Ordbok } from "@/lib/sprak";
 export const KUNDEMENY = [
   { id: "oversikt", href: "/oversikt" },
   { id: "nyKontroll", href: "/ny-kontroll" },
-  { id: "bulk", href: "/bulk" },
-  { id: "kjede", href: "/kjede" },
+  { id: "funn", href: "/kjede" },
   { id: "tilbud", href: "/tilbud" },
-  { id: "anskaffelser", href: "/anskaffelser" },
   { id: "leverandorer", href: "/leverandorer" },
-  { id: "jav", href: "/jav" },
-  { id: "espd", href: "/espd" },
-  { id: "support", href: "/support" },
 ] as const;
+
+/**
+ * Hvilke sider som hører under hvilket menypunkt. Står man på /jav, er det
+ * Funn som skal være markert — ellers ser menyen ut som om man er et annet
+ * sted enn man er.
+ */
+export const UNDERSIDER: Record<string, string[]> = {
+  funn: ["kjede", "jav", "espd"],
+  nyKontroll: ["nyKontroll", "bulk"],
+  leverandorer: ["leverandorer", "anskaffelser"],
+};
 
 /**
  * Henter sine egne opplysninger i stedet for å få dem som props. Ellers
@@ -42,6 +48,12 @@ export async function DashboardShell({
   // krevProfil er cachet per forespørsel, så dette koster ingenting ekstra
   // selv om siden allerede har kalt den.
   const { user, profil, organisasjonNavn, t, sprak } = await krevProfil();
+
+  // Et menypunkt er markert også når man står på en av undersidene.
+  const under = Object.entries(UNDERSIDER).find(([, barn]) =>
+    barn.includes(aktivtSteg),
+  )?.[0];
+  const markert = under ?? aktivtSteg;
 
   const punkter = KUNDEMENY.map((s) => ({
     navn: t.meny[s.id as keyof Ordbok["meny"]],
@@ -65,6 +77,13 @@ export async function DashboardShell({
   // innhold i sidemenyen og i mobilskuffen — skrevet én gang, ikke to.
   const bunn = (
     <>
+      <Link
+        href="/support"
+        className="block text-[13px] px-3 py-2 rounded-lg text-dim hover:bg-canvas hover:text-ink transition"
+      >
+        {t.meny.support}
+      </Link>
+
       <Link
         href="/konto"
         className="flex items-center justify-between gap-2 text-[13px] px-3 py-2 rounded-lg text-dim hover:bg-canvas hover:text-ink transition"
@@ -129,9 +148,9 @@ export async function DashboardShell({
             <Link
               key={s.href}
               href={s.href}
-              aria-current={aktivtSteg === s.id ? "page" : undefined}
+              aria-current={markert === s.id ? "page" : undefined}
               className={`text-[13.5px] px-3 py-2 rounded-lg transition ${
-                aktivtSteg === s.id
+                markert === s.id
                   ? "bg-surface2 text-accent font-semibold"
                   : "text-dim hover:bg-canvas hover:text-ink"
               }`}
@@ -146,9 +165,9 @@ export async function DashboardShell({
 
       <MobilMeny
         punkter={punkter}
-        aktivtSteg={aktivtSteg}
+        aktivtSteg={markert}
         tittel={organisasjon}
-        tittelForSteg={t.meny[aktivtSteg as keyof Ordbok["meny"]] ?? ""}
+        tittelForSteg={t.meny[aktivtSteg as keyof Ordbok["meny"]] ?? t.meny[markert as keyof Ordbok["meny"]] ?? ""}
         apneMenyen={t.skall.apneMenyen}
         lukkMenyen={t.skall.lukkMenyen}
       >

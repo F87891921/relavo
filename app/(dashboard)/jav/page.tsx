@@ -1,6 +1,8 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, type Tone } from "@/components/ui";
+import { Flikar } from "@/components/ui/Flikar";
+import { funnAntall } from "@/lib/funn";
 
 const KOBLINGSTONE: Record<string, Tone> = {
   styre: "brudd",
@@ -21,6 +23,7 @@ type Detaljer = {
 
 export default async function JavSide() {
   const { supabase, t } = await krevProfil();
+  const antall = await funnAntall();
 
   const [{ data: treff, error }, { count: antallDeltakere }] = await Promise.all([
     supabase
@@ -53,6 +56,15 @@ export default async function JavSide() {
           tittel={t.sider.jav.tittel}
           tekst={t.sider.jav.tekst}
         />
+
+        <Flikar
+          flikar={[
+            { navn: t.meny.kjede, href: "/kjede", aktiv: false, antall: antall.kjede },
+            { navn: t.meny.jav, href: "/jav", aktiv: true, antall: antall.jav },
+            { navn: t.meny.espd, href: "/espd", aktiv: false, antall: antall.espd },
+          ]}
+        />
+
 
         <Rad>
           <Tall

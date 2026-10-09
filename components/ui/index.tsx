@@ -160,7 +160,13 @@ export function Tall({
 }
 
 export function Rad({ children }: { children: ReactNode }) {
-  return <div className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4 mb-5 sm:mb-6">{children}</div>;
+  // auto-fit, ikke fire faste kolonner: da ser en rad med tre tall riktig ut
+  // uten at noen må huske å endre klassen her når en rute fjernes.
+  return (
+    <div className="grid grid-cols-2 gap-2.5 sm:gap-3 mb-5 sm:mb-6 lg:grid-cols-[repeat(auto-fit,minmax(170px,1fr))]">
+      {children}
+    </div>
+  );
 }
 
 /** Framdriftsstripe. Brukes for kontrollplikt og forbruk mot kvote. */

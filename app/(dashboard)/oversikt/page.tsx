@@ -3,6 +3,7 @@ import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, Stripe } from "@/components/ui";
 import { HANDLING, KJORINGER, SUPPLIERS } from "@/lib/demo/app";
+import { NesteSteg } from "@/components/NesteSteg";
 
 const navnFor = (org: string) =>
   SUPPLIERS.find((s) => s.org === org)?.name ?? org;
@@ -52,6 +53,8 @@ export default async function OversiktSide() {
           tekst={t.sider.oversikt.tekst}
         />
 
+        <NesteSteg />
+
         <Rad>
           <Tall verdi={String(totalt)} merke={t.oversikt.iPortefoljen} />
           <Tall verdi={String(kontrollert)} merke={t.oversikt.kontrollerKjort} />
@@ -60,7 +63,6 @@ export default async function OversiktSide() {
             merke={t.oversikt.medHoyRisiko}
             tone={hoyRisiko?.length ? "brudd" : undefined}
           />
-          <Tall verdi={`${andel} %`} merke={t.oversikt.dokumentert} />
         </Rad>
 
         {(forfalteEspd?.length || apneKrav?.length) ? (

@@ -1,12 +1,15 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode, Tall, Rad } from "@/components/ui";
+import { Flikar } from "@/components/ui/Flikar";
+import { funnAntall } from "@/lib/funn";
 import { EspdRad, type Espd } from "@/components/brev/EspdRad";
 import { dagerIgjen } from "@/lib/brev";
 import { grunnUrl } from "@/lib/url";
 
 export default async function EspdSide() {
   const { supabase, profil, organisasjonNavn, t } = await krevProfil();
+  const antall = await funnAntall();
   const lenkebase = grunnUrl();
 
   const { data: erklaringer } = await supabase
@@ -35,6 +38,15 @@ export default async function EspdSide() {
           tittel={t.sider.espd.tittel}
           tekst={t.sider.espd.tekst}
         />
+
+        <Flikar
+          flikar={[
+            { navn: t.meny.kjede, href: "/kjede", aktiv: false, antall: antall.kjede },
+            { navn: t.meny.jav, href: "/jav", aktiv: false, antall: antall.jav },
+            { navn: t.meny.espd, href: "/espd", aktiv: true, antall: antall.espd },
+          ]}
+        />
+
 
         <Rad>
           <Tall verdi={String(alle.length)} merke="erklæringer" />

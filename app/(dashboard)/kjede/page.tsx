@@ -1,6 +1,8 @@
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode } from "@/components/ui";
+import { Flikar } from "@/components/ui/Flikar";
+import { funnAntall } from "@/lib/funn";
 import { KjedeListe, type Kjede } from "@/components/kjede/KjedeListe";
 import { SUPPLIERS } from "@/lib/demo/app";
 import { formaterOrgnr } from "@/lib/orgnr";
@@ -12,6 +14,7 @@ const navnFor = (org: string) =>
 
 export default async function KjedeSide() {
   const { t } = await krevProfil();
+  const antall = await funnAntall();
 
   const kjeder: Kjede[] = SUPPLIERS.filter((s) => s.kjede && s.kjede.length > 1).map(
     (s) => ({
@@ -28,6 +31,15 @@ export default async function KjedeSide() {
           tittel={t.sider.kjede.tittel}
           tekst={t.sider.kjede.tekst}
         />
+
+        <Flikar
+          flikar={[
+            { navn: t.meny.kjede, href: "/kjede", aktiv: true, antall: antall.kjede },
+            { navn: t.meny.jav, href: "/jav", aktiv: false, antall: antall.jav },
+            { navn: t.meny.espd, href: "/espd", aktiv: false, antall: antall.espd },
+          ]}
+        />
+
         <KjedeListe kjeder={kjeder} />
       </Side>
     </DashboardShell>
