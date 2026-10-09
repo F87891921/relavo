@@ -17,9 +17,24 @@ import { KAPSEL_SPRAK, erSprak } from "@/lib/sprak/felles";
  */
 const TOKENSIDER = ["/offert", "/ettersending"];
 
+/**
+ * Ruter som kjøres av maskiner, ikke av folk.
+ *
+ * De må forbi både passordsperren og innloggingskravet — en planlagt jobb
+ * har verken kapsel eller sesjon. Det er ikke et hull: de har sin egen
+ * dør, CRON_SECRET i Authorization, og den er strengere enn begge de
+ * andre. Uten dette ble cron-kallet sendt til /port, og overvåkingen
+ * hadde aldri kjørt en eneste natt.
+ */
+const MASKINRUTER = ["/api/overvaking", "/api/synk-sanksjoner"];
+
 export async function middleware(request: NextRequest) {
   const sti = request.nextUrl.pathname;
   const medToken = TOKENSIDER.some((p) => sti.startsWith(`${p}/`));
+  const maskin = MASKINRUTER.includes(sti);
+
+  // Maskinrutene svarer selv på om kallet er legitimt.
+  if (maskin) return NextResponse.next();
 
   // Portvakten kommer først av alt. Er SIDE_PASSORD satt, slipper ingen
   // inn noe sted uten kapselen — heller ikke forsiden, og heller ikke
