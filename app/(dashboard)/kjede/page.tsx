@@ -4,25 +4,60 @@ import { Side, Sidehode } from "@/components/ui";
 import { Flikar } from "@/components/ui/Flikar";
 import { funnAntall } from "@/lib/funn";
 import { KjedeListe, type Kjede } from "@/components/kjede/KjedeListe";
-import { SUPPLIERS } from "@/lib/demo/app";
 import { formaterOrgnr } from "@/lib/orgnr";
 
-// Kjedene i demodataen når lenger ned enn leverandørlista. Da vises
-// nummeret i lesbar form heller enn å skjule at vi ikke har navnet.
-const navnFor = (org: string) =>
-  SUPPLIERS.find((s) => s.org === org)?.name ?? formaterOrgnr(org);
-
+/**
+ * Leverandørkjedene, slik kontrollene har kartlagt dem.
+ *
+ * Leddene ligger på kontrollen, ikke på leverandøren: kjeden er noe som så
+ * sånn ut den dagen den ble kartlagt. Derfor vises siste kontroll per
+ * leverandør, ikke alle kontroller — ellers står samme kjede flere ganger
+ * med en dags mellomrom.
+ */
 export default async function KjedeSide() {
-  const { t } = await krevProfil();
+  const { supabase, t } = await krevProfil();
   const antall = await funnAntall();
 
-  const kjeder: Kjede[] = SUPPLIERS.filter((s) => s.kjede && s.kjede.length > 1).map(
-    (s) => ({
-      org: s.org,
-      navn: s.name,
-      ledd: s.kjede.map((o) => ({ org: o, navn: navnFor(o) })),
-    }),
-  );
+  // Nyest først, så den første kontrollen vi møter per leverandør er den
+  // som gjelder.
+  const { data: kontroller } = await supabase
+    .from("kontroller")
+    .select("id, utfort, leverandor_id, leverandorer(navn, org_nr)")
+    .order("utfort", { ascending: false });
+
+  const siste = new Map<string, { id: string; navn: string; org: string }>();
+  for (const k of kontroller ?? []) {
+    if (siste.has(k.leverandor_id)) continue;
+    const lev = k.leverandorer as unknown as { navn: string; org_nr: string } | null;
+    siste.set(k.leverandor_id, {
+      id: k.id,
+      navn: lev?.navn ?? "—",
+      org: lev?.org_nr ?? k.leverandor_id,
+    });
+  }
+
+  const { data: ledd } = await supabase
+    .from("kjede_ledd")
+    .select("kontroll_id, niva, navn, org_nr")
+    .in("kontroll_id", [...siste.values()].map((v) => v.id))
+    .order("niva");
+
+  const perKontroll = new Map<string, { org: string; navn: string }[]>();
+  for (const l of ledd ?? []) {
+    const liste = perKontroll.get(l.kontroll_id) ?? [];
+    liste.push({ org: l.org_nr, navn: l.navn || formaterOrgnr(l.org_nr) });
+    perKontroll.set(l.kontroll_id, liste);
+  }
+
+  // En kjede med bare hovedleverandøren er ikke en kjede. Den sier ingenting
+  // om § 5k, og en liste full av enkeltledd skjuler de som faktisk har en.
+  const kjeder: Kjede[] = [...siste.values()]
+    .map((lev) => ({
+      org: lev.org,
+      navn: lev.navn,
+      ledd: perKontroll.get(lev.id) ?? [],
+    }))
+    .filter((k) => k.ledd.length > 1);
 
   return (
     <DashboardShell aktivtSteg="kjede">

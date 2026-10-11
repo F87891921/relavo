@@ -26,6 +26,10 @@ import { dagerIgjen } from "@/lib/brev";
  * Hvert steg sier også hva som skal til for at det er gjort. Den setningen
  * er like viktig som tallet: «dokumentert» og «kontrollert» er ikke det
  * samme, og det er nettopp der kontrollplikten ryker.
+ *
+ * Oversikten viser hele lista, banneret viser det øverste. Begge kommer
+ * herfra. To uttrekk ville gitt to forskjellige svar på hva som haster, og
+ * da er banneret ikke lenger til å stole på.
  */
 export type Steg = {
   tittel: string;
@@ -39,7 +43,7 @@ export type Steg = {
   kø?: number;
 };
 
-export const nesteSteg = cache(async (): Promise<Steg> => {
+const grupper = cache(async (): Promise<Steg[][]> => {
   const supabase = createClient();
   const t = ord().nesteSteg;
   const idag = new Date().toISOString().slice(0, 10);
@@ -82,116 +86,140 @@ export const nesteSteg = cache(async (): Promise<Steg> => {
   // 0 — noe har endret seg i natt som i seg selv er en avvisningsgrunn.
   // Det går foran alt annet: de andre punktene handler om saker vi
   // allerede visste om.
-  if (kritiske?.length) {
-    const k = kritiske[0];
-    return {
+  const g: Steg[][] = [];
+
+  g.push(
+    (kritiske ?? []).map((k, i) => ({
       tittel: navn(k),
       detalj: t.endring[k.slag as keyof typeof t.endring] ?? t.endringAnnet,
       kriterium: t.endringKrav,
       href: "/leverandorer",
       knapp: t.seEndringen,
-      tone: "brudd",
-      kø: kritiske.length - 1,
-    };
-  }
+      tone: "brudd" as const,
+      kø: i === 0 ? (kritiske?.length ?? 0) - 1 : undefined,
+    })),
+  );
 
   // 1 — svar som venter på en vurdering
-  if (uvurdert?.length) {
-    const f = uvurdert[0];
-    return {
+  g.push(
+    (uvurdert ?? []).map((f, i) => ({
       tittel: f.leverandor_navn,
       detalj: t.vurderSvar,
       kriterium: t.vurderSvarKrav,
       href: "/tilbud",
       knapp: t.vurder,
-      tone: "brudd",
-      kø: uvurdert.length - 1,
-    };
-  }
+      tone: "brudd" as const,
+      kø: i === 0 ? (uvurdert?.length ?? 0) - 1 : undefined,
+    })),
+  );
 
   // 2 — ESPD der fristen er ute
   const forfalt = (espd ?? []).filter((e) => (dagerIgjen(e.frist) ?? 0) < 0);
-  if (forfalt.length) {
-    const f = forfalt[0];
-    const dager = Math.abs(dagerIgjen(f.frist) ?? 0);
-    return {
+  g.push(
+    forfalt.map((f, i) => ({
       tittel: navn(f),
-      detalj: t.espdForfalt.replace("{n}", String(dager)),
+      detalj: t.espdForfalt.replace("{n}", String(Math.abs(dagerIgjen(f.frist) ?? 0))),
       kriterium: t.espdKrav,
       href: "/espd",
       knapp: t.seFristen,
-      tone: "brudd",
-      kø: forfalt.length - 1,
-    };
-  }
+      tone: "brudd" as const,
+      kø: i === 0 ? forfalt.length - 1 : undefined,
+    })),
+  );
 
   // 3 — § 24-9 sendt, fristen ute, ingenting kommet
-  if (ubesvart?.length) {
-    const f = ubesvart[0];
-    return {
+  g.push(
+    (ubesvart ?? []).map((f, i) => ({
       tittel: f.leverandor_navn,
       detalj: t.ingenRedegjorelse,
       kriterium: t.ingenRedegjorelseKrav,
       href: "/tilbud",
       knapp: t.seSaken,
-      tone: "brudd",
-      kø: ubesvart.length - 1,
-    };
-  }
+      tone: "brudd" as const,
+      kø: i === 0 ? (ubesvart?.length ?? 0) - 1 : undefined,
+    })),
+  );
 
-  // 4 — mulig inhabilitet
-  if (jav?.length) {
-    return {
-      tittel: navn(jav[0]),
+  // 4 — mulig inhabilitet. Samme leverandør kan ha flere treff; lista
+  // skal vise selskapet én gang, ikke én linje per navnelikhet.
+  const javSett = new Set<string>();
+  const javUnike = (jav ?? []).filter((j) => {
+    const n = navn(j);
+    if (javSett.has(n)) return false;
+    javSett.add(n);
+    return true;
+  });
+  g.push(
+    javUnike.map((j, i) => ({
+      tittel: navn(j),
       detalj: t.jav,
       kriterium: t.javKrav,
       href: "/jav",
       knapp: t.seKoblingen,
-      tone: "advarsel",
-      kø: jav.length - 1,
-    };
-  }
+      tone: "advarsel" as const,
+      kø: i === 0 ? javUnike.length - 1 : undefined,
+    })),
+  );
 
   // 5 — frister som løper ut snart
   const snart = (espd ?? []).filter((e) => {
     const d = dagerIgjen(e.frist);
     return d !== null && d >= 0 && d <= 3;
   });
-  if (snart.length) {
-    const f = snart[0];
-    const d = dagerIgjen(f.frist) ?? 0;
-    return {
-      tittel: navn(f),
-      detalj: d === 0 ? t.fristIDag : t.fristSnart.replace("{n}", String(d)),
-      kriterium: t.espdKrav,
-      href: "/espd",
-      knapp: t.seFristen,
-      tone: "advarsel",
-      kø: snart.length - 1,
-    };
-  }
+  g.push(
+    snart.map((f, i) => {
+      const d = dagerIgjen(f.frist) ?? 0;
+      return {
+        tittel: navn(f),
+        detalj: d === 0 ? t.fristIDag : t.fristSnart.replace("{n}", String(d)),
+        kriterium: t.espdKrav,
+        href: "/espd",
+        knapp: t.seFristen,
+        tone: "advarsel" as const,
+        kø: i === 0 ? snart.length - 1 : undefined,
+      };
+    }),
+  );
 
   // 6 — kontrollplikten
   const mangler = (antLev ?? 0) - (antKontroll ?? 0);
-  if (mangler > 0) {
-    return {
-      tittel: t.kontrollplikt,
-      detalj: t.manglerKontroll
-        .replace("{n}", String(mangler))
-        .replace("{av}", String(antLev ?? 0)),
-      kriterium: t.kontrollpliktKrav,
-      href: "/ny-kontroll",
-      knapp: t.kjorKontroll,
-      tone: "aksent",
-    };
-  }
+  g.push(
+    mangler > 0
+      ? [
+          {
+            tittel: t.kontrollplikt,
+            detalj: t.manglerKontroll
+              .replace("{n}", String(mangler))
+              .replace("{av}", String(antLev ?? 0)),
+            kriterium: t.kontrollpliktKrav,
+            href: "/ny-kontroll",
+            knapp: t.kjorKontroll,
+            tone: "aksent" as const,
+          },
+        ]
+      : [],
+  );
 
-  return {
-    tittel: t.altIOrden,
-    detalj: t.altIOrdenTekst,
-    kriterium: t.altIOrdenKrav,
-    href: "/leverandorer",
-    knapp: t.sePortefoljen,
-    tone: "god",
-  };
+  return g;
+});
+
+/** Alt som krever noe, i samme rekkefølge som banneret prioriterer. */
+export const alleSteg = cache(async (): Promise<Steg[]> =>
+  (await grupper()).flat(),
+);
+
+/** Det øverste. Står ingenting igjen, er det fordi ingenting står igjen. */
+export const nesteSteg = cache(async (): Promise<Steg> => {
+  const t = ord().nesteSteg;
+  const forste = (await grupper()).flat()[0];
+  return (
+    forste ?? {
+      tittel: t.altIOrden,
+      detalj: t.altIOrdenTekst,
+      kriterium: t.altIOrdenKrav,
+      href: "/leverandorer",
+      knapp: t.sePortefoljen,
+      tone: "god",
+    }
+  );
 });

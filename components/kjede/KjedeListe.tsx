@@ -65,7 +65,11 @@ export function KjedeListe({ kjeder }: { kjeder: Kjede[] }) {
       <div className="space-y-3">
         {vist.length === 0 && (
           <div className="bg-surface rounded-card shadow-card px-5 py-10 text-center text-dim text-sm">
-            Ingen kjeder over grensen i § 5k.
+            {/* To forskjellige tomrom. «Ingen over grensen» er et resultat;
+                «ingen kjeder kartlagt» er at jobben ikke er gjort. Samme
+                setning på begge ville sagt at alt er i orden når
+                ingenting er sjekket. */}
+            {bareBrudd ? k9.ingenOverGrensen : k9.ingenKjeder}
           </div>
         )}
 

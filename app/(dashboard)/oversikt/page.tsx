@@ -2,17 +2,12 @@ import Link from "next/link";
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, Stripe } from "@/components/ui";
-import { HANDLING, KJORINGER, SUPPLIERS } from "@/lib/demo/app";
 import { NesteSteg } from "@/components/NesteSteg";
-
-const navnFor = (org: string) =>
-  SUPPLIERS.find((s) => s.org === org)?.name ?? org;
+import { alleSteg } from "@/lib/nesteSteg";
 
 export default async function OversiktSide() {
   const { supabase, profil, t } = await krevProfil();
 
-  // Tallene som finnes i databasen hentes derfra. Resten er ennå demodata
-  // fra prototypen — se lib/demo/app.ts.
   const { count: antallLeverandorer } = await supabase
     .from("leverandorer")
     .select("id", { count: "exact", head: true });
@@ -40,6 +35,18 @@ export default async function OversiktSide() {
     .select("id")
     .is("vurdering", null)
     .not("sendt", "is", null);
+
+  // Lista over det som krever noe er den samme som banneret over henter
+  // sitt ene punkt fra. Det øverste står allerede der, så tabellen begynner
+  // på det nest øverste — ellers leser man den samme saken to ganger.
+  const krever = (await alleSteg()).slice(1, 9);
+
+  // De siste kjøringene, med lenke til hver rapport.
+  const { data: sisteKjoringer } = await supabase
+    .from("kontroller")
+    .select("id, utfort, risiko, leverandorer(navn)")
+    .order("utfort", { ascending: false })
+    .limit(8);
 
   const totalt = antallLeverandorer ?? 0;
   const kontrollert = antallKontroller ?? 0;
@@ -109,33 +116,51 @@ export default async function OversiktSide() {
         </Kort>
 
         <div className="grid lg:grid-cols-2 gap-4">
-          <Kort tittel={t.oversikt.kreverNoe} note={t.ui.demodata}>
+          <Kort tittel={t.oversikt.kreverNoe}>
             <Tabell
-              kolonner={[t.ui.leverandor, t.ui.hva, t.ui.nar]}
-              rader={HANDLING.map((h) => [
-                <span key="n" className="font-semibold">{navnFor(h.org)}</span>,
-                <span key="w" className="text-dim">{h.why}</span>,
-                <Merke key="t" tone={h.sev === "red" ? "brudd" : "advarsel"}>
-                  {h.when}
-                </Merke>,
+              kolonner={[t.ui.leverandor, t.ui.hva, ""]}
+              tom={t.oversikt.ingenKrever}
+              rader={krever.map((steg) => [
+                <span key="n" className="font-semibold">{steg.tittel}</span>,
+                <span key="w" className="text-dim">{steg.detalj}</span>,
+                <Link
+                  key="t"
+                  href={steg.href}
+                  className="text-[12px] text-accent hover:underline whitespace-nowrap"
+                >
+                  {steg.knapp}
+                </Link>,
               ])}
             />
           </Kort>
 
-          <Kort tittel={t.oversikt.sisteKjoringer} note={t.ui.demodata}>
+          <Kort tittel={t.oversikt.sisteKjoringer}>
             <Tabell
-              kolonner={[t.ui.leverandor, t.ui.tidspunkt, t.ui.utlostAv, t.ui.resultat]}
-              rader={KJORINGER.map((k) => [
-                <span key="n" className="font-semibold">{navnFor(k.org)}</span>,
-                <span key="t" className="text-dim whitespace-nowrap">{k.t}</span>,
-                <span key="h" className="text-dim">{k.how}</span>,
-                <Merke
-                  key="r"
-                  tone={k.res === "hoy" ? "brudd" : k.res === "middels" ? "advarsel" : "god"}
-                >
-                  {k.res === "hoy" ? t.risiko.hoy : k.res === "middels" ? t.risiko.middels : t.risiko.lav}
-                </Merke>,
-              ])}
+              kolonner={[t.ui.leverandor, t.ui.tidspunkt, t.ui.resultat]}
+              tom={t.oversikt.ingenKjoringer}
+              rader={(sisteKjoringer ?? []).map((k) => {
+                const lev = k.leverandorer as unknown as { navn: string } | null;
+                return [
+                  <Link
+                    key="n"
+                    href={`/kontroll/${k.id}`}
+                    className="font-semibold hover:text-accent hover:underline"
+                  >
+                    {lev?.navn ?? "—"}
+                  </Link>,
+                  <span key="t" className="text-dim whitespace-nowrap">
+                    {new Date(k.utfort).toLocaleDateString("nb-NO", {
+                      day: "numeric", month: "short",
+                    })}
+                  </span>,
+                  <Merke
+                    key="r"
+                    tone={k.risiko === "hoy" ? "brudd" : k.risiko === "middels" ? "advarsel" : "god"}
+                  >
+                    {t.risiko[k.risiko as keyof typeof t.risiko] ?? k.risiko}
+                  </Merke>,
+                ];
+              })}
             />
           </Kort>
         </div>

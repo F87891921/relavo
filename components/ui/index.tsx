@@ -183,5 +183,21 @@ export function Stripe({ andel, tone = "aksent" }: { andel: number; tone?: Tone 
   );
 }
 
-export const NOK = (n: number) =>
-  new Intl.NumberFormat("nb-NO").format(n).replace(/ /g, " ");
+/**
+ * Beløp. Ører vises bare når de finnes, og da med to siffer —
+ * standardformateringen gir «36 900 000,5», som leses som en avkortet sum
+ * og ikke som femti øre.
+ *
+ * Tusenskillet normaliseres til vanlig mellomrom. nb-NO gir hardt
+ * mellomrom, og det kopieres med inn i regneark og søkefelt der det ikke
+ * oppfører seg som mellomrom.
+ */
+export const NOK = (n: number) => {
+  const ore = Math.abs(n % 1) > 1e-9;
+  return new Intl.NumberFormat("nb-NO", {
+    minimumFractionDigits: ore ? 2 : 0,
+    maximumFractionDigits: ore ? 2 : 0,
+  })
+    .format(n)
+    .replace(/\u00a0/g, " ");
+};

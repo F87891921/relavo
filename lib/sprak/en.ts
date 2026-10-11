@@ -284,6 +284,8 @@ export const en: Ordbok = {
   },
   risiko: { lav: "Low", middels: "Medium", hoy: "High" },
   oversikt: {
+    ingenKrever: "Nothing needs attention right now.",
+    ingenKjoringer: "No controls have been run yet.",
     iPortefoljen: "suppliers in the portfolio",
     kontrollerKjort: "checks run",
     medHoyRisiko: "at high risk",
@@ -377,6 +379,35 @@ export const en: Ordbok = {
     kobling: "Connection",
     sikkerhet: "Confidence",
   },
+  tilbud: {
+    ingenAnskaffelse: "Assessing abnormally low tenders needs a procurement to work from.",
+    forFaa: "Fewer than {n} bids. There is no median to compare against, so no deviation has been calculated.",
+    leggTilTilbud: "Add the bids",
+    ingenTilbud: "No bids registered for this procurement.",
+    ikkeVurdert: "Not assessed",
+  },
+
+  anskaffelse: {
+    forklaring: "The procurements you have out and the bids received. The bid amounts are what the assessment of abnormally low tenders under § 24-9 is calculated from.",
+    nyAnskaffelse: "New procurement",
+    saksnummer: "Case number",
+    navn: "What it covers",
+    navnPlassholder: "Cleaning, municipal buildings",
+    konkurranseform: "Procedure",
+    formPlassholder: "Open tender procedure",
+    verdi: "Estimated value",
+    periode: "Period",
+    ingenEnna: "No procurements registered yet.",
+    etTilbud: "bid",
+    flereTilbud: "bids",
+    tilbyder: "Bidder",
+    sum: "Bid amount (NOK)",
+    epost: "Email",
+    leggTilTilbud: "Add",
+    fjernAnskaffelse: "Remove the procurement",
+    medianForklaring: "The deviation is calculated against the median of the other bids, not against your own estimate. It needs at least three bids to mean anything.",
+  },
+
   bulk: {
     lastOpp: "Upload a list",
     velgFil: "Choose file",
@@ -412,6 +443,8 @@ export const en: Ordbok = {
     kunneIkkeLese: "Could not read the file. Is it damaged, or password-protected?",
   },
   kjede: {
+    ingenOverGrensen: "No chains exceed the limit in § 5k.",
+    ingenKjeder: "No supply chains have been mapped yet. The chain is mapped when a control is run.",
     alle: "All",
     overGrensen: "Over the limit",
     bareOver: "Showing only chains with more than two tiers.",

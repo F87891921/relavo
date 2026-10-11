@@ -293,6 +293,8 @@ export const no = {
   },
   risiko: { lav: "Lav", middels: "Middels", hoy: "Høy" },
   oversikt: {
+    ingenKrever: "Ingenting krever noe akkurat nå.",
+    ingenKjoringer: "Ingen kontroller er kjørt ennå.",
     iPortefoljen: "leverandører i porteføljen",
     kontrollerKjort: "kontroller kjørt",
     medHoyRisiko: "med høy risiko",
@@ -386,6 +388,35 @@ export const no = {
     kobling: "Kobling",
     sikkerhet: "Sikkerhet",
   },
+  tilbud: {
+    ingenAnskaffelse: "Vurderingen av unormalt lave tilbud trenger en anskaffelse å regne på.",
+    forFaa: "Færre enn {n} tilbud. Det finnes ingen median å sammenligne mot, så ingen avvik er regnet ut.",
+    leggTilTilbud: "Legg til tilbudene",
+    ingenTilbud: "Ingen tilbud registrert på denne anskaffelsen.",
+    ikkeVurdert: "Ikke vurdert",
+  },
+
+  anskaffelse: {
+    forklaring: "Anskaffelsene dere har ute, og tilbudene som er kommet inn. Tilbudssummene er det vurderingen av unormalt lave tilbud etter § 24-9 regner på.",
+    nyAnskaffelse: "Ny anskaffelse",
+    saksnummer: "Saksnummer",
+    navn: "Hva gjelder det",
+    navnPlassholder: "Renhold, kommunale bygg",
+    konkurranseform: "Konkurranseform",
+    formPlassholder: "Åpen anbudskonkurranse",
+    verdi: "Anslått verdi",
+    periode: "Periode",
+    ingenEnna: "Ingen anskaffelser registrert ennå.",
+    etTilbud: "tilbud",
+    flereTilbud: "tilbud",
+    tilbyder: "Tilbyder",
+    sum: "Tilbudssum (NOK)",
+    epost: "E-post",
+    leggTilTilbud: "Legg til",
+    fjernAnskaffelse: "Fjern anskaffelsen",
+    medianForklaring: "Avviket regnes mot medianen av de øvrige tilbudene, ikke mot deres eget estimat. Det krever minst tre tilbud for å bety noe.",
+  },
+
   bulk: {
     lastOpp: "Last opp en liste",
     velgFil: "Velg fil",
@@ -421,6 +452,8 @@ export const no = {
     kunneIkkeLese: "Kunne ikke lese filen. Er den skadet, eller passordbeskyttet?",
   },
   kjede: {
+    ingenOverGrensen: "Ingen kjeder over grensen i § 5k.",
+    ingenKjeder: "Ingen leverandørkjeder er kartlagt ennå. Kjeden kartlegges når en kontroll kjøres.",
     alle: "Alle",
     overGrensen: "Over grensen",
     bareOver: "Viser bare kjeder med flere enn to ledd.",

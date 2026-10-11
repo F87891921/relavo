@@ -284,6 +284,8 @@ export const sv: Ordbok = {
   },
   risiko: { lav: "Låg", middels: "Medel", hoy: "Hög" },
   oversikt: {
+    ingenKrever: "Inget kräver något just nu.",
+    ingenKjoringer: "Inga kontroller har körts ännu.",
     iPortefoljen: "leverantörer i portföljen",
     kontrollerKjort: "kontroller körda",
     medHoyRisiko: "med hög risk",
@@ -377,6 +379,35 @@ export const sv: Ordbok = {
     kobling: "Koppling",
     sikkerhet: "Säkerhet",
   },
+  tilbud: {
+    ingenAnskaffelse: "Bedömningen av onormalt låga anbud behöver en upphandling att räkna på.",
+    forFaa: "Färre än {n} anbud. Det finns ingen median att jämföra mot, så ingen avvikelse är uträknad.",
+    leggTilTilbud: "Lägg till anbuden",
+    ingenTilbud: "Inga anbud registrerade på den här upphandlingen.",
+    ikkeVurdert: "Ej bedömt",
+  },
+
+  anskaffelse: {
+    forklaring: "Upphandlingarna ni har ute och anbuden som kommit in. Anbudssummorna är vad bedömningen av onormalt låga anbud enligt § 24-9 räknar på.",
+    nyAnskaffelse: "Ny upphandling",
+    saksnummer: "Ärendenummer",
+    navn: "Vad gäller det",
+    navnPlassholder: "Städning, kommunala byggnader",
+    konkurranseform: "Upphandlingsform",
+    formPlassholder: "Öppet anbudsförfarande",
+    verdi: "Uppskattat värde",
+    periode: "Period",
+    ingenEnna: "Inga upphandlingar registrerade ännu.",
+    etTilbud: "anbud",
+    flereTilbud: "anbud",
+    tilbyder: "Anbudsgivare",
+    sum: "Anbudssumma (NOK)",
+    epost: "E-post",
+    leggTilTilbud: "Lägg till",
+    fjernAnskaffelse: "Ta bort upphandlingen",
+    medianForklaring: "Avvikelsen räknas mot medianen av de övriga anbuden, inte mot er egen uppskattning. Det krävs minst tre anbud för att det ska betyda något.",
+  },
+
   bulk: {
     lastOpp: "Ladda upp en lista",
     velgFil: "Välj fil",
@@ -412,6 +443,8 @@ export const sv: Ordbok = {
     kunneIkkeLese: "Kunde inte läsa filen. Är den skadad, eller lösenordsskyddad?",
   },
   kjede: {
+    ingenOverGrensen: "Inga kedjor över gränsen i § 5k.",
+    ingenKjeder: "Inga leverantörskedjor är kartlagda ännu. Kedjan kartläggs när en kontroll körs.",
     alle: "Alla",
     overGrensen: "Över gränsen",
     bareOver: "Visar bara kedjor med fler än två led.",

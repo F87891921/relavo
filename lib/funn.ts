@@ -15,10 +15,13 @@ export const funnAntall = cache(async () => {
       .from("espd_erklaringer")
       .select("id", { count: "exact", head: true })
       .in("status", ["mangler", "sendt", "motstrid", "utlopt"]),
+    // Kjedetallet skal være kjeder over grensen i § 5k, ikke leverandører
+    // med høy risiko. Det var det før, og da sto det et tall på fanen som
+    // ikke hadde noe med det fanen viser å gjøre.
     supabase
-      .from("leverandorer")
+      .from("kjede_ledd")
       .select("id", { count: "exact", head: true })
-      .eq("risiko", "hoy"),
+      .eq("over_grense", true),
   ]);
   return { jav: jav ?? 0, espd: espd ?? 0, kjede: kjede ?? 0 };
 });
