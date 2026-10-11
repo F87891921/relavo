@@ -7,6 +7,8 @@ import { slaOppEnhet, type Enhet } from "@/lib/brreg";
 import { HMS_PUNKTER, type Svar, type Resultat } from "@/lib/kontroll";
 import { finnJav } from "@/lib/jav";
 import { erRenholdsbransje, tolkStatus } from "@/lib/renhold";
+import { hentSentralgodkjenning, type Sentralgodkjenning } from "@/lib/dibk";
+import { screenSanksjoner, type Sanksjonstreff } from "@/lib/screening";
 
 /**
  * Kjører kontrollen og lagrer den. Oppslaget gjøres på nytt her, på
@@ -44,7 +46,18 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
     renhold = data ?? { status: "Ikke i registeret", godkjent: false };
   }
 
-  const { krav, kilder, risiko } = vurder(enhet, svar, renhold);
+  // Begge er tilleggskilder: feiler de, skal kontrollen fortsatt kunne
+  // kjøres. Da står de som «ikke kontrollert», ikke som «ingen funn».
+  const [dibk, sanksjoner] = await Promise.all([
+    hentSentralgodkjenning(enhet.orgnr).catch(
+      () => ({ status: "feil", melding: "Oppslaget feilet" }) as Sentralgodkjenning,
+    ),
+    screenSanksjoner(supabase, { navn: enhet.navn, orgnr: enhet.orgnr }).catch(
+      () => ({ treff: [], listeDato: null, kjort: false }),
+    ),
+  ]);
+
+  const { krav, kilder, risiko } = vurder(enhet, svar, renhold, dibk, sanksjoner);
 
   // Leverandøren må finnes før kontrollen kan peke på den. Er selskapet
   // kontrollert før, gjenbrukes raden — ellers legges den inn nå.
@@ -145,8 +158,42 @@ function vurder(
   enhet: Enhet,
   svar: Svar,
   renhold: { status: string; godkjent: boolean } | null,
+  dibk: Sentralgodkjenning,
+  sanksjoner: { treff: Sanksjonstreff[]; listeDato: string | null; kjort: boolean },
 ) {
   const krav: { ref: string; status: "ok" | "no" | "na"; tekst: string }[] = [];
+
+  // Sanksjoner står først. Er det treff, er det det som avgjør om man i
+  // det hele tatt kan handle med selskapet — før alt annet i lista.
+  if (!sanksjoner.kjort) {
+    krav.push({
+      ref: "Sanksjoner",
+      status: "na",
+      tekst: "Sanksjonslista er ikke hentet. Screening ikke utført.",
+    });
+  } else if (sanksjoner.treff.length === 0) {
+    krav.push({
+      ref: "Sanksjoner",
+      status: "ok",
+      tekst: "Ingen treff mot EUs sanksjonsliste for selskapet eller rollene",
+    });
+  } else {
+    for (const t of sanksjoner.treff) {
+      // «Mulig treff», aldri «sanksjonert». Lista kobler på navn, og navn
+      // tar feil. Et selskap som uriktig merkes som sanksjonert er rammet
+      // hardt, og teksten her er det eneste som står mellom.
+      krav.push({
+        ref: "Sanksjoner",
+        status: "no",
+        tekst:
+          `Mulig treff mot EUs sanksjonsliste: «${t.sokt}»` +
+          (t.kilde === "rolle" ? ` (${t.rolle})` : "") +
+          ` ligner «${t.treff}»` +
+          (t.program ? ` i programmet ${t.program}` : "") +
+          `. Treffet er navnelikhet og må verifiseres mot lista før avtale inngås.`,
+      });
+    }
+  }
 
   krav.push({
     ref: "§ 24-2",
@@ -193,6 +240,43 @@ function vurder(
     });
   }
 
+  // Sentral godkjenning har vært frivillig siden 2016. Å ikke stå der er
+  // ikke et avvik — det betyr at de ikke har søkt. Derfor «na» og ikke
+  // «no», og en tekst som sier hvorfor.
+  if (dibk.status === "godkjent") {
+    krav.push({
+      ref: "DiBK",
+      status: "ok",
+      tekst:
+        `Sentral godkjenning gyldig${dibk.gyldigTil ? ` til ${dibk.gyldigTil}` : ""}` +
+        (dibk.omrader.length ? ` for ${dibk.omrader.length} godkjenningsområder` : ""),
+    });
+
+    // Den ene linja som gjør § 5h etterprøvbar. Ellers er lærlingekravet
+    // bare en avkryssing kunden gjør selv.
+    if (svar.hms.includes("lare"))
+      krav.push({
+        ref: "§ 5h",
+        status: dibk.larebedrift ? "ok" : "na",
+        tekst: dibk.larebedrift
+          ? "Registrert som godkjent lærebedrift hos DiBK"
+          : "DiBK har ikke registrert selskapet som lærebedrift. Lærlingekravet er likevel krysset av — sjekk hvilken ordning det gjelder.",
+      });
+  } else if (dibk.status === "utlopt") {
+    krav.push({
+      ref: "DiBK",
+      status: "na",
+      tekst: `Sentral godkjenning er utløpt${dibk.gyldigTil ? ` (${dibk.gyldigTil})` : ""}. Ordningen er frivillig, så dette er ikke et avvik i seg selv.`,
+    });
+  } else if (dibk.status === "ikke_registrert") {
+    krav.push({
+      ref: "DiBK",
+      status: "na",
+      tekst:
+        "Ikke registrert med sentral godkjenning. Ordningen har vært frivillig siden 2016, så dette er ikke et avvik.",
+    });
+  }
+
   if (svar.espd === "finnes") {
     krav.push({
       ref: "ESPD",
@@ -223,6 +307,16 @@ function vurder(
       navn: "Arbeidstilsynet",
       status: renhold ? ("svar" as const) : ("ikke" as const),
       tidspunkt: renhold ? new Date().toISOString() : null,
+    },
+    {
+      navn: "DiBK sentral godkjenning",
+      status: dibk.status === "feil" ? ("ikke" as const) : ("svar" as const),
+      tidspunkt: dibk.status === "feil" ? null : new Date().toISOString(),
+    },
+    {
+      navn: "EUs sanksjonsliste",
+      status: sanksjoner.kjort ? ("svar" as const) : ("ikke" as const),
+      tidspunkt: sanksjoner.listeDato,
     },
     { navn: "StartBANK", status: "ikke" as const, tidspunkt: null },
   ];
