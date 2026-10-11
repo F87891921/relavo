@@ -53,7 +53,7 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
       () => ({ status: "feil", melding: "Oppslaget feilet" }) as Sentralgodkjenning,
     ),
     screenSanksjoner(supabase, { navn: enhet.navn, orgnr: enhet.orgnr }).catch(
-      () => ({ treff: [], listeDato: null, kjort: false }),
+      () => ({ treff: [], listeDato: null, kjort: false, rollerScreenet: false }),
     ),
   ]);
 
@@ -159,7 +159,12 @@ function vurder(
   svar: Svar,
   renhold: { status: string; godkjent: boolean } | null,
   dibk: Sentralgodkjenning,
-  sanksjoner: { treff: Sanksjonstreff[]; listeDato: string | null; kjort: boolean },
+  sanksjoner: {
+    treff: Sanksjonstreff[];
+    listeDato: string | null;
+    kjort: boolean;
+    rollerScreenet: boolean;
+  },
 ) {
   const krav: { ref: string; status: "ok" | "no" | "na"; tekst: string }[] = [];
 
@@ -172,10 +177,15 @@ function vurder(
       tekst: "Sanksjonslista er ikke hentet. Screening ikke utført.",
     });
   } else if (sanksjoner.treff.length === 0) {
+    // «eller rollene» bare når rollene faktisk ble screenet. Sto den
+    // setningen der uansett, ville rapporten dekket over at styret aldri
+    // ble slått opp — og styret er ofte det som treffer.
     krav.push({
       ref: "Sanksjoner",
-      status: "ok",
-      tekst: "Ingen treff mot EUs sanksjonsliste for selskapet eller rollene",
+      status: sanksjoner.rollerScreenet ? "ok" : "na",
+      tekst: sanksjoner.rollerScreenet
+        ? "Ingen treff mot EUs sanksjonsliste for selskapet eller rollene"
+        : "Ingen treff mot EUs sanksjonsliste for selskapsnavnet. Styret kunne ikke hentes fra Enhetsregisteret og er ikke screenet.",
     });
   } else {
     for (const t of sanksjoner.treff) {

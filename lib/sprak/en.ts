@@ -57,6 +57,7 @@ export const en: Ordbok = {
   },
 
   felles: {
+    fjern: "Remove",
     lagre: "Save",
     lagrer: "Saving …",
     avbryt: "Cancel",
@@ -310,7 +311,50 @@ export const en: Ordbok = {
     harEn: "supplier has",
     harFlere: "suppliers have",
   },
+  kontroll: {
+    lastNedPdf: "Download PDF",
+    ingenBrudd: "No breaches found.",
+    kravIkkeOppfylt: "requirements are not met.",
+    ikkeKontrollert: "points could not be checked.",
+    utfort: "Performed",
+    utfortAv: "Performed by",
+    oppdragsgiver: "Contracting authority",
+    referanse: "Reference",
+    vurdering: "Assessment against the rules",
+    kilder: "Sources",
+    ingenKilder: "No sources are recorded on this control.",
+    kjede: "Supply chain (§ 5k)",
+    hoved: "Main",
+    ledd: "Tier",
+    overGrense: "Beyond the limit",
+    interessekonflikt: "Conflict of interest (§ 6)",
+    lignerPa: "resembles",
+    kravstatus: {
+      ok: "Met",
+      no: "Breach",
+      na: "Not checked",
+    },
+    kildestatus: {
+      svar: "Response",
+      vedlegg: "Attachment",
+      ikke: "No response",
+    },
+    forbehold: "The control is based on public registers as they stood at the time above, and on what the supplier itself stated. A register can be out of date and a self-declaration can be untrue. Points marked “not checked” have not been checked — they have not been found to be in order.",
+    seKontroll: "View the control",
+  },
+
   jav: {
+    deltakereTittel: "People involved in the procurement",
+    deltakereForklaring: "People on your side who handle the procurement: case officers, requisitioners and the evaluation committee. The check cross-references the supplier's board and managing director against this list. A match is not a finding of disqualification — it is a signal that someone must assess forvaltningsloven § 6.",
+    leggTilDeltaker: "Add",
+    limInnFlere: "Paste several at once",
+    limInn: "One per line: “Name, role”",
+    limInnPlassholder: "Ola Nordmann, case officer\nKari Hansen, evaluation committee\nPer Olsen",
+    standardrolle: "Role for lines without a comma",
+    leggTilAlle: "Add all",
+    enOmGangen: "One at a time",
+    kjorPaNytt: "Cross-reference suppliers again",
+    kjorPaNyttForklaring: "The conflict check runs when a control is performed. If you change the list afterwards, the suppliers must be cross-referenced again for the change to matter.",
     eiersiden:
       "Ownership has not been checked. Aksjonærregisteret, the Norwegian shareholder register, is published by Skatteetaten as an annual file rather than a lookup service, so ownership cannot yet be cross-checked automatically.",
     utenDeltakere:

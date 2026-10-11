@@ -27,7 +27,18 @@ export type Sanksjonstreff = {
 export async function screenSanksjoner(
   supabase: SupabaseClient,
   o: { navn: string; orgnr: string },
-): Promise<{ treff: Sanksjonstreff[]; listeDato: string | null; kjort: boolean }> {
+): Promise<{
+  treff: Sanksjonstreff[];
+  listeDato: string | null;
+  kjort: boolean;
+  /**
+   * Om vi faktisk fikk tak i styret. Svarer ikke rolleregisteret, er bare
+   * selskapsnavnet screenet — og da kan rapporten ikke si «selskapet eller
+   * rollene». Kommentaren over sier at rollene ofte er det som treffer;
+   * da er det ikke en detalj om de manglet.
+   */
+  rollerScreenet: boolean;
+}> {
   const { data: meta } = await supabase
     .from("integrasjoner")
     .select("sist_synk")
@@ -37,7 +48,7 @@ export async function screenSanksjoner(
   // Er lista aldri hentet, er svaret «ikke kontrollert» — ikke «ingen treff».
   // Det er forskjellen mellom å ha sett etter og å ikke ha sett etter.
   if (!meta?.sist_synk)
-    return { treff: [], listeDato: null, kjort: false };
+    return { treff: [], listeDato: null, kjort: false, rollerScreenet: false };
 
   const treff: Sanksjonstreff[] = [];
 
@@ -58,6 +69,11 @@ export async function screenSanksjoner(
     });
 
   const roller = await hentRoller(o.orgnr);
+
+  // «ingen» er et svar: enheten finnes og har ingen roller å screene.
+  // «ukjent» og «feil» er ikke svar — da ble rollene ikke screenet.
+  const rollerScreenet = roller.status === "ok" || roller.status === "ingen";
+
   if (roller.status === "ok") {
     for (const p of roller.personer) {
       const { data: per } = await supabase.rpc("sanksjonstreff", {
@@ -77,5 +93,5 @@ export async function screenSanksjoner(
     }
   }
 
-  return { treff, listeDato: meta.sist_synk, kjort: true };
+  return { treff, listeDato: meta.sist_synk, kjort: true, rollerScreenet };
 }

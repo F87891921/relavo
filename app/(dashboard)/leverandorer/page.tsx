@@ -19,11 +19,23 @@ export default async function LeverandorerSide() {
     .select("id, navn, org_nr, bransje, risiko, sist_kontrollert")
     .order("navn");
 
-  // Jav-treff per leverandør. Varselet hører hjemme her fordi dette er der
-  // resultatet av en kontroll vises — en egen resultatside finnes ikke ennå.
+  // Jav-treff per leverandør, som varsel på raden.
   const { data: javTreff } = await supabase
     .from("jav_treff")
     .select("leverandor_id");
+
+  // Siste kontroll per leverandør, så raden kan føre til rapporten.
+  // Sortert nyest først og så tatt første per leverandør — Postgres har
+  // distinct on, men PostgREST eksponerer det ikke, og lista er liten.
+  const { data: kontroller } = await supabase
+    .from("kontroller")
+    .select("id, leverandor_id, utfort")
+    .order("utfort", { ascending: false });
+
+  const sisteKontroll = new Map<string, string>();
+  for (const k of kontroller ?? [])
+    if (!sisteKontroll.has(k.leverandor_id))
+      sisteKontroll.set(k.leverandor_id, k.id);
 
   const javPerLeverandor = new Map<string, number>();
   for (const t of javTreff ?? [])
@@ -90,7 +102,16 @@ export default async function LeverandorerSide() {
                 leverandorer.map((l) => (
                   <tr key={l.id} className="border-b border-border last:border-0">
                     <td className="px-5 py-3.5">
-                      <div className="font-semibold">{l.navn}</div>
+                      {sisteKontroll.has(l.id) ? (
+                        <Link
+                          href={`/kontroll/${sisteKontroll.get(l.id)}`}
+                          className="font-semibold hover:text-accent hover:underline transition"
+                        >
+                          {l.navn}
+                        </Link>
+                      ) : (
+                        <div className="font-semibold">{l.navn}</div>
+                      )}
                       <div className="text-xs text-faint font-mono">{l.org_nr}</div>
                       {javPerLeverandor.has(l.id) && (
                         <Link
@@ -112,9 +133,23 @@ export default async function LeverandorerSide() {
                       )}
                     </td>
                     <td className="px-5 py-3.5 text-dim">
-                      {l.sist_kontrollert
-                        ? new Date(l.sist_kontrollert).toLocaleDateString("nb-NO")
-                        : t.ui.aldri}
+                      {l.sist_kontrollert ? (
+                        sisteKontroll.has(l.id) ? (
+                          <Link
+                            href={`/kontroll/${sisteKontroll.get(l.id)}`}
+                            className="hover:text-accent hover:underline transition"
+                          >
+                            {new Date(l.sist_kontrollert).toLocaleDateString("nb-NO")}
+                            <span className="block text-[11px] text-accent">
+                              {t.kontroll.seKontroll}
+                            </span>
+                          </Link>
+                        ) : (
+                          new Date(l.sist_kontrollert).toLocaleDateString("nb-NO")
+                        )
+                      ) : (
+                        t.ui.aldri
+                      )}
                     </td>
                   </tr>
                 ))

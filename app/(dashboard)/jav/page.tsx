@@ -3,6 +3,7 @@ import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, type Tone } from "@/components/ui";
 import { Flikar } from "@/components/ui/Flikar";
 import { funnAntall } from "@/lib/funn";
+import { Deltakere } from "@/components/jav/Deltakere";
 
 const KOBLINGSTONE: Record<string, Tone> = {
   styre: "brudd",
@@ -25,15 +26,18 @@ export default async function JavSide() {
   const { supabase, t } = await krevProfil();
   const antall = await funnAntall();
 
-  const [{ data: treff, error }, { count: antallDeltakere }] = await Promise.all([
+  const [{ data: treff, error }, { data: deltakere }] = await Promise.all([
     supabase
       .from("jav_treff")
       .select("id, leverandor_id, type_kobling, detaljer, opprettet, leverandorer(navn, org_nr)")
       .order("opprettet", { ascending: false }),
     supabase
       .from("prosjektdeltakere")
-      .select("id", { count: "exact", head: true }),
+      .select("id, navn, rolle")
+      .order("navn"),
   ]);
+
+  const antallDeltakere = deltakere?.length ?? 0;
 
   // Hver kontrollkjøring legger igjen sine egne treff, så samme par dukker
   // opp på nytt for hver kjøring. Som spor er det riktig — men på en
@@ -89,6 +93,10 @@ export default async function JavSide() {
             <b>{t.jav.ingenDeltakere}</b> {t.jav.utenDeltakere}
           </div>
         )}
+
+        <Kort tittel={t.jav.deltakereTittel} className="mb-5">
+          <Deltakere deltakere={deltakere ?? []} />
+        </Kort>
 
         <div className="bg-canvas text-dim text-[12.5px] rounded-xl px-4 py-3 mb-5 leading-relaxed border border-border">
           {t.jav.eiersiden}

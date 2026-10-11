@@ -32,18 +32,29 @@ export type JavResultat = {
   merknad?: string;
 };
 
+export type Deltaker = { id: string; navn: string; rolle: string };
+
 export async function finnJav(
   supabase: SupabaseClient,
   opts: {
     organisasjonId: string;
     leverandorId: string;
     orgnr: string;
+    /**
+     * Ferdig hentet deltakerliste. Kryssingen av mange leverandører henter
+     * ellers den samme lista på nytt for hver eneste leverandør.
+     */
+    deltakere?: Deltaker[];
   },
 ): Promise<JavResultat> {
-  const { data: deltakere } = await supabase
-    .from("prosjektdeltakere")
-    .select("id, navn, rolle")
-    .eq("organisasjon_id", opts.organisasjonId);
+  const deltakere =
+    opts.deltakere ??
+    (
+      await supabase
+        .from("prosjektdeltakere")
+        .select("id, navn, rolle")
+        .eq("organisasjon_id", opts.organisasjonId)
+    ).data;
 
   // Ingen deltakere registrert: ingenting å krysse mot. Da er dette ikke
   // «ingen jav funnet», men «ikke kontrollert» — og det skal sies.
@@ -60,6 +71,16 @@ export async function finnJav(
 
   if (roller.status === "feil")
     return { treff: [], rollerHentet: false, merknad: roller.melding };
+
+  // rollerHentet: false. Et organisasjonsnummer registeret ikke kjenner er
+  // ikke et selskap uten styre — det er et nummer vi ikke fikk kontrollert.
+  if (roller.status === "ukjent")
+    return {
+      treff: [],
+      rollerHentet: false,
+      merknad:
+        "Enhetsregisteret kjenner ikke dette organisasjonsnummeret, så styret er ikke kontrollert.",
+    };
 
   if (roller.status === "ingen")
     return {

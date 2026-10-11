@@ -112,7 +112,10 @@ export function NyKontrollVeiviser() {
       setKjorFeil(res.feil);
       return;
     }
-    router.push("/leverandorer");
+    // Rett til rapporten. Kontrollen er det man nettopp gjorde; å bli
+    // sendt til en liste der resultatet er én dato i én kolonne er å
+    // gjemme svaret man ba om.
+    router.push(`/kontroll/${res.kontrollId}`);
     router.refresh();
   }
 

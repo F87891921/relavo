@@ -57,6 +57,7 @@ export const sv: Ordbok = {
   },
 
   felles: {
+    fjern: "Ta bort",
     lagre: "Spara",
     lagrer: "Sparar …",
     avbryt: "Avbryt",
@@ -310,7 +311,50 @@ export const sv: Ordbok = {
     harEn: "leverantör har",
     harFlere: "leverantörer har",
   },
+  kontroll: {
+    lastNedPdf: "Ladda ner PDF",
+    ingenBrudd: "Inga brott hittades.",
+    kravIkkeOppfylt: "krav är inte uppfyllda.",
+    ikkeKontrollert: "punkter kunde inte kontrolleras.",
+    utfort: "Utförd",
+    utfortAv: "Utförd av",
+    oppdragsgiver: "Upphandlande myndighet",
+    referanse: "Referens",
+    vurdering: "Bedömning mot regelverket",
+    kilder: "Källor",
+    ingenKilder: "Inga källor är registrerade på kontrollen.",
+    kjede: "Leverantörskedja (§ 5k)",
+    hoved: "Huvud",
+    ledd: "Led",
+    overGrense: "Över gränsen",
+    interessekonflikt: "Jäv (§ 6)",
+    lignerPa: "liknar",
+    kravstatus: {
+      ok: "Uppfyllt",
+      no: "Brott",
+      na: "Ej kontrollerat",
+    },
+    kildestatus: {
+      svar: "Svar",
+      vedlegg: "Bilaga",
+      ikke: "Inget svar",
+    },
+    forbehold: "Kontrollen bygger på offentliga register som de såg ut vid tidpunkten ovan, och på det leverantören själv uppgett. Ett register kan vara inaktuellt och en egenförsäkran kan vara oriktig. Punkter märkta ”ej kontrollerat” är inte kontrollerade — de är inte funna i sin ordning.",
+    seKontroll: "Se kontrollen",
+  },
+
   jav: {
+    deltakereTittel: "Deltagare i upphandlingen",
+    deltakereForklaring: "Personer hos er som handlägger upphandlingen: handläggare, beställare och utvärderingskommittén. Kontrollen korsar leverantörens styrelse och vd mot den här listan. En träff är inget beslut om jäv — det är en signal om att någon måste pröva forvaltningsloven § 6.",
+    leggTilDeltaker: "Lägg till",
+    limInnFlere: "Klistra in flera på en gång",
+    limInn: "En per rad: ”Namn, roll”",
+    limInnPlassholder: "Ola Nordmann, handläggare\nKari Hansen, utvärderingskommittén\nPer Olsen",
+    standardrolle: "Roll för rader utan komma",
+    leggTilAlle: "Lägg till alla",
+    enOmGangen: "En i taget",
+    kjorPaNytt: "Korsa leverantörerna på nytt",
+    kjorPaNyttForklaring: "Jävskontrollen körs när en kontroll utförs. Ändrar ni listan efteråt måste leverantörerna korsas på nytt för att ändringen ska få effekt.",
     eiersiden:
       "Ägarsidan är inte kontrollerad. Aksjonærregisteret publiceras av Skatteetaten som en årlig fil, inte som uppslag, så ägande kan ännu inte korsas automatiskt.",
     utenDeltakere:

@@ -17,7 +17,10 @@ export type Rolleperson = {
 
 export type Rollesvar =
   | { status: "ok"; personer: Rolleperson[] }
+  /** Enheten finnes, men har ingen roller vi kan krysse mot. */
   | { status: "ingen" }
+  /** Enhetsregisteret kjenner ikke organisasjonsnummeret i det hele tatt. */
+  | { status: "ukjent" }
   | { status: "feil"; melding: string };
 
 /** Rollegrupper vi bryr oss om. Revisor og regnskapsfører utløser ikke jav. */
@@ -38,7 +41,12 @@ export async function hentRoller(orgnr: string): Promise<Rollesvar> {
     return { status: "feil", melding: "Fikk ikke kontakt med Enhetsregisteret." };
   }
 
-  if (svar.status === 404) return { status: "ingen" };
+  // 404 betyr at nummeret ikke finnes i registeret — ikke at selskapet
+  // finnes uten styre. Slås de to sammen, svarer jav-kontrollen «ingen
+  // roller registrert» på et feilskrevet eller slettet organisasjonsnummer,
+  // og det leses som en bestått kontroll. Det er den verste måten å ta feil
+  // på: kontrollen ser utført ut uten å ha vært det.
+  if (svar.status === 404) return { status: "ukjent" };
   if (!svar.ok)
     return { status: "feil", melding: `Enhetsregisteret svarte ${svar.status}.` };
 

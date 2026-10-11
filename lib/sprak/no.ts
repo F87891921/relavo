@@ -66,6 +66,7 @@ export const no = {
   },
 
   felles: {
+    fjern: "Fjern",
     lagre: "Lagre",
     lagrer: "Lagrer …",
     avbryt: "Avbryt",
@@ -319,7 +320,50 @@ export const no = {
     harEn: "leverandør har",
     harFlere: "leverandører har",
   },
+  kontroll: {
+    lastNedPdf: "Last ned PDF",
+    ingenBrudd: "Ingen brudd funnet.",
+    kravIkkeOppfylt: "krav er ikke oppfylt.",
+    ikkeKontrollert: "punkter kunne ikke kontrolleres.",
+    utfort: "Utført",
+    utfortAv: "Utført av",
+    oppdragsgiver: "Oppdragsgiver",
+    referanse: "Referanse",
+    vurdering: "Vurdering mot regelverket",
+    kilder: "Kilder",
+    ingenKilder: "Ingen kilder er registrert på kontrollen.",
+    kjede: "Leverandørkjede (§ 5k)",
+    hoved: "Hoved",
+    ledd: "Ledd",
+    overGrense: "Over grensen",
+    interessekonflikt: "Interessekonflikt (§ 6)",
+    lignerPa: "ligner",
+    kravstatus: {
+      ok: "Oppfylt",
+      no: "Brudd",
+      na: "Ikke sjekket",
+    },
+    kildestatus: {
+      svar: "Svar",
+      vedlegg: "Vedlegg",
+      ikke: "Ikke svar",
+    },
+    forbehold: "Kontrollen bygger på offentlige registre slik de sto på tidspunktet over, og på det leverandøren selv har oppgitt. Et register kan være utdatert, og en egenerklæring kan være uriktig. Punkter merket «ikke sjekket» er ikke kontrollert — de er ikke funnet i orden.",
+    seKontroll: "Se kontrollen",
+  },
+
   jav: {
+    deltakereTittel: "Deltakere i anskaffelsen",
+    deltakereForklaring: "Folk hos dere som behandler anskaffelsen: saksbehandlere, bestillere og evalueringskomiteen. Kontrollen krysser styret og daglig leder hos leverandøren mot denne lista. Et treff er ikke en avgjørelse om inhabilitet — det er et varsel om at noen må vurdere forvaltningsloven § 6.",
+    leggTilDeltaker: "Legg til",
+    limInnFlere: "Lim inn flere på en gang",
+    limInn: "Én per linje: «Navn, rolle»",
+    limInnPlassholder: "Ola Nordmann, saksbehandler\nKari Hansen, evalueringskomiteen\nPer Olsen",
+    standardrolle: "Rolle for linjer uten komma",
+    leggTilAlle: "Legg til alle",
+    enOmGangen: "Én om gangen",
+    kjorPaNytt: "Kryss leverandørene på nytt",
+    kjorPaNyttForklaring: "Jav-kontrollen kjører når en kontroll utføres. Endrer dere lista etterpå, må leverandørene krysses på nytt for at endringen skal få betydning.",
     eiersiden:
       "Eiersiden er ikke kontrollert. Aksjonærregisteret publiseres av Skatteetaten som en årlig fil, ikke som oppslag, så eierskap kan ikke krysses automatisk ennå.",
     utenDeltakere:
