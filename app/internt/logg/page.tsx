@@ -1,10 +1,23 @@
 import { krevSuperadmin } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
 import { Side, Sidehode, Kort, Tabell, Merke } from "@/components/ui";
-import { LOGG } from "@/lib/demo/staff";
+
+const initialer = (navn: string) =>
+  navn
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((d) => d[0]?.toUpperCase() ?? "")
+    .join("");
 
 export default async function InterntLoggSide() {
-  const { t } = await krevSuperadmin();
+  const { supabase, t } = await krevSuperadmin();
+
+  const { data: rader } = await supabase
+    .from("tilgangslogg")
+    .select("id, utfort_av_navn, organisasjon_navn, handling, begrunnelse, opprettet")
+    .order("opprettet", { ascending: false })
+    .limit(200);
 
   return (
     <StaffShell aktivtSteg="logg">
@@ -14,30 +27,45 @@ export default async function InterntLoggSide() {
           tekst={t.ansattsider.logg.tekst}
         />
 
-        <div className="bg-surface2 text-accent text-[12.5px] rounded-xl px-4 py-3 mb-5 leading-relaxed">
-          Varje uppslag kräver en angiven anledning. Rader utan anledning
-          hade varit värdelösa vid en granskning — därför finns fältet inte
-          som valfritt.
+        <div className="bg-surface2 text-accent text-[12.5px] rounded-xl px-4 py-3 mb-5 leading-relaxed max-w-[76ch]">
+          {t.internt.loggForklaring}
         </div>
 
-        <Kort note={t.internt.demodataStaff}>
+        <Kort>
           <Tabell
-            kolonner={["Vem", t.internt.konto, t.internt.vad, t.internt.gjaldt, t.internt.begrunnelse, "Tid"]}
-            rader={LOGG.map((l) => [
+            kolonner={[
+              t.internt.hvem,
+              t.internt.konto,
+              t.internt.vad,
+              t.internt.begrunnelse,
+              t.internt.tid,
+            ]}
+            tom={t.internt.ingenLogg}
+            rader={(rader ?? []).map((l) => [
               <div key="v" className="flex items-center gap-2.5">
                 <span className="w-7 h-7 rounded-lg bg-surface2 text-accent text-[10px] font-bold flex items-center justify-center shrink-0">
-                  {l.vem}
+                  {initialer(l.utfort_av_navn)}
                 </span>
-                <span className="font-semibold whitespace-nowrap">{l.namn}</span>
+                <span className="font-semibold whitespace-nowrap">
+                  {l.utfort_av_navn}
+                </span>
               </div>,
-              <Merke key="k" tone="aksent">{l.konto}</Merke>,
-              <span key="w" className="text-dim">{l.vad}</span>,
-              <span key="r" className="whitespace-nowrap">{l.ref}</span>,
-              <span key="a" className="text-dim">{l.varfor}</span>,
-              <span key="t" className="text-faint whitespace-nowrap">{l.tid}</span>,
+              <Merke key="k" tone="aksent">{l.organisasjon_navn}</Merke>,
+              <span key="h" className="whitespace-nowrap">{l.handling}</span>,
+              <span key="b" className="text-dim">{l.begrunnelse}</span>,
+              <span key="t" className="text-faint whitespace-nowrap">
+                {new Date(l.opprettet).toLocaleString("nb-NO", {
+                  day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+                })}
+              </span>,
             ])}
           />
         </Kort>
+
+        {/* Det som ikke står her er like viktig som det som gjør. */}
+        <p className="text-[12px] text-faint mt-4 max-w-[76ch] leading-relaxed">
+          {t.internt.loggOmfang}
+        </p>
       </Side>
     </StaffShell>
   );

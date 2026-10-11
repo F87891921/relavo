@@ -1,30 +1,45 @@
 import { krevSuperadmin } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
 import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, NOK } from "@/components/ui";
-import { KONTON, PLANER, KALLOR } from "@/lib/demo/staff";
+import { hentKonton, mrr } from "@/lib/konton";
+import { planFor } from "@/lib/plan";
+import { KILDER } from "@/lib/kilder";
 
 /**
- * Marginalen per konto. Kostnaden är summan av uppslagen kontot gjort,
- * prissatt per källa. Källor som inte kostar något (Enhetsregisteret) drar
- * ner styckkostnaden, och det är hela poängen med att visa den här.
+ * Marginen per konto.
+ *
+ * Her sto det en kostnad per oppslag regnet ut av en snittpris over
+ * demokildene. Den var oppdiktet, og en margin bygget på et oppdiktet tall
+ * er verre enn ingen margin: den ser ut som et regnskap.
+ *
+ * Sannheten i dag er at den variable kostnaden er null. Alle kildene vi
+ * faktisk bruker — Enhetsregisteret, Arbeidstilsynet, DiBK, EUs
+ * sanksjonsliste — er gratis, og skatteattesten kommer fra leverandøren.
+ * Marginen er derfor inntekten minus drift, og driften er ikke per kunde.
+ *
+ * Det som er verdt å se her er noe annet: hvem som betaler lite og bruker
+ * mye. Det er den som blir dyr den dagen en kilde begynner å koste.
  */
-const KOSTNAD_PER_UPPSLAG =
-  KALLOR.reduce((s, k) => s + k.kostnad, 0) / Math.max(1, KALLOR.length);
-
 export default async function InterntMarginalSide() {
   const { t } = await krevSuperadmin();
+  const konton = await hentKonton();
 
-  const rader = KONTON.map((k) => {
-    const plan = PLANER[k.plan as keyof typeof PLANER];
-    const intakt = plan?.pris ?? 0;
-    const kostnad = Math.round(k.anvant * KOSTNAD_PER_UPPSLAG);
-    const marginal = intakt - kostnad;
-    const andel = intakt ? Math.round((marginal / intakt) * 100) : 0;
-    return { ...k, plan, intakt, kostnad, marginal, andel };
-  });
+  const betalende = konton.filter((k) => k.status === "aktiv");
+  const inntekt = mrr(konton);
+  const kontroller30 = betalende.reduce((s, k) => s + Number(k.kontroller_30d), 0);
 
-  const sumIntakt = rader.reduce((s, r) => s + r.intakt, 0);
-  const sumKostnad = rader.reduce((s, r) => s + r.kostnad, 0);
+  const betalte = KILDER.filter((k) => k.vei !== "mangler" && (k.kostnad ?? 0) > 0);
+
+  const rader = betalende
+    .map((k) => {
+      const pris = planFor(k.plan).manedspris;
+      const brukt = Number(k.kontroller_30d);
+      // Hva en kontroll faktisk innbringer for denne kunden denne måneden.
+      // Det er tallet som faller når noen bruker mye og betaler fast.
+      const perKontroll = brukt ? Math.round(pris / brukt) : null;
+      return { ...k, pris, brukt, perKontroll };
+    })
+    .sort((a, b) => (a.perKontroll ?? Infinity) - (b.perKontroll ?? Infinity));
 
   return (
     <StaffShell aktivtSteg="marginal">
@@ -35,38 +50,60 @@ export default async function InterntMarginalSide() {
         />
 
         <Rad>
-          <Tall verdi={`${NOK(sumIntakt)} kr`} merke={t.internt.inntektPerManed} />
-          <Tall verdi={`${NOK(sumKostnad)} kr`} merke={t.internt.oppslagskostnad} />
-          <Tall verdi={`${NOK(sumIntakt - sumKostnad)} kr`} merke="marginal" />
+          <Tall verdi={`${NOK(inntekt)} kr`} merke={t.internt.inntektPerManed} />
+          <Tall verdi={String(kontroller30)} merke={t.internt.kontroller30} />
           <Tall
-            verdi={`${Math.round(((sumIntakt - sumKostnad) / Math.max(1, sumIntakt)) * 100)} %`}
-            merke={t.internt.marginIProsent}
+            verdi={kontroller30 ? `${NOK(Math.round(inntekt / kontroller30))} kr` : "—"}
+            merke={t.internt.snittPerKontroll}
+          />
+          <Tall
+            verdi={betalte.length ? `${betalte.length}` : "0 kr"}
+            merke={t.internt.betalteKilder}
           />
         </Rad>
 
-        <Kort note={t.internt.demodataStaff}>
+        <div className="bg-surface2 text-accent text-[12.5px] rounded-xl px-4 py-3 mb-5 leading-relaxed max-w-[76ch]">
+          {t.internt.marginForklaring}
+        </div>
+
+        <Kort>
           <Tabell
-            kolonner={[t.internt.konto, t.internt.plan, t.internt.oppslag, t.internt.inntekt, t.internt.kostnad, t.internt.margin, ""]}
+            kolonner={[
+              t.internt.konto,
+              t.internt.plan,
+              t.internt.inntekt,
+              t.internt.kontroller30Kol,
+              t.internt.perKontroll,
+            ]}
+            tom={t.internt.ingenBetalende}
             rader={rader.map((r) => [
-              <span key="n" className="font-semibold">{r.namn}</span>,
-              <Merke key="p" tone={r.plan?.namn === "Enterprise" ? "aksent" : "noytral"}>
-                {r.plan?.namn ?? "—"}
+              <span key="n" className="font-semibold">{r.navn}</span>,
+              <Merke key="p" tone={r.plan === "enterprise" ? "aksent" : "noytral"}>
+                {planFor(r.plan).navn}
               </Merke>,
-              <span key="u" className="tabular-nums">{r.anvant}</span>,
-              <span key="i" className="tabular-nums whitespace-nowrap">{NOK(r.intakt)}</span>,
-              <span key="k" className="tabular-nums whitespace-nowrap text-dim">{NOK(r.kostnad)}</span>,
-              <span
-                key="m"
-                className={`tabular-nums whitespace-nowrap font-semibold ${r.marginal < 0 ? "text-bad" : ""}`}
-              >
-                {NOK(r.marginal)}
+              <span key="i" className="tabular-nums whitespace-nowrap">
+                {r.pris ? `${NOK(r.pris)} kr` : t.internt.perStykk}
               </span>,
-              <Merke key="a" tone={r.andel < 0 ? "brudd" : r.andel < 40 ? "advarsel" : "god"}>
-                {r.andel} %
-              </Merke>,
+              <span key="b" className="tabular-nums">{r.brukt}</span>,
+              r.perKontroll === null ? (
+                <Merke key="m" tone="advarsel">{t.internt.ingenBruk}</Merke>
+              ) : (
+                <span
+                  key="m"
+                  className={`tabular-nums whitespace-nowrap font-semibold ${
+                    r.perKontroll < 100 ? "text-warn" : ""
+                  }`}
+                >
+                  {NOK(r.perKontroll)} kr
+                </span>
+              ),
             ])}
           />
         </Kort>
+
+        <p className="text-[12px] text-faint mt-4 max-w-[76ch] leading-relaxed">
+          {t.internt.marginFotnot}
+        </p>
       </Side>
     </StaffShell>
   );

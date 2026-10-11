@@ -35,7 +35,10 @@ export function SynkRenhold({
           return;
         }
         setMelding(
-          `${data.antall} verksamheter hämtade — ${data.godkjente} godkända, ${data.ikkeGodkjente} inte godkända.`,
+          t.internt.synkResultat
+            .replace("{n}", String(data.antall))
+            .replace("{g}", String(data.godkjente))
+            .replace("{i}", String(data.ikkeGodkjente)),
         );
         router.refresh();
       } catch {
@@ -50,10 +53,7 @@ export function SynkRenhold({
         {t.internt.renholdsregister}
       </h2>
       <p className="text-[12.5px] text-dim mb-4 leading-relaxed max-w-[70ch]">
-        Sedan 2012 är det olagligt att köpa städtjänster från bolag som inte är
-        godkända här. Registret innehåller <b>både</b> godkända och icke
-        godkända — ett träff betyder alltså inte att bolaget är godkänt.
-        Öppen fil under NLOD 2.0, uppdateras varje morgon.
+        {t.internt.renholdForklaring}
       </p>
 
       <div className="flex flex-wrap items-center gap-4">
@@ -69,11 +69,11 @@ export function SynkRenhold({
         <span className="text-[12.5px] text-dim">
           {sistHentet ? (
             <>
-              Senast hämtat{" "}
+              {t.internt.sistHentet}{" "}
               <b className="text-ink">
-                {new Date(sistHentet).toLocaleString("sv-SE")}
+                {new Date(sistHentet).toLocaleString("nb-NO")}
               </b>{" "}
-              · {antall} verksamheter
+              · {antall} {t.internt.virksomheter}
             </>
           ) : (
             <b className="text-warn">{t.internt.aldriHentet}</b>

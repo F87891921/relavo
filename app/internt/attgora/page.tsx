@@ -2,21 +2,26 @@ import Link from "next/link";
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
 import { Side, Sidehode, Kort, Tabell, Merke, NOK } from "@/components/ui";
-import { LARM } from "@/lib/demo/staff";
 import { Varsler, type Varsel } from "@/components/internt/Varsler";
 
 /**
  * Samlar det som faktiskt kräver en människa i dag, från de riktiga
  * tabellerna. Poängen är att slippa gå igenom sju flikar för att se om
- * något brinner. Källhälsolarmen är ännu demodata — de har ingen tabell.
+ * något brinner.
  */
 export default async function InterntAttgoraSide() {
   const { supabase, t } = await krevAnsatt();
 
   const idag = new Date().toISOString().slice(0, 10);
 
-  const [{ data: fakturaer }, { data: leads }, { data: offerter }, { data: varsler }] =
-    await Promise.all([
+  const [
+    { data: fakturaer },
+    { data: leads },
+    { data: offerter },
+    { data: varsler },
+    { data: venter },
+    { data: synk },
+  ] = await Promise.all([
       supabase
         .from("fakturaer")
         .select("id, nummer, kunde_navn, belopp, forfall, status")
@@ -38,6 +43,14 @@ export default async function InterntAttgoraSide() {
         .select("id, slag, tittel, tekst, lenke, opprettet")
         .is("lest", null)
         .order("opprettet", { ascending: false }),
+      // Kontoer som venter på en beslutning fra oss. Ingen annen enn vi kan
+      // flytte dem, så de hører hjemme på denne siden.
+      supabase
+        .from("organisasjoner")
+        .select("id, navn, status, bestilt")
+        .in("status", ["venter_kreditt", "venter_betaling"])
+        .order("bestilt", { nullsFirst: false }),
+      supabase.from("registersynk").select("register, sist_hentet"),
     ]);
 
   const poster: {
@@ -79,12 +92,32 @@ export default async function InterntAttgoraSide() {
     });
   }
 
-  for (const l of LARM.filter((x) => x.status === "aktivt")) {
+  for (const o of venter ?? []) {
+    poster.push({
+      hastar: o.status === "venter_kreditt",
+      vad: `${o.navn} väntar på oss`,
+      detalj:
+        o.status === "venter_kreditt"
+          ? t.internt.ventarKredit
+          : t.internt.ventarBetalning,
+      var: o.bestilt ? `beställt ${o.bestilt.slice(0, 10)}` : "—",
+      lank: "/internt/onboarding",
+    });
+  }
+
+  // Det eneste vi faktisk kan si om kildehelsen: en synkronisert kilde som
+  // ikke er hentet på to døgn er ikke fersk. Resten målte vi aldri, og
+  // larmene som sto her var oppdiktede.
+  for (const r of synk ?? []) {
+    const dager = Math.floor(
+      (Date.now() - new Date(r.sist_hentet).getTime()) / 86_400_000,
+    );
+    if (dager <= 2) continue;
     poster.push({
       hastar: true,
-      vad: `Larm: ${l.kalla}`,
-      detalj: l.regel,
-      var: `aktivt sedan ${l.sedan} · demodata`,
+      vad: `${r.register} är ${dager} dagar gammal`,
+      detalj: t.internt.synkGammal,
+      var: `senast hämtad ${r.sist_hentet.slice(0, 10)}`,
       lank: "/internt/kallor",
     });
   }

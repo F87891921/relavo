@@ -411,7 +411,33 @@ export async function settAnsatt(
  * fire ukers venting mister kunden. Vil vi likevel ha pengene først, settes
  * forskudd i stedet — da åpnes kontoen av betalingMottatt().
  */
-export async function godkjennKonto(id: string): Promise<Svar> {
+/**
+ * Hvert inngrep i en kundekonto føres i tilgangsloggen. Begrunnelsen er
+ * obligatorisk i basen, ikke bare her — en rad uten begrunnelse er verdiløs
+ * ved en granskning, og da skal den ikke kunne skrives.
+ *
+ * Loggingen kan ikke velte handlingen. Er kontoen åpnet, er den åpnet, og
+ * en feilet logglinje skal ikke få det til å se ut som den ikke er det.
+ * Den havner i serverloggen i stedet.
+ */
+async function logg(
+  supabase: Awaited<ReturnType<typeof krevAnsatt>>["supabase"],
+  organisasjon: string,
+  handling: string,
+  begrunnelse: string,
+) {
+  const { error } = await supabase.rpc("logg_tilgang", {
+    p_organisasjon: organisasjon,
+    p_handling: handling,
+    p_begrunnelse: begrunnelse,
+  });
+  if (error) console.error("tilgangslogg:", handling, error.message);
+}
+
+export async function godkjennKonto(
+  id: string,
+  begrunnelse = "Kredittsjekk godkjent",
+): Promise<Svar> {
   const { supabase, user } = await krevAnsatt();
   const { error } = await supabase
     .from("organisasjoner")
@@ -423,8 +449,12 @@ export async function godkjennKonto(id: string): Promise<Svar> {
     })
     .eq("id", id);
   if (error) return { ok: false, feil: error.message };
+
+  await logg(supabase, id, "Kontoen åpnet", begrunnelse);
+
   revalidatePath("/internt/onboarding");
   revalidatePath("/internt/attgora");
+  revalidatePath("/internt/logg");
   return { ok: true };
 }
 
@@ -436,13 +466,17 @@ export async function krevForskudd(id: string): Promise<Svar> {
     .update({ forskuddsbetaling: true, status: "venter_betaling" })
     .eq("id", id);
   if (error) return { ok: false, feil: error.message };
+
+  await logg(supabase, id, "Forskudd krevd", "Kredittsjekken ga grunn til å ta betalt først");
+
   revalidatePath("/internt/onboarding");
+  revalidatePath("/internt/logg");
   return { ok: true };
 }
 
 /** Forskuddsfakturaen er betalt. Nå åpnes kontoen. */
 export async function betalingMottatt(id: string): Promise<Svar> {
-  return godkjennKonto(id);
+  return godkjennKonto(id, "Forskuddsbetalingen er mottatt");
 }
 
 export async function avslaKonto(id: string, grunn: string): Promise<Svar> {
@@ -455,7 +489,11 @@ export async function avslaKonto(id: string, grunn: string): Promise<Svar> {
     .update({ status: "avslatt", avslag_grunn: grunn.trim() })
     .eq("id", id);
   if (error) return { ok: false, feil: error.message };
+
+  await logg(supabase, id, "Kontoen avslått", grunn.trim());
+
   revalidatePath("/internt/onboarding");
+  revalidatePath("/internt/logg");
   return { ok: true };
 }
 
