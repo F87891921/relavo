@@ -17,7 +17,7 @@ export function Sources() {
   const t = ord().landing;
 
   return (
-    <section className="sources">
+    <section data-avsloj className="sources">
       <div className="sources-l">
         {t.kilder.byggerPa}
         {KILDER.map((kilde, i) => (

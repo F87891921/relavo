@@ -371,3 +371,43 @@ html{scroll-behavior:smooth}
 .li-close:hover{background:var(--surface-2);color:var(--text)}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:1ms !important}html{scroll-behavior:auto}}
+
+/* ==========================================================================
+   Bevegelse
+   ==========================================================================
+   Avsløringen skjules av en klasse skriptet selv setter på <html>. Kjører
+   ikke JavaScript, finnes ikke klassen, og alt står synlig fra start. En
+   landingsside som er tom uten JS er ikke en animasjon, det er en feil.
+
+   Forskyvningen er 18 piksler, ikke 40. Et element som kommer langt
+   nedenfra ser ut som en nettside fra 2014; 18 piksler leses som at det
+   alltid har ligget der og bare kom i fokus.
+   ========================================================================== */
+.avsloj-pa [data-avsloj]{
+  opacity:0;
+  transform:translateY(18px);
+  transition:opacity 620ms var(--ease-out),transform 620ms var(--ease-out);
+  transition-delay:calc(var(--i, 0) * 70ms);
+  will-change:opacity,transform;
+}
+.avsloj-pa [data-avsloj].inne{opacity:1;transform:none;will-change:auto}
+
+/* Navigasjonen trekker seg sammen forbi heroen. Lavere og tettere, ikke
+   borte — den skal fortsatt kunne nås. */
+.nav{transition:padding 420ms var(--ease-out),box-shadow 420ms var(--ease-out),
+  background 420ms var(--ease-out)}
+.nav-in{transition:padding 420ms var(--ease-out)}
+.nav svg{transition:width 420ms var(--ease-out)}
+.nav.kompakt{box-shadow:0 1px 2px rgba(40,31,42,.04),0 6px 24px -10px rgba(40,31,42,.16)}
+.nav.kompakt .nav-in{padding-top:8px;padding-bottom:8px}
+.nav.kompakt .logo svg{width:84px}
+
+/* Trykkrespons på alt som går an å trykke på. Den lille sammentrekningen
+   er det som skiller noe som føles bygget fra noe som føles tegnet. */
+.landing a.btn:active,.landing button:active{transform:scale(0.97)}
+.plan:active,.faq-q:active{transform:scale(0.995)}
+
+@media (prefers-reduced-motion:reduce){
+  .avsloj-pa [data-avsloj]{opacity:1;transform:none;transition:none}
+  .nav,.nav-in,.nav svg{transition:none}
+}

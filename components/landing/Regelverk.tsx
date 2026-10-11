@@ -14,7 +14,7 @@ export function Regelverk() {
   const t = ord().landing.regelverk;
 
   return (
-    <section className="sec sec-alt" id="regelverk">
+    <section data-avsloj className="sec sec-alt" id="regelverk">
       <div className="wrap">
         <div className="sec-head">
           <div className="eyebrow">{t.eyebrow}</div>

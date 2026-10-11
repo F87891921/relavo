@@ -10,6 +10,8 @@ import { Priser } from "@/components/landing/Priser";
 import { Faq } from "@/components/landing/Faq";
 import { Close } from "@/components/landing/Close";
 import { LandingFooter } from "@/components/landing/LandingFooter";
+import { Avslojning } from "@/components/landing/Avslojning";
+import { Rullenav } from "@/components/landing/Rullenav";
 
 /**
  * Forsiden, portet fra relavo-landing.html. Innloggingsmodalen med
@@ -21,6 +23,8 @@ export default function Hjemmeside() {
 
   return (
     <div className="landing">
+      <Avslojning />
+      <Rullenav />
       <LandingNav />
       <main>
         <Hero />

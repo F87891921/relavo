@@ -1,3 +1,4 @@
+import type React from "react";
 import { ord } from "@/lib/sprak";
 import Link from "next/link";
 
@@ -10,7 +11,7 @@ export function Priser() {
   return (
     <section className="sec" id="priser">
       <div className="wrap">
-        <div className="sec-head center">
+        <div className="sec-head center" data-avsloj>
           <div className="eyebrow">{t.eyebrow}</div>
           <h2 className="statement">
             {t.tittel} <span>{t.undertittel}</span>
@@ -21,7 +22,12 @@ export function Priser() {
         </div>
         <div className="plans">
           {t.planer.map((plan, i) => (
-            <div key={plan.navn} className={i === ANBEFALT ? "plan rec" : "plan"}>
+            <div
+              key={plan.navn}
+              className={i === ANBEFALT ? "plan rec" : "plan"}
+              data-avsloj
+              style={{ "--i": i + 1 } as React.CSSProperties}
+            >
               {i === ANBEFALT && <span className="plan-tag">{t.vanligst}</span>}
               <div className="plan-n">{plan.navn}</div>
               <div className="plan-p">

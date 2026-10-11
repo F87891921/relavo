@@ -5,7 +5,7 @@ export function Close() {
   const t = ord().landing;
 
   return (
-    <section className="close">
+    <section data-avsloj className="close">
       <div className="wrap">
         <h2>{t.close.tittel}</h2>
         <p>{t.close.tekst}</p>

@@ -19,7 +19,7 @@ export function Plattform() {
   return (
     <section className="sec" id="plattform">
       <div className="wrap">
-        <div className="sec-head">
+        <div className="sec-head" data-avsloj>
           <div className="eyebrow">Plattform</div>
           <h2 className="statement">
             {t.tittel}{" "}
@@ -28,7 +28,7 @@ export function Plattform() {
         </div>
 
         <div className="feats">
-          <div className="feat">
+          <div data-avsloj className="feat">
             <div className="feat-t">{t.kjede}</div>
             <p className="feat-d">
               {t.kjedeD}
@@ -38,7 +38,7 @@ export function Plattform() {
             </div>
           </div>
 
-          <div className="feat">
+          <div data-avsloj className="feat">
             <div className="feat-t">{t.krav}</div>
             <p className="feat-d">
               {t.kravD}
@@ -64,11 +64,11 @@ export function Plattform() {
         </div>
 
         <div className="feats-3">
-          <div className="feat feat-label">
+          <div data-avsloj className="feat feat-label">
             <div className="eyebrow">{t.eyebrow}</div>
           </div>
 
-          <div className="feat">
+          <div data-avsloj className="feat">
             <div className="feat-t">{t.laveTilbud}</div>
             <p className="feat-d">
               {t.laveTilbudD}
@@ -89,7 +89,7 @@ export function Plattform() {
             </div>
           </div>
 
-          <div className="feat">
+          <div data-avsloj className="feat">
             <div className="feat-t">{t.overvaking}</div>
             <p className="feat-d">
               {t.overvakingD}
@@ -110,7 +110,7 @@ export function Plattform() {
             </div>
           </div>
 
-          <div className="feat">
+          <div data-avsloj className="feat">
             <div className="feat-t">{t.rapport}</div>
             <p className="feat-d">
               {t.rapportD}
