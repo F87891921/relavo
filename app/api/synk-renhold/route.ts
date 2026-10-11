@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { admin } from "@/lib/supabase/admin";
 import { RENHOLD_URL, parseRenhold } from "@/lib/renhold";
@@ -8,10 +8,23 @@ export const maxDuration = 300;
 /**
  * Henter renholdsregisteret og skriver det til basen.
  *
- * Kjøres av en ansatt, ikke automatisk. Filen er 22 MB og oppdateres én gang
- * i døgnet — å hente den ved hvert oppslag ville vært både tregt og unødig
- * belastning på Arbeidstilsynet.
+ * Filen er 22 MB og oppdateres én gang i døgnet, så den hentes ikke ved
+ * hvert oppslag — det ville vært tregt og unødig belastning på
+ * Arbeidstilsynet.
+ *
+ * To veier inn: POST fra en innlogget ansatt, og GET fra den nattlige
+ * jobben med CRON_SECRET. Den andre måtte til. Tabellen sto på 7 779 rader
+ * fra første import mens registeret hadde vokst til 7 932 — 153 selskaper
+ * vi ikke visste om, fordi ingen hadde trykket på knappen. En kopi som
+ * bare oppdateres når noen husker det, er en kopi som er feil.
  */
+export async function GET(req: NextRequest) {
+  const hemmelighet = process.env.CRON_SECRET;
+  if (!hemmelighet || req.headers.get("authorization") !== `Bearer ${hemmelighet}`)
+    return NextResponse.json({ feil: "Ikke autorisert" }, { status: 401 });
+  return hentOgLagre();
+}
+
 export async function POST() {
   const supabase = createClient();
 
@@ -29,6 +42,10 @@ export async function POST() {
   if (!profil?.ansatt)
     return NextResponse.json({ feil: "Krever ansatt" }, { status: 403 });
 
+  return hentOgLagre();
+}
+
+async function hentOgLagre() {
   let xml: string;
   try {
     const svar = await fetch(RENHOLD_URL, { cache: "no-store" });

@@ -127,22 +127,38 @@ export async function GET(req: NextRequest) {
   // Sanksjonslista endres med uker. Er den mer enn sju dager gammel,
   // settes den i gang i bakgrunnen — den skal ikke stjele tidsbudsjettet
   // fra leverandørsjekkene over.
+  const base = req.nextUrl.origin;
+  const settIGang = (sti: string) =>
+    void fetch(`${base}${sti}`, {
+      headers: { authorization: `Bearer ${hemmelighet}` },
+    }).catch(() => {});
+
   const { data: sanksjonsstatus } = await db
     .from("integrasjoner")
     .select("sist_synk")
     .eq("navn", "sanksjoner")
     .maybeSingle();
 
-  const foreldet =
+  if (
     !sanksjonsstatus?.sist_synk ||
-    Date.now() - new Date(sanksjonsstatus.sist_synk).getTime() > 7 * 86_400_000;
+    Date.now() - new Date(sanksjonsstatus.sist_synk).getTime() > 7 * 86_400_000
+  )
+    settIGang("/api/synk-sanksjoner");
 
-  if (foreldet) {
-    const base = req.nextUrl.origin;
-    void fetch(`${base}/api/synk-sanksjoner`, {
-      headers: { authorization: `Bearer ${hemmelighet}` },
-    }).catch(() => {});
-  }
+  // Renholdsregisteret oppdateres hver morgen hos Arbeidstilsynet. Vår kopi
+  // sto stille fra første import til noen trykket på knappen, og hadde
+  // kommet 153 selskaper på etterskudd.
+  const { data: renholdstatus } = await db
+    .from("registersynk")
+    .select("sist_hentet")
+    .eq("register", "renhold")
+    .maybeSingle();
+
+  if (
+    !renholdstatus?.sist_hentet ||
+    Date.now() - new Date(renholdstatus.sist_hentet).getTime() > 36 * 3_600_000
+  )
+    settIGang("/api/synk-renhold");
 
   await db.from("integrasjoner").upsert({
     navn: "overvaking",
