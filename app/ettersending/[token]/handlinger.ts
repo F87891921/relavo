@@ -92,3 +92,85 @@ export async function leverESPD(fd: FormData): Promise<Svar> {
   revalidatePath(`/ettersending/${token}`);
   return { ok: true };
 }
+
+const ATTESTTYPER: Record<string, string> = {
+  "application/pdf": "pdf",
+  "image/png": "png",
+  "image/jpeg": "jpg",
+};
+
+/**
+ * Leverandøren laster opp skatteattesten.
+ *
+ * Attesten hentes ikke fra Skatteetaten. Den utleveres til selskapet selv,
+ * ikke til hvem som helst som spør, og norsk praksis er at leverandøren
+ * legger den ved tilbudet. Samme vei inn som egenerklæringen: serveren ser
+ * på filen først, og registreringen gjøres med service_role.
+ *
+ * Utstedelsesdatoen er det viktigste feltet. § 5i-kontrollen avhenger av om
+ * attesten er fersk, og en attest lastet opp i dag kan være et halvt år
+ * gammel. Derfor spørres det om datoen som står på attesten, ikke om når
+ * den ble sendt.
+ */
+export async function leverSkatteattest(fd: FormData): Promise<Svar> {
+  const token = String(fd.get("token") ?? "");
+  const navn = String(fd.get("attest_navn") ?? "").trim();
+  const rolle = String(fd.get("attest_rolle") ?? "").trim();
+  const utstedt = String(fd.get("utstedt") ?? "").trim();
+  const fil = fd.get("attest");
+
+  if (!navn) return { ok: false, feil: "Skriv inn navnet ditt." };
+  if (!rolle) return { ok: false, feil: "Skriv inn hvilken rolle du har i selskapet." };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(utstedt))
+    return { ok: false, feil: "Fyll inn datoen som står på attesten." };
+
+  const dato = new Date(`${utstedt}T00:00:00Z`);
+  if (Number.isNaN(dato.getTime()))
+    return { ok: false, feil: "Datoen er ikke gyldig." };
+  if (dato.getTime() > Date.now())
+    return { ok: false, feil: "Datoen ligger fram i tid." };
+
+  if (!(fil instanceof File) || fil.size === 0)
+    return { ok: false, feil: "Velg filen med skatteattesten." };
+  if (fil.size > MAKS)
+    return { ok: false, feil: "Filen er større enn 15 MB." };
+
+  const endelse = ATTESTTYPER[fil.type];
+  if (!endelse)
+    return { ok: false, feil: "Send attesten som PDF eller bilde." };
+
+  const supabase = createClient();
+  const { data: rader } = await supabase.rpc("espd_ved_token", { t: token });
+  if (!(Array.isArray(rader) ? rader[0] : null))
+    return { ok: false, feil: "Lenken er ikke gyldig." };
+
+  const trygtNavn = fil.name.replace(/[^\w.\- ]+/g, "_").slice(-80);
+  const sti = `${token}/${Date.now()}.${endelse}`;
+
+  const lager = admin();
+  const { error: lastFeil } = await lager.storage
+    .from("skatteattest")
+    .upload(sti, Buffer.from(await fil.arrayBuffer()), {
+      contentType: fil.type,
+      upsert: false,
+    });
+
+  if (lastFeil) return { ok: false, feil: `Opplastingen feilet: ${lastFeil.message}` };
+
+  const { data: ferdig, error } = await lager.rpc("skatteattest_lever", {
+    t: token,
+    p_utstedt: utstedt,
+    p_filsti: sti,
+    p_filnavn: trygtNavn,
+    p_navn: navn,
+    p_rolle: rolle,
+  });
+
+  if (error || ferdig !== true) {
+    await lager.storage.from("skatteattest").remove([sti]);
+    return { ok: false, feil: error?.message ?? "Kunne ikke registrere attesten." };
+  }
+
+  revalidatePath(`/ettersending/${token}`);
+  return { ok: true };
+}

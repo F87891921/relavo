@@ -57,7 +57,22 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
     ),
   ]);
 
-  const { krav, kilder, risiko } = vurder(enhet, svar, renhold, dibk, sanksjoner);
+  // Skatteattesten ligger på leverandøren og er gyldig i seks måneder, så
+  // den gjelder på tvers av anskaffelser. Den hentes før vurderingen fordi
+  // § 5i-linja avhenger av den — og den hentes på organisasjonsnummer, for
+  // leverandørraden opprettes først lenger ned.
+  const { data: attest } = await supabase
+    .from("skatteattester")
+    .select("utstedt, leverandorer!inner(org_nr)")
+    .eq("leverandorer.org_nr", enhet.orgnr)
+    .order("utstedt", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const { krav, kilder, risiko } = vurder(
+    enhet, svar, renhold, dibk, sanksjoner,
+    attest ? { utstedt: attest.utstedt as string } : null,
+  );
 
   // Leverandøren må finnes før kontrollen kan peke på den. Er selskapet
   // kontrollert før, gjenbrukes raden — ellers legges den inn nå.
@@ -165,6 +180,7 @@ function vurder(
     kjort: boolean;
     rollerScreenet: boolean;
   },
+  attest: { utstedt: string } | null,
 ) {
   const krav: { ref: string; status: "ok" | "no" | "na"; tekst: string }[] = [];
 
@@ -222,6 +238,46 @@ function vurder(
       tekst: "Selskapet er under avvikling",
     });
   }
+
+  // § 5i — skatt og merverdiavgift.
+  //
+  // Attesten utleveres av Skatteetaten til selskapet selv, ikke til hvem som
+  // helst som spør, så den må komme fra leverandøren. Gyldigheten regnes fra
+  // datoen på attesten, ikke fra når den ble lastet opp: en attest sendt i
+  // dag kan være et halvt år gammel.
+  //
+  // En utløpt attest er «ikke kontrollert», ikke «brudd». Leverandøren har
+  // ikke gjort noe galt — vi har et dokument som er for gammelt til å si noe.
+  const GYLDIG_DAGER = 183;
+  const attestAlder = attest
+    ? Math.floor(
+        (Date.now() - new Date(`${attest.utstedt}T00:00:00Z`).getTime()) / 86_400_000,
+      )
+    : null;
+  const attestNorsk = attest
+    ? new Date(`${attest.utstedt}T00:00:00Z`).toLocaleDateString("nb-NO")
+    : null;
+
+  krav.push(
+    attestAlder === null
+      ? {
+          ref: "§ 5i",
+          status: "na",
+          tekst:
+            "Skatteattest er ikke mottatt. Skatt og merverdiavgift er ikke kontrollert.",
+        }
+      : attestAlder > GYLDIG_DAGER
+        ? {
+            ref: "§ 5i",
+            status: "na",
+            tekst: `Skatteattesten er utstedt ${attestNorsk} og er ${attestAlder} dager gammel. Attester eldre enn seks måneder kan ikke legges til grunn — be om en ny.`,
+          }
+        : {
+            ref: "§ 5i",
+            status: "ok",
+            tekst: `Skatteattest mottatt fra leverandøren, utstedt ${attestNorsk}. Ingen restanser på skatt eller merverdiavgift oppgitt.`,
+          },
+  );
 
   // Renhold: § 4 i renholdsforskriften. Å kjøpe renhold fra et selskap som
   // ikke er godkjent har vært ulovlig siden 2012, så dette er et brudd og
@@ -309,9 +365,16 @@ function vurder(
       status: "svar" as const,
       tidspunkt: new Date().toISOString(),
     },
-    // Vi har ikke avtale med disse ennå. En rapport som tier om hullene
-    // sine er verre enn ingen rapport, så de står oppført som ikke hentet.
-    { navn: "Skatteetaten", status: "ikke" as const, tidspunkt: null },
+    // Skatteattesten kommer fra leverandøren, ikke fra oss mot Skatteetaten.
+    // Kilden er derfor «vedlegg» når den finnes — ikke «svar», som ville
+    // antydet at vi spurte et register og fikk svar.
+    {
+      navn: "Skatteattest fra leverandøren",
+      status: attest ? ("vedlegg" as const) : ("ikke" as const),
+      tidspunkt: attest ? `${attest.utstedt}T00:00:00Z` : null,
+    },
+    // Vi har ikke avtale med denne ennå. En rapport som tier om hullene
+    // sine er verre enn ingen rapport, så den står oppført som ikke hentet.
     { navn: "Creditsafe", status: "ikke" as const, tidspunkt: null },
     {
       navn: "Arbeidstilsynet",

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { RelavoLogo } from "@/components/RelavoLogo";
 import { dagerIgjen } from "@/lib/brev";
 import { Skjema } from "./Skjema";
+import { Attest } from "./Attest";
 
 export const metadata: Metadata = {
   title: "Ettersending av egenerklæring",
@@ -22,8 +23,14 @@ type Rad = {
 
 export default async function Ettersending({ params }: { params: { token: string } }) {
   const supabase = createClient();
-  const { data } = await supabase.rpc("espd_ved_token", { t: params.token });
+  const [{ data }, { data: attestrader }] = await Promise.all([
+    supabase.rpc("espd_ved_token", { t: params.token }),
+    supabase.rpc("skatteattest_ved_token", { t: params.token }),
+  ]);
   const e = (Array.isArray(data) ? data[0] : null) as Rad | null;
+  const attest = (Array.isArray(attestrader) ? attestrader[0] : null) as
+    | { filnavn: string; utstedt: string }
+    | null;
 
   if (!e)
     return (
@@ -50,10 +57,15 @@ export default async function Ettersending({ params }: { params: { token: string
             fått beskjed.
           </p>
         </div>
-        <p className="text-[12.5px] text-dim leading-relaxed">
+        <p className="text-[12.5px] text-dim leading-relaxed mb-6">
           Trenger dere å sende en ny versjon, ta kontakt med {e.oppdragsgiver}{" "}
           direkte — denne lenken er brukt opp.
         </p>
+
+        {/* Attesten står igjen også etter at erklæringen er levert. De to
+            kommer sjelden samtidig, og lenken skal ikke være brukt opp for
+            den som bare manglet den ene. */}
+        <AttestSeksjon token={params.token} attest={attest} />
       </Ramme>
     );
 
@@ -100,6 +112,8 @@ export default async function Ettersending({ params }: { params: { token: string
         <Skjema token={params.token} />
       </div>
 
+      <AttestSeksjon token={params.token} attest={attest} />
+
       {e.brev && (
         <details className="mt-5">
           <summary className="text-[12.5px] text-dim cursor-pointer">
@@ -111,6 +125,36 @@ export default async function Ettersending({ params }: { params: { token: string
         </details>
       )}
     </Ramme>
+  );
+}
+
+/**
+ * Skatteattesten er en egen leveranse med egen knapp.
+ *
+ * Den ligger ikke i samme skjema som erklæringen fordi den er valgfri: et
+ * felt som må fylles ut ville blokkert leveringen av det som faktisk har
+ * en frist.
+ */
+function AttestSeksjon({
+  token,
+  attest,
+}: {
+  token: string;
+  attest: { filnavn: string; utstedt: string } | null;
+}) {
+  return (
+    <div className="mt-5">
+      <h2 className="text-[15px] font-semibold mb-1.5">Skatteattest</h2>
+      <p className="text-[13px] text-dim leading-relaxed mb-4 max-w-[68ch]">
+        Oppdragsgiver skal kontrollere at skatt og merverdiavgift er betalt,
+        etter anskaffelsesforskriften § 5i. Attesten får dere selv i Altinn —
+        vi kan ikke hente den for dere. Har dere allerede sendt den et annet
+        sted, kan dere hoppe over dette.
+      </p>
+      <div className="bg-surface rounded-card border border-border shadow-card px-5 sm:px-6 py-5 sm:py-6">
+        <Attest token={token} levert={attest} />
+      </div>
+    </div>
   );
 }
 
