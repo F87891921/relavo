@@ -21,7 +21,7 @@ const KOMMUNE = ["liten", "kommune", "medelstor"] as const;
 const SELSKAP = ["start", "vekst", "bygg"] as const;
 const PRIS: Record<string, string> = {
   liten: "3 900", kommune: "7 900", medelstor: "12 900",
-  start: "2 000", vekst: "5 900", bygg: "11 900",
+  start: "1 500", vekst: "5 900", bygg: "11 900",
 };
 
 export default function VelkommenSide() {

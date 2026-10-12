@@ -32,7 +32,7 @@ const BELOP: Record<PlanId, number> = {
   kommune: 7900,
   medelstor: 12900,
   stor: 0,
-  start: 2000,
+  start: 1500,
   vekst: 5900,
   bygg: 11900,
   standard: 6900,
