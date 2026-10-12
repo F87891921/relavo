@@ -205,25 +205,47 @@ export function Prisfinner() {
         </div>
       )}
 
+      <div className="pf-samlet">
+        <h3>{t.samlet.tittel}</h3>
+        <p className="pf-m">{t.samlet.per}</p>
+        <div className="pf-gr">
+          <div>
+            <div className="pf-gt"><b>{t.samlet.kommuneTittel}</b> <span>{t.samlet.kommuneUnder}</span></div>
+            <div className="pf-tw"><table>
+              <thead><tr><th>{t.samlet.nivaa}</th><th>{t.samlet.leverandorer}</th>{LOPETIDER.map((l) => <th key={l}>{l} {t.sok.mnd}</th>)}</tr></thead>
+              <tbody>
+                {NIVAER.map((x) => (
+                  <tr key={x.id}>
+                    <td><b>{t.nivaer[x.id].navn}</b><small>{t.nivaer[x.id].spenn}</small></td>
+                    <td>{t.samlet.ubegrenset}</td>
+                    {LOPETIDER.map((l) => { const m = mndFor(x, l); return <td key={l}>{m === null ? t.samlet.offert : kr(m)}</td>; })}
+                  </tr>
+                ))}
+              </tbody>
+            </table></div>
+          </div>
+          <div>
+            <div className="pf-gt"><b>{t.samlet.selskapTittel}</b> <span>{t.samlet.selskapUnder}</span></div>
+            <div className="pf-tw"><table>
+              <thead><tr><th>{t.samlet.nivaa}</th><th>{t.samlet.leverandorer}</th>{BEDRIFT_LOPETIDER.map((l) => <th key={l}>{l === 1 ? t.samlet.manedlig : `${l} ${t.sok.mnd}`}</th>)}</tr></thead>
+              <tbody>
+                {BEDRIFT.map((b) => (
+                  <tr key={b.id}>
+                    <td><b>{t.bedrift.nivaer[b.id].navn}</b></td>
+                    <td>{b.maks === null ? t.samlet.offert : b.maks}</td>
+                    {BEDRIFT_LOPETIDER.map((l) => { const m = mndBedrift(b, l); return <td key={l}>{m === null ? t.samlet.offert : kr(m)}</td>; })}
+                  </tr>
+                ))}
+              </tbody>
+            </table></div>
+          </div>
+        </div>
+        <p className="pf-m">{t.samlet.inkludert}</p>
+      </div>
+
       <details className="pf-regn">
         <summary>{t.tabell.tittel}</summary>
         <p>{t.tabell.tekst}</p>
-        {velgerLop}
-        <table>
-          <tbody>
-            {NIVAER.map((x) => {
-              const m = mndFor(x, lop);
-              return (
-                <tr key={x.id}>
-                  <td>
-                    <b>{t.nivaer[x.id].navn}</b> · {t.nivaer[x.id].spenn}
-                  </td>
-                  <td>{m === null ? t.tabell.offert : `${kr(m)} NOK`}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
         <ul className="pf-ingar-l">
           {t.ingar.punkter.map((x) => (
             <li key={x}>{x}</li>

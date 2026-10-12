@@ -390,6 +390,20 @@ export const en: Ordbok = {
         },
         knapp: "Request a quote",
       },
+      samlet: {
+        "tittel": "All prices",
+        "per": "NOK per month, excl. VAT. The agreement is twelve months or longer.",
+        "kommuneTittel": "Municipality",
+        "kommuneUnder": "By population",
+        "selskapTittel": "Company",
+        "selskapUnder": "By number of suppliers",
+        "nivaa": "Tier",
+        "leverandorer": "Suppliers",
+        "ubegrenset": "Unlimited",
+        "manedlig": "Monthly",
+        "offert": "Quote",
+        "inkludert": "Included on every tier: unlimited controls and users, daily monitoring, report as PDF and a data processing agreement. Municipalities have all suppliers included; companies pay by how many suppliers they follow."
+      },
       sok: {
         etikett: "Municipality name",
         plassholder: "For example Voss",

@@ -399,6 +399,20 @@ export const no = {
         },
         knapp: "Be om tilbud",
       },
+      samlet: {
+        "tittel": "Alle priser",
+        "per": "NOK per måned, eks. mva. Avtalen er tolv måneder eller lenger.",
+        "kommuneTittel": "Kommune",
+        "kommuneUnder": "Etter innbyggertall",
+        "selskapTittel": "Selskap",
+        "selskapUnder": "Etter antall leverandører",
+        "nivaa": "Nivå",
+        "leverandorer": "Leverandører",
+        "ubegrenset": "Ubegrenset",
+        "manedlig": "Månedlig",
+        "offert": "Offert",
+        "inkludert": "Inkludert på alle nivåer: ubegrenset antall kontroller og brukere, daglig overvåking, rapport som PDF og databehandleravtale. Kommuner har alle leverandører inkludert; selskap betaler etter hvor mange leverandører de følger."
+      },
       sok: {
         etikett: "Kommunens navn",
         plassholder: "For eksempel Voss",

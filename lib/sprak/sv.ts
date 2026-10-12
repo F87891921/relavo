@@ -390,6 +390,20 @@ export const sv: Ordbok = {
         },
         knapp: "Be om offert",
       },
+      samlet: {
+        "tittel": "Alla priser",
+        "per": "NOK per månad, exkl. moms. Avtalet är tolv månader eller längre.",
+        "kommuneTittel": "Kommun",
+        "kommuneUnder": "Efter invånarantal",
+        "selskapTittel": "Bolag",
+        "selskapUnder": "Efter antal leverantörer",
+        "nivaa": "Nivå",
+        "leverandorer": "Leverantörer",
+        "ubegrenset": "Obegränsat",
+        "manedlig": "Månadsvis",
+        "offert": "Offert",
+        "inkludert": "Ingår på alla nivåer: obegränsat antal kontroller och användare, daglig övervakning, rapport som PDF och databehandlingsavtal. Kommuner har alla leverantörer inkluderade; bolag betalar efter hur många leverantörer de följer."
+      },
       sok: {
         etikett: "Kommunens namn",
         plassholder: "Till exempel Voss",
