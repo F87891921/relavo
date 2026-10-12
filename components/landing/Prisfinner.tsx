@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useOrd } from "@/components/Sprakgiver";
-import { BEDRIFT, BEDRIFT_LOPETIDER, LOPETIDER, NIVAER, kr, mndBedrift, mndFor, type BedriftLopetid, type Lopetid } from "@/lib/priser";
+import { BEDRIFT, BEDRIFT_LOPETIDER, ENKELTKONTROLL, LOPETIDER, NIVAER, kr, mndBedrift, mndFor, type BedriftLopetid, type Lopetid } from "@/lib/priser";
 
 type Treff = {
   kode: string;
@@ -233,13 +233,24 @@ export function Prisfinner() {
                   <tr key={b.id}>
                     <td><b>{t.bedrift.nivaer[b.id].navn}</b></td>
                     <td>{b.maks === null ? "400+" : b.maks}</td>
-                    {BEDRIFT_LOPETIDER.map((l) => { const m = mndBedrift(b, l); return <td key={l}>{m === null ? t.samlet.offert : kr(m)}</td>; })}
+                    {BEDRIFT_LOPETIDER.map((l) => {
+                      const m = mndBedrift(b, l);
+                      // Besparelsen er mot å kjøpe en enkeltkontroll for hver leverandør i en full plan.
+                      const sparer = m !== null && b.maks !== null ? Math.round((1 - (m * 12) / (b.maks * ENKELTKONTROLL)) * 100) : null;
+                      return (
+                        <td key={l}>
+                          {m === null ? t.samlet.offert : kr(m)}
+                          {sparer !== null && <small className="pf-sp">−{sparer} %</small>}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>
             </table></div>
           </div>
         </div>
+        <p className="pf-m">{t.samlet.sparerForklaring}</p>
         <p className="pf-m">{t.samlet.inkludert}</p>
       </div>
 

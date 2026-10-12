@@ -402,6 +402,7 @@ export const sv: Ordbok = {
         "ubegrenset": "Obegränsat",
         "manedlig": "Månadsvis",
         "offert": "Offert",
+        "sparerForklaring": "Procenten under priset för bolag visar vad ni sparar jämfört med att köpa en enkelkontroll (890 kr) för varje leverantör i planen.",
         "inkludert": "Ingår på alla nivåer: obegränsat antal kontroller och användare, daglig övervakning, rapport som PDF och databehandlingsavtal. Kommuner har alla leverantörer inkluderade; bolag betalar efter hur många leverantörer de följer."
       },
       sok: {

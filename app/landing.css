@@ -587,3 +587,4 @@ html{scroll-behavior:smooth}
 .landing .pf-tw td { text-align: right; padding: 10px; border-top: 1px solid var(--border, #e5e0e8); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .landing .pf-tw td small { display: block; color: var(--text-faint, #8a8289); font-size: 11.5px; }
 @media (max-width: 860px) { .landing .pf-gr { grid-template-columns: 1fr; } }
+.landing .pf-tw td small.pf-sp { color: #3d7a4f; font-weight: 600; font-size: 11px; }
