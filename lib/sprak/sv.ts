@@ -345,6 +345,18 @@ export const sv: Ordbok = {
     seKontroll: "Se kontrollen",
   },
 
+  espd: {
+    fristTreDager: "frist inom tre dagar",
+    overFristen: "över fristen",
+    enOverFrist: "försäkran är över fristen.",
+    flereOverFrist: "försäkringar är över fristen.",
+    overFristTekst: "Fristen enligt § 23-5 har gått ut. Tas anbudet vidare utan försäkran bör det motiveras i upphandlingsprotokollet.",
+    enSnart: "frist löper ut inom tre dagar.",
+    flereSnart: "frister löper ut inom tre dagar.",
+    snartTekst: "Har ni inte hört något är det nu en påminnelse hör hemma.",
+    ingenEnna: "Inga egenförsäkringar registrerade ännu. De skapas när en kontroll knyts till en upphandling.",
+  },
+
   jav: {
     deltakereTittel: "Deltagare i upphandlingen",
     deltakereForklaring: "Personer hos er som handlägger upphandlingen: handläggare, beställare och utvärderingskommittén. Kontrollen korsar leverantörens styrelse och vd mot den här listan. En träff är inget beslut om jäv — det är en signal om att någon måste pröva forvaltningsloven § 6.",

@@ -345,6 +345,18 @@ export const en: Ordbok = {
     seKontroll: "View the control",
   },
 
+  espd: {
+    fristTreDager: "deadline within three days",
+    overFristen: "past the deadline",
+    enOverFrist: "declaration is past the deadline.",
+    flereOverFrist: "declarations are past the deadline.",
+    overFristTekst: "The deadline under § 23-5 has passed. If the tender is taken forward without the declaration, that should be justified in the procurement record.",
+    enSnart: "deadline falls within three days.",
+    flereSnart: "deadlines fall within three days.",
+    snartTekst: "If you have heard nothing, this is where a reminder belongs.",
+    ingenEnna: "No self-declarations registered yet. They are created when a control is linked to a procurement.",
+  },
+
   jav: {
     deltakereTittel: "People involved in the procurement",
     deltakereForklaring: "People on your side who handle the procurement: case officers, requisitioners and the evaluation committee. The check cross-references the supplier's board and managing director against this list. A match is not a finding of disqualification — it is a signal that someone must assess forvaltningsloven § 6.",

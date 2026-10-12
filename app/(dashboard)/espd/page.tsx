@@ -53,12 +53,12 @@ export default async function EspdSide() {
           <Tall verdi={String(venter.length)} merke="venter på svar" />
           <Tall
             verdi={String(snart.length)}
-            merke="frist innen tre dager"
+            merke={t.espd.fristTreDager}
             tone={snart.length ? "advarsel" : undefined}
           />
           <Tall
             verdi={String(forfalt.length)}
-            merke="over fristen"
+            merke={t.espd.overFristen}
             tone={forfalt.length ? "brudd" : undefined}
           />
         </Rad>
@@ -67,29 +67,26 @@ export default async function EspdSide() {
           <div className="bg-bad-bg text-bad rounded-xl px-4 py-3 mb-5 text-[12.5px] leading-relaxed">
             <b>
               {forfalt.length}{" "}
-              {forfalt.length === 1 ? "erklæring er" : "erklæringer er"} over
-              fristen.
+              {forfalt.length === 1 ? t.espd.enOverFrist : t.espd.flereOverFrist}
             </b>{" "}
-            Fristen etter § 23-5 er ute. Tas tilbudet videre uten erklæringen,
-            bør det begrunnes i anskaffelsesprotokollen.
+            {t.espd.overFristTekst}
           </div>
         )}
 
         {snart.length > 0 && (
           <div className="bg-warn-bg text-warn rounded-xl px-4 py-3 mb-5 text-[12.5px] leading-relaxed">
             <b>
-              {snart.length} {snart.length === 1 ? "frist" : "frister"} løper ut
-              innen tre dager.
+              {snart.length}{" "}
+              {snart.length === 1 ? t.espd.enSnart : t.espd.flereSnart}
             </b>{" "}
-            Har dere ikke hørt noe, er det nå en påminnelse hører hjemme.
+            {t.espd.snartTekst}
           </div>
         )}
 
         <div className="space-y-3">
           {alle.length === 0 && (
             <div className="bg-surface rounded-card border border-border shadow-card px-5 py-10 text-center text-dim text-sm">
-              Ingen egenerklæringer registrert ennå. De opprettes når en
-              kontroll knyttes til en anskaffelse.
+              {t.espd.ingenEnna}
             </div>
           )}
           {alle.map((e) => (

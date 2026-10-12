@@ -354,6 +354,18 @@ export const no = {
     seKontroll: "Se kontrollen",
   },
 
+  espd: {
+    fristTreDager: "frist innen tre dager",
+    overFristen: "over fristen",
+    enOverFrist: "erklæring er over fristen.",
+    flereOverFrist: "erklæringer er over fristen.",
+    overFristTekst: "Fristen etter § 23-5 er ute. Tas tilbudet videre uten erklæringen, bør det begrunnes i anskaffelsesprotokollen.",
+    enSnart: "frist løper ut innen tre dager.",
+    flereSnart: "frister løper ut innen tre dager.",
+    snartTekst: "Har dere ikke hørt noe, er det nå en påminnelse hører hjemme.",
+    ingenEnna: "Ingen egenerklæringer registrert ennå. De opprettes når en kontroll knyttes til en anskaffelse.",
+  },
+
   jav: {
     deltakereTittel: "Deltakere i anskaffelsen",
     deltakereForklaring: "Folk hos dere som behandler anskaffelsen: saksbehandlere, bestillere og evalueringskomiteen. Kontrollen krysser styret og daglig leder hos leverandøren mot denne lista. Et treff er ikke en avgjørelse om inhabilitet — det er et varsel om at noen må vurdere forvaltningsloven § 6.",
