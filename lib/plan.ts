@@ -23,7 +23,7 @@ export const PLANER = {
   kommune: nivaPlan("kommune", "Kommune"),
   medelstor: nivaPlan("medelstor", "Medelstor"),
   stor: nivaPlan("stor", "Stor"),
-  start: { navn: "Start", brukere: 1000, pris: "1 500 NOK/mnd", manedspris: 1500 },
+  start: { navn: "Start", brukere: 1000, pris: "2 900 NOK/mnd", manedspris: 2900 },
   vekst: { navn: "Vekst", brukere: 1000, pris: "5 900 NOK/mnd", manedspris: 5900 },
   bygg: { navn: "Bygg", brukere: 1000, pris: "11 900 NOK/mnd", manedspris: 11900 },
   standard: { navn: "Standard", brukere: 3, pris: "6 900 NOK/mnd", manedspris: 6900 },
@@ -38,5 +38,5 @@ export function planFor(id: string | null | undefined) {
 
 /** Speiler maks_leverandorer() i 0030. Null: ingen grense. */
 export function maksLeverandorer(id: string | null | undefined): number | null {
-  return ({ start: 25, vekst: 100, bygg: 300 } as Record<string, number>)[id ?? ""] ?? null;
+  return ({ start: 50, vekst: 150, bygg: 400 } as Record<string, number>)[id ?? ""] ?? null;
 }

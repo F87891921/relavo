@@ -10,7 +10,7 @@ const PLANER = [
   { verdi: "kommune", pris: "7 900", enhet: "NOK/mnd", anbefalt: true },
   { verdi: "medelstor", pris: "12 900", enhet: "NOK/mnd" },
   { verdi: "engangs", pris: "890", enhet: "NOK" },
-  { verdi: "start", pris: "1 500", enhet: "NOK/mnd", selskap: true },
+  { verdi: "start", pris: "2 900", enhet: "NOK/mnd", selskap: true },
   { verdi: "vekst", pris: "5 900", enhet: "NOK/mnd", selskap: true },
   { verdi: "bygg", pris: "11 900", enhet: "NOK/mnd", selskap: true },
 ];

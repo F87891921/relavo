@@ -84,9 +84,9 @@ export const kr = (n: number) =>
  */
 export type BedriftId = "start" | "vekst" | "bygg" | "stor";
 export const BEDRIFT: { id: BedriftId; maks: number | null; mnd: number | null }[] = [
-  { id: "start", maks: 25, mnd: 1_500 },
-  { id: "vekst", maks: 100, mnd: 5_900 },
-  { id: "bygg", maks: 300, mnd: 11_900 },
+  { id: "start", maks: 50, mnd: 2_900 },
+  { id: "vekst", maks: 150, mnd: 5_900 },
+  { id: "bygg", maks: 400, mnd: 11_900 },
   { id: "stor", maks: null, mnd: null },
 ];
 
@@ -111,6 +111,6 @@ export function mndBedrift(b: { mnd: number | null }, l: BedriftLopetid): number
 /**
  * Prenumerasjonen skal alltid være billigere enn å kjøpe enkeltkontroller, selv
  * for den som fyller opp planen og betaler månedlig. Per leverandør ved full
- * plan, med månedsprisen: Start 816, Vekst 816, Bygg 548 — alle under 890.
+ * plan, med månedsprisen: Start 792, Vekst 536, Bygg 408 — alle under 890.
  * Endres en pris eller grense, kjør scripts/prissjekk.ts.
  */

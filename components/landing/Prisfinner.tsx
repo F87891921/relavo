@@ -232,7 +232,7 @@ export function Prisfinner() {
                 {BEDRIFT.map((b) => (
                   <tr key={b.id}>
                     <td><b>{t.bedrift.nivaer[b.id].navn}</b></td>
-                    <td>{b.maks === null ? "300+" : b.maks}</td>
+                    <td>{b.maks === null ? "400+" : b.maks}</td>
                     {BEDRIFT_LOPETIDER.map((l) => { const m = mndBedrift(b, l); return <td key={l}>{m === null ? t.samlet.offert : kr(m)}</td>; })}
                   </tr>
                 ))}
