@@ -59,7 +59,7 @@ export function KontaktSkjema({ forvalgt, organisasjon }: { forvalgt?: string; o
             id="organisasjon"
             name="organisasjon"
             defaultValue={organisasjon}
-            placeholder="Bergen kommune"
+            placeholder="Eksempelvik kommune"
             className={FELT}
           />
         </div>

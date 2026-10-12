@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useOrd } from "@/components/Sprakgiver";
-import { LOPETIDER, NIVAER, kr, mndFor, type Lopetid } from "@/lib/priser";
+import { BEDRIFT, LOPETIDER, NIVAER, kr, mndFor, type Lopetid } from "@/lib/priser";
 
 type Treff = {
   kode: string;
@@ -23,6 +23,7 @@ export function Prisfinner() {
   const [treff, setTreff] = useState<Treff[]>([]);
   const [valgt, setValgt] = useState<Treff | null>(null);
   const [lop, setLop] = useState<Lopetid>(12);
+  const [modus, setModus] = useState<"kommune" | "selskap">("kommune");
   const [status, setStatus] = useState<"hvile" | "soker" | "ingen" | "feil">("hvile");
   const teller = useRef(0);
 
@@ -72,6 +73,45 @@ export function Prisfinner() {
 
   return (
     <div className="pf">
+      <div className="pf-lop pf-modus" role="group">
+        {(["kommune", "selskap"] as const).map((m) => (
+          <button key={m} type="button" aria-pressed={modus === m} onClick={() => setModus(m)}>
+            {t.maltype[m]}
+          </button>
+        ))}
+      </div>
+
+      {modus === "selskap" && (
+        <div className="pf-res">
+          <div className="pf-top">
+            <b>{t.bedrift.etikett}</b>
+            <span>{t.bedrift.tekst}</span>
+          </div>
+          {velgerLop}
+          <table className="pf-bt">
+            <tbody>
+              {BEDRIFT.map((b) => {
+                const m = mndFor(b, lop);
+                return (
+                  <tr key={b.id}>
+                    <td>
+                      <b>{t.bedrift.nivaer[b.id].navn}</b>
+                      <small>{t.bedrift.nivaer[b.id].spenn}</small>
+                    </td>
+                    <td>{m === null ? t.tabell.offert : `${kr(m)} NOK`}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <p className="pf-m">{t.sok.fakturering} {t.sok.tillegg}</p>
+          <Link href="/kontakt?om=priser" className="btn btn-primary">
+            {t.bedrift.knapp}
+          </Link>
+        </div>
+      )}
+
+      {modus === "kommune" && (<>
       <label htmlFor="pf-q" className="pf-l">
         {t.sok.etikett}
       </label>
@@ -168,6 +208,7 @@ export function Prisfinner() {
           ))}
         </ul>
       </details>
+      </>)}
     </div>
   );
 }

@@ -368,6 +368,18 @@ export const sv: Ordbok = {
       tittel: "Priset följer invånarantalet.",
       undertittel: "Skriv kommunens namn, så ser du vad det kostar.",
       eksMva: "Alla priser är exkl. moms.",
+      maltype: { kommune: "Kommun", selskap: "Bolag" },
+      bedrift: {
+        etikett: "Leverantörer ni följer",
+        tekst: "Priset följer hur många leverantörer ni följer.",
+        nivaer: {
+          start: { navn: "Start", spenn: "Upp till 25 leverantörer" },
+          vekst: { navn: "Vekst", spenn: "Upp till 100 leverantörer" },
+          bygg: { navn: "Bygg", spenn: "Upp till 300 leverantörer" },
+          stor: { navn: "Över 300", spenn: "Fler än 300 leverantörer" },
+        },
+        knapp: "Be om offert",
+      },
       sok: {
         etikett: "Kommunens namn",
         plassholder: "Till exempel Voss",
@@ -1085,7 +1097,7 @@ export const sv: Ordbok = {
     overvakninger: "Bevakningar",
     historikk: "Historik",
     leverandorkjede: "Leverantörskedja",
-    aktiveLeverandorer: "Bergen kommune · 148 aktiva leverantörer",
+    aktiveLeverandorer: "Eksempelvik kommune · 148 aktiva leverantörer",
     kontrollplikt: "Kontrollplikt § 5i",
     dokumentert: "136 av 148 leverantörer dokumenterade · senast uppdaterad i dag",
     sokPlassholder: "Sök på bolagsnamn eller org.nr...",

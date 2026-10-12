@@ -51,7 +51,7 @@ export default async function InterntLeadsSide() {
         </Rad>
 
         <Skjema knapp={`+ ${t.internt.nyttLead}`} tittel={t.internt.nyttLead} handling={nyttLead}>
-          <Felt navn="bolag" merke={t.internt.bolag} krav plassholder="Stavanger kommune" />
+          <Felt navn="bolag" merke={t.internt.bolag} krav plassholder="Eksempelvik kommune" />
           <Felt navn="kontakt" merke={t.internt.kontaktperson} plassholder="Ingvild Berge" />
           <Felt navn="epost" merke={t.auth.epost} type="email" plassholder="namn@kommune.no" />
           <Felt

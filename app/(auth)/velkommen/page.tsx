@@ -88,7 +88,7 @@ export default function VelkommenSide() {
               required
               value={navn}
               onChange={(e) => setNavn(e.target.value)}
-              placeholder="Bergen kommune"
+              placeholder="Eksempelvik kommune"
               className={FELT_FULL}
             />
           </div>

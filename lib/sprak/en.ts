@@ -368,6 +368,18 @@ export const en: Ordbok = {
       tittel: "The price follows the population.",
       undertittel: "Type your municipality's name to see what it costs.",
       eksMva: "All prices are excl. VAT.",
+      maltype: { kommune: "Municipality", selskap: "Company" },
+      bedrift: {
+        etikett: "Suppliers you follow",
+        tekst: "The price follows how many suppliers you follow.",
+        nivaer: {
+          start: { navn: "Start", spenn: "Up to 25 suppliers" },
+          vekst: { navn: "Growth", spenn: "Up to 100 suppliers" },
+          bygg: { navn: "Build", spenn: "Up to 300 suppliers" },
+          stor: { navn: "Over 300", spenn: "More than 300 suppliers" },
+        },
+        knapp: "Request a quote",
+      },
       sok: {
         etikett: "Municipality name",
         plassholder: "For example Voss",
@@ -1085,7 +1097,7 @@ export const en: Ordbok = {
     overvakninger: "Monitoring",
     historikk: "History",
     leverandorkjede: "Supply chain",
-    aktiveLeverandorer: "Bergen kommune · 148 active suppliers",
+    aktiveLeverandorer: "Eksempelvik kommune · 148 active suppliers",
     kontrollplikt: "Duty to verify, § 5i",
     dokumentert: "136 of 148 suppliers documented · last updated today",
     sokPlassholder: "Search by company name or org. no. ...",

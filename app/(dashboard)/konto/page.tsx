@@ -81,7 +81,7 @@ export default async function KontoSide() {
               {t.konto.sprakTekst}
             </p>
             <span className="shrink-0 -mt-1">
-              <Sprakvelger na={sprak} retning="ned" />
+              <Sprakvelger na={sprak} retning="ned" medSvensk={Boolean(profil.ansatt)} />
             </span>
           </div>
         </Kort>

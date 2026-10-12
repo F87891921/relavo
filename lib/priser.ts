@@ -50,7 +50,7 @@ export type Lopetid = (typeof LOPETIDER)[number];
 export const RABATT: Record<Lopetid, number> = { 12: 0, 24: 0.08, 36: RABATT_36 };
 
 /** Månedspris ved valgt avtaletid, rundet til nærmeste hundrelapp. Null: offert. */
-export function mndFor(n: Niva, lopetid: Lopetid): number | null {
+export function mndFor(n: { mnd: number | null }, lopetid: Lopetid): number | null {
   if (n.mnd === null) return null;
   return Math.round((n.mnd * (1 - RABATT[lopetid])) / 100) * 100;
 }
@@ -74,3 +74,18 @@ export function mnd36(n: Niva): number | null {
 /** 12 900 → «12 900». Vanlig mellomrom, så det kopieres rent. */
 export const kr = (n: number) =>
   n.toLocaleString("nb-NO").replace(/ /g, " ");
+
+/**
+ * Selskap som ikke er kommune. Innbyggertall finnes ikke, så prisen følger
+ * antall leverandører de følger — det er det som gir dem kostnad og nytte.
+ * Foreløpige priser: de skal justeres når vi kjenner kostnaden for
+ * kredittdata. Selvbetjent bestilling venter på at grensen håndheves, så
+ * foreløpig går de via tilbud.
+ */
+export type BedriftId = "start" | "vekst" | "bygg" | "stor";
+export const BEDRIFT: { id: BedriftId; maks: number | null; mnd: number | null }[] = [
+  { id: "start", maks: 25, mnd: 2_900 },
+  { id: "vekst", maks: 100, mnd: 5_900 },
+  { id: "bygg", maks: 300, mnd: 11_900 },
+  { id: "stor", maks: null, mnd: null },
+];

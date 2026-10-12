@@ -19,12 +19,15 @@ export function Sprakvelger({
   na,
   variant = "lys",
   retning = "opp",
+  medSvensk = false,
 }: {
   na: Sprak;
   /** mork for kontopanelets svarte sidemeny, minimal for landingssiden. */
   variant?: "lys" | "mork" | "minimal";
   /** Sidemenyen står nederst, så der må lista opp. I toppen skal den ned. */
   retning?: "opp" | "ned";
+  /** Svensk finnes for oss som eier siden, ikke som kundespråk. */
+  medSvensk?: boolean;
 }) {
   const [apen, setApen] = useState(false);
   const [venter, start] = useTransition();
@@ -93,7 +96,7 @@ export function Sprakvelger({
             retning === "opp" ? "bottom-full mb-1.5" : "top-full mt-1.5"
           }`}
         >
-          {SPRAK.map((s) => (
+          {SPRAK.filter((s) => s.kode !== "sv" || medSvensk || na === "sv").map((s) => (
             <li key={s.kode}>
               <button
                 type="button"

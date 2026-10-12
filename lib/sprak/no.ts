@@ -377,6 +377,18 @@ export const no = {
       tittel: "Prisen følger innbyggertallet.",
       undertittel: "Skriv kommunens navn, så ser du hva det koster.",
       eksMva: "Alle priser er eks. mva.",
+      maltype: { kommune: "Kommune", selskap: "Selskap" },
+      bedrift: {
+        etikett: "Leverandører dere følger",
+        tekst: "Prisen følger hvor mange leverandører dere følger.",
+        nivaer: {
+          start: { navn: "Start", spenn: "Opptil 25 leverandører" },
+          vekst: { navn: "Vekst", spenn: "Opptil 100 leverandører" },
+          bygg: { navn: "Bygg", spenn: "Opptil 300 leverandører" },
+          stor: { navn: "Over 300", spenn: "Flere enn 300 leverandører" },
+        },
+        knapp: "Be om tilbud",
+      },
       sok: {
         etikett: "Kommunens navn",
         plassholder: "For eksempel Voss",
@@ -1094,7 +1106,7 @@ export const no = {
     overvakninger: "Overvåkninger",
     historikk: "Historikk",
     leverandorkjede: "Leverandørkjede",
-    aktiveLeverandorer: "Bergen kommune · 148 aktive leverandører",
+    aktiveLeverandorer: "Eksempelvik kommune · 148 aktive leverandører",
     kontrollplikt: "Kontrollplikt § 5i",
     dokumentert: "136 av 148 leverandører dokumentert · sist oppdatert i dag",
     sokPlassholder: "Søk på selskapsnavn eller org.nr...",

@@ -565,3 +565,8 @@ html{scroll-behavior:smooth}
 .landing .pf-ingar-l { margin: 14px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.7; columns: 2; column-gap: 24px; }
 @media (max-width: 600px) { .landing .pf-ingar-l { columns: 1; } }
 .landing .pf-under { font-size: 13.5px; }
+.landing .pf-modus { display: flex; width: fit-content; margin: 0 auto 22px; }
+.landing .pf-bt { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14.5px; }
+.landing .pf-bt td { padding: 11px 0; border-top: 1px solid var(--border, #e5e0e8); }
+.landing .pf-bt td:last-child { text-align: right; font-weight: 600; }
+.landing .pf-bt small { display: block; color: var(--text-faint, #8a8289); font-size: 12.5px; }
