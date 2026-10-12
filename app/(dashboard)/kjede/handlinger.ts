@@ -5,6 +5,8 @@ import { krevProfil } from "@/lib/tilgang";
 import { validerOrgnr } from "@/lib/orgnr";
 import { slaOppEnhet } from "@/lib/brreg";
 import { orgnrFeil } from "@/lib/orgnrtekst";
+import { erRenholdsbransje } from "@/lib/renhold";
+import { screenSanksjoner } from "@/lib/screening";
 import { ord } from "@/lib/sprak";
 
 export type Svar = { ok: true } | { ok: false; feil: string };
@@ -48,7 +50,23 @@ export async function leggTilLedd(kontrollId: string, orgnr: string): Promise<Sv
   if (oppslag.status === "ikke-funnet") return { ok: false, feil: ord().kjede.ukjentOrg };
   if (oppslag.status === "feil") return { ok: false, feil: oppslag.melding };
 
-  const rader: { kontroll_id: string; niva: number; navn: string; org_nr: string; over_grense: boolean }[] = [];
+  // Hvert ledd kontrolleres, ikke bare telles. Å telle kan en kunde gjøre i
+  // hodet; det de ikke kan gjøre i hodet er å vite at ledd to er konkurs eller
+  // at renholdsselskapet i ledd tre mangler godkjenning.
+  const e = oppslag.enhet;
+  const merknader: string[] = [];
+  if (e.konkurs) merknader.push("konkurs");
+  if (e.underTvangsavvikling) merknader.push("tvangsavvikling");
+  if (e.underAvvikling) merknader.push("avvikling");
+  if (erRenholdsbransje(e.bransje)) {
+    const { data: r } = await supabase.from("renholdsvirksomheter").select("godkjent").eq("org_nr", e.orgnr).maybeSingle();
+    if (!r?.godkjent) merknader.push("renhold_ikke_godkjent");
+  }
+  const sanksjoner = await screenSanksjoner(supabase, { navn: e.navn, orgnr: e.orgnr }).catch(() => null);
+  if (sanksjoner?.treff.length) merknader.push("mulig_sanksjon");
+  if (!sanksjoner?.kjort) merknader.push("sanksjon_ikke_sjekket");
+
+  const rader: { kontroll_id: string; niva: number; navn: string; org_nr: string; over_grense: boolean; merknader?: string[] }[] = [];
 
   // Hovedleverandøren legges inn første gang, så leddene har noe å henge på.
   if (!eksisterende?.length) {
@@ -57,7 +75,7 @@ export async function leggTilLedd(kontrollId: string, orgnr: string): Promise<Sv
   }
 
   const neste = eksisterende?.length ? Math.max(...eksisterende.map((l) => l.niva)) + 1 : 1;
-  rader.push({ kontroll_id: kontrollId, niva: neste, navn: oppslag.enhet.navn, org_nr: v.orgnr, over_grense: neste > GRENSE });
+  rader.push({ kontroll_id: kontrollId, niva: neste, navn: oppslag.enhet.navn, org_nr: v.orgnr, over_grense: neste > GRENSE, merknader });
 
   const { error } = await supabase.from("kjede_ledd").insert(rader);
   if (error) return { ok: false, feil: error.message };

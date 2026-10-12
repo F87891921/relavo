@@ -39,15 +39,15 @@ export default async function KjedeSide() {
 
   const { data: ledd } = await supabase
     .from("kjede_ledd")
-    .select("kontroll_id, niva, navn, org_nr")
+    .select("kontroll_id, niva, navn, org_nr, merknader")
     .in("kontroll_id", [...siste.values()].map((v) => v.id))
     .order("niva");
 
-  const perKontroll = new Map<string, { org: string; navn: string }[]>();
+  const perKontroll = new Map<string, { org: string; navn: string; merknader: string[] }[]>();
   const leverandorerListe = [...siste.values()].map((v) => ({ kontrollId: v.id, navn: v.navn }));
   for (const l of ledd ?? []) {
     const liste = perKontroll.get(l.kontroll_id) ?? [];
-    liste.push({ org: l.org_nr, navn: l.navn || formaterOrgnr(l.org_nr) });
+    liste.push({ org: l.org_nr, navn: l.navn || formaterOrgnr(l.org_nr), merknader: (l.merknader as string[] | null) ?? [] });
     perKontroll.set(l.kontroll_id, liste);
   }
 

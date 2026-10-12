@@ -15,7 +15,7 @@ export type Kjede = {
   org: string;
   navn: string;
   kontrollId: string;
-  ledd: { org: string; navn: string }[];
+  ledd: { org: string; navn: string; merknader?: string[] }[];
 };
 
 export function KjedeListe({ kjeder }: { kjeder: Kjede[] }) {
@@ -137,6 +137,13 @@ export function KjedeListe({ kjeder }: { kjeder: Kjede[] }) {
                             <div className="text-[11.5px] font-semibold mt-1 leading-tight">
                               {l.navn}
                             </div>
+                            {(l.merknader ?? [])
+                              .filter((m) => m !== "sanksjon_ikke_sjekket")
+                              .map((m) => (
+                                <div key={m} className="mt-1.5">
+                                  <Merke tone="brudd">{(k9.merknad as Record<string, string>)[m] ?? m}</Merke>
+                                </div>
+                              ))}
                           </div>
                         </div>
                       );
