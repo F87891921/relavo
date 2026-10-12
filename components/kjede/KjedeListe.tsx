@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Merke } from "@/components/ui";
 import { useOrd } from "@/components/Sprakgiver";
+import { LeggTilLedd } from "./KjedeRedigering";
 
 /**
  * § 5k tillater høyst to ledd underleverandører i bygg, anlegg og renhold.
@@ -13,6 +14,7 @@ const GRENSE = 2;
 export type Kjede = {
   org: string;
   navn: string;
+  kontrollId: string;
   ledd: { org: string; navn: string }[];
 };
 
@@ -140,6 +142,8 @@ export function KjedeListe({ kjeder }: { kjeder: Kjede[] }) {
                       );
                     })}
                   </div>
+
+                  <LeggTilLedd kontrollId={k.kontrollId} harLedd={k.ledd.length > 1} />
 
                   <div className="mt-4">
                     {k.brudd ? (

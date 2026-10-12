@@ -174,6 +174,32 @@ export async function opprettKonto(fd: FormData): Promise<OpprettSvar> {
         .eq("id", orgId);
   }
 
+  // Stemmer e-postadressen med kommunens nettside? Ingen sperre, siden noen
+  // kommuner bruker egne domener, men noen hos oss ser på det før kontoen åpnes.
+  if (type === "kommune") {
+    const epostDomene = String(fd.get("epost") ?? "").split("@")[1]?.toLowerCase() ?? "";
+    try {
+      const r = await fetch(
+        `https://data.brreg.no/enhetsregisteret/api/enheter?navn=${encodeURIComponent(orgnavn)}&organisasjonsform=KOMM&size=3`,
+        { headers: { Accept: "application/json" } },
+      );
+      const d = (await r.json()) as { _embedded?: { enheter: { navn: string; hjemmeside?: string }[] } };
+      const treff = d._embedded?.enheter.find((x) => x.navn.toUpperCase() === orgnavn.toUpperCase()) ?? d._embedded?.enheter[0];
+      const vert = (treff?.hjemmeside ?? "").replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0].toLowerCase();
+      if (vert && epostDomene && epostDomene !== vert && !epostDomene.endsWith(`.${vert}`) && !vert.endsWith(`.${epostDomene}`))
+        await admin().from("interne_varsler").upsert(
+          {
+            slag: "epost_domene",
+            tittel: `${orgnavn}: e-postadressen stemmer ikke med nettsiden`,
+            tekst: `Registrert med @${epostDomene}, kommunens nettside er ${vert}. Sjekk før kontoen åpnes.`,
+            lenke: "/internt/onboarding",
+            noekkel: `epost-domene:${orgId}`,
+          },
+          { onConflict: "noekkel", ignoreDuplicates: true },
+        );
+    } catch {}
+  }
+
   // Kommuner krever tofaktor som utgangspunkt; administratoren kan slå det av.
   if (["liten", "kommune", "medelstor", "stor"].includes(plan))
     await admin().from("organisasjoner").update({ krever_tofaktor: true }).eq("id", orgId);

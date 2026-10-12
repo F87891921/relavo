@@ -5,6 +5,7 @@ import { Flikar } from "@/components/ui/Flikar";
 import { funnAntall } from "@/lib/funn";
 import { KjedeListe, type Kjede } from "@/components/kjede/KjedeListe";
 import { formaterOrgnr } from "@/lib/orgnr";
+import { NyKjede } from "@/components/kjede/KjedeRedigering";
 
 /**
  * Leverandørkjedene, slik kontrollene har kartlagt dem.
@@ -43,6 +44,7 @@ export default async function KjedeSide() {
     .order("niva");
 
   const perKontroll = new Map<string, { org: string; navn: string }[]>();
+  const leverandorerListe = [...siste.values()].map((v) => ({ kontrollId: v.id, navn: v.navn }));
   for (const l of ledd ?? []) {
     const liste = perKontroll.get(l.kontroll_id) ?? [];
     liste.push({ org: l.org_nr, navn: l.navn || formaterOrgnr(l.org_nr) });
@@ -55,6 +57,7 @@ export default async function KjedeSide() {
     .map((lev) => ({
       org: lev.org,
       navn: lev.navn,
+      kontrollId: lev.id,
       ledd: perKontroll.get(lev.id) ?? [],
     }))
     .filter((k) => k.ledd.length > 1);
@@ -75,6 +78,7 @@ export default async function KjedeSide() {
           ]}
         />
 
+        <NyKjede leverandorer={leverandorerListe} />
         <KjedeListe kjeder={kjeder} />
       </Side>
     </DashboardShell>

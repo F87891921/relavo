@@ -74,7 +74,7 @@ export async function oppdaterOrganisasjon(fd: FormData): Promise<Svar> {
 /* ----------------------------------------------------------- Kolleger */
 
 export async function nyBruker(fd: FormData): Promise<Svar> {
-  const { supabase, profil } = await krevProfil();
+  const { supabase, user, profil } = await krevProfil();
   if (profil.rolle !== "administrator")
     return { ok: false, feil: ord().feil.bareAdminBrukere };
 
@@ -104,6 +104,17 @@ export async function nyBruker(fd: FormData): Promise<Svar> {
     .maybeSingle();
 
   const plan = planFor(org?.plan);
+
+  // Kommunale brukere må ha kommunens e-postadresse. Administratoren ble
+  // kontrollert da kontoen ble åpnet, så domenet hennes er domenet kommunen
+  // bruker. Selskap har ofte flere domener og konsulenter, så der er det fritt.
+  if (["liten", "kommune", "medelstor", "stor"].includes(org?.plan ?? "")) {
+    const domene = (e: string | null | undefined) => (e ?? "").split("@")[1]?.toLowerCase() ?? "";
+    const mitt = domene(user.email);
+    const nytt = domene(epost);
+    if (mitt && nytt !== mitt && !nytt.endsWith(`.${mitt}`))
+      return { ok: false, feil: ord().feil.kommuneDomene.replace("{domene}", mitt) };
+  }
 
   const { count } = await supabase
     .from("profiler")
