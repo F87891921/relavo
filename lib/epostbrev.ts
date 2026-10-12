@@ -7,7 +7,10 @@ import { brevHtml, brevTekst, type Brev } from "@/lib/epostmal";
  */
 export type Ferdig = { emne: string; tekst: string; html: string };
 
-const ferdig = (emne: string, b: Brev): Ferdig => ({ emne, tekst: brevTekst(b), html: brevHtml(b) });
+const ferdig = (emne: string, b: Brev): Ferdig => {
+  const m = { tittel: emne, ...b };
+  return { emne, tekst: brevTekst(m), html: brevHtml(m) };
+};
 
 export const glemtPassordBrev = (
   t: {
@@ -38,6 +41,7 @@ export const tilbudBrev = (o: {
   nummer: string;
 }) =>
   ferdig(`Tilbud fra Relavo — ${o.nummer}`, {
+    tittel: "Her er tilbudet ditt",
     hei: `Hei${o.kontakt ? " " + o.kontakt : ""},`,
     avsnitt: [
       `Her er tilbudet fra Relavo på ${o.plan.toLowerCase()} — samlet kontraktsverdi ${o.total} NOK eksklusive merverdiavgift.`,
