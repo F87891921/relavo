@@ -358,7 +358,7 @@ export const en: Ordbok = {
     kjorPaNytt: "Cross-reference suppliers again",
     kjorPaNyttForklaring: "The conflict check runs when a control is performed. If you change the list afterwards, the suppliers must be cross-referenced again for the change to matter.",
     eiersiden:
-      "Ownership has not been checked. Aksjonærregisteret, the Norwegian shareholder register, is published by Skatteetaten as an annual file rather than a lookup service, so ownership cannot yet be cross-checked automatically.",
+      "Ownership has not been checked. There are two routes to ownership data and both are closed to us today: the Norwegian Tax Administration releases the shareholder register as an annual file on application, with a download link valid for one week, and Brønnøysund's register of beneficial owners requires a Maskinporten scope granted to public authorities, media, civil society and higher education. The check therefore covers the board and the managing director, not owners.",
     utenDeltakere:
       "Without them there is nothing to cross the board against, and the check has not been carried out — not passed.",
     kunneIkkeHente: "Could not load matches:",

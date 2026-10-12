@@ -88,3 +88,22 @@ $$;
 
 revoke execute on function skatteattest_lever(uuid, date, text, text, text, text)
   from anon, authenticated;
+
+-- Den nyeste attesten for leverandøren lenken gjelder. Leverandøren skal se
+-- at den kom fram, uten at siden røper noe annet om kunden enn det den
+-- allerede viser.
+create or replace function skatteattest_ved_token(t uuid)
+returns table (filnavn text, utstedt date, mottatt timestamptz)
+language sql
+security definer
+set search_path = public
+as $$
+  select s.filnavn, s.utstedt, s.mottatt
+    from skatteattester s
+    join espd_erklaringer e on e.leverandor_id = s.leverandor_id
+   where e.token = t
+   order by s.mottatt desc
+   limit 1;
+$$;
+
+grant execute on function skatteattest_ved_token(uuid) to anon, authenticated;

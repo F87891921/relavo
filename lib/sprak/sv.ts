@@ -358,7 +358,7 @@ export const sv: Ordbok = {
     kjorPaNytt: "Korsa leverantörerna på nytt",
     kjorPaNyttForklaring: "Jävskontrollen körs när en kontroll utförs. Ändrar ni listan efteråt måste leverantörerna korsas på nytt för att ändringen ska få effekt.",
     eiersiden:
-      "Ägarsidan är inte kontrollerad. Aksjonærregisteret publiceras av Skatteetaten som en årlig fil, inte som uppslag, så ägande kan ännu inte korsas automatiskt.",
+      "Ägarsidan är inte kontrollerad. Det finns två vägar till ägardata och båda är stängda för oss i dag: Skatteetaten lämnar ut aksjonærregisteret som en årlig fil efter ansökan, med en nedladdningslänk som gäller i en vecka, och Brønnøysunds register över verkliga huvudmän kräver ett Maskinporten-scope som tilldelas offentliga myndigheter, media, civilsamhälle och högre utbildning. Kontrollen täcker därför styrelse och vd, inte ägare.",
     utenDeltakere:
       "Utan dem finns det inget att korsa styrelsen mot, och kontrollen är inte utförd — inte godkänd.",
     kunneIkkeHente: "Kunde inte hämta träffar:",

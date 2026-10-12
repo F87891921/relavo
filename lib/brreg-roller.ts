@@ -3,9 +3,15 @@
  * https://data.brreg.no/enhetsregisteret/api/enheter/{orgnr}/roller
  * Åpent og gratis, som resten av registeret.
  *
- * Eiere finnes IKKE her. Aksjonærregisteret publiseres av Skatteetaten som
- * en årlig fil, ikke som oppslag. Derfor dekker denne kontrollen styre og
- * daglig leder, og sier fra om at eiersiden ikke er sjekket.
+ * Eiere finnes IKKE her, og de finnes ikke noe sted vi kommer til:
+ * Aksjonærregisteret utleveres av Skatteetaten som en årlig fil etter
+ * søknad, og Brønnøysunds register over reelle rettighetshavere ligger bak
+ * et Maskinporten-scope som tildeles offentlige myndigheter, media,
+ * sivilsamfunn og høyere utdanning — prøvd 11. oktober 2026, 401 på samtlige
+ * endepunkter, også kodelistene som dokumentasjonen kaller åpne.
+ *
+ * Derfor dekker denne kontrollen styre og daglig leder, og sier fra om at
+ * eiersiden ikke er sjekket.
  */
 export type Rolleperson = {
   navn: string;

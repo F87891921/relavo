@@ -117,6 +117,6 @@ export async function finnJav(
     treff,
     rollerHentet: true,
     merknad:
-      "Eiersiden er ikke kontrollert. Aksjonærregisteret finnes bare som årlig fil fra Skatteetaten, ikke som oppslag.",
+      "Eiersiden er ikke kontrollert. Aksjonærregisteret utleveres av Skatteetaten som årlig fil etter søknad, og Brønnøysunds register over reelle rettighetshavere krever et Maskinporten-scope vi ikke har.",
   };
 }

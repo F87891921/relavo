@@ -367,7 +367,7 @@ export const no = {
     kjorPaNytt: "Kryss leverandørene på nytt",
     kjorPaNyttForklaring: "Jav-kontrollen kjører når en kontroll utføres. Endrer dere lista etterpå, må leverandørene krysses på nytt for at endringen skal få betydning.",
     eiersiden:
-      "Eiersiden er ikke kontrollert. Aksjonærregisteret publiseres av Skatteetaten som en årlig fil, ikke som oppslag, så eierskap kan ikke krysses automatisk ennå.",
+      "Eiersiden er ikke kontrollert. Det finnes to veier til eierdata, og begge er stengt for oss i dag: Skatteetaten utleverer Aksjonærregisteret som en årlig fil etter søknad, med en nedlastingslenke som varer i én uke, og Brønnøysunds register over reelle rettighetshavere krever et Maskinporten-scope som tildeles offentlige myndigheter, media, sivilsamfunn og høyere utdanning. Kontrollen dekker derfor styre og daglig leder, ikke eiere.",
     utenDeltakere:
       "Uten dem finnes det ingenting å krysse styret mot, og kontrollen er ikke utført — ikke bestått.",
     kunneIkkeHente: "Kunne ikke hente treff:",
