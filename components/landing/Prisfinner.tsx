@@ -23,6 +23,7 @@ export function Prisfinner() {
   const [treff, setTreff] = useState<Treff[]>([]);
   const [valgt, setValgt] = useState<Treff | null>(null);
   const [lop, setLop] = useState<Lopetid>(12);
+  const [bn, setBn] = useState<"start" | "vekst" | "bygg" | "stor">("vekst");
   const [modus, setModus] = useState<"kommune" | "selskap">("kommune");
   const [status, setStatus] = useState<"hvile" | "soker" | "ingen" | "feil">("hvile");
   const teller = useRef(0);
@@ -93,7 +94,11 @@ export function Prisfinner() {
               {BEDRIFT.map((b) => {
                 const m = mndFor(b, lop);
                 return (
-                  <tr key={b.id}>
+                  <tr
+                    key={b.id}
+                    className={bn === b.id ? "pf-valgt" : undefined}
+                    onClick={() => setBn(b.id)}
+                  >
                     <td>
                       <b>{t.bedrift.nivaer[b.id].navn}</b>
                       <small>{t.bedrift.nivaer[b.id].spenn}</small>
@@ -105,9 +110,15 @@ export function Prisfinner() {
             </tbody>
           </table>
           <p className="pf-m">{t.sok.fakturering} {t.sok.tillegg}</p>
-          <Link href="/kontakt?om=priser" className="btn btn-primary">
-            {t.bedrift.knapp}
-          </Link>
+          {bn === "stor" ? (
+            <Link href="/kontakt?om=priser" className="btn btn-primary">
+              {t.bedrift.knapp}
+            </Link>
+          ) : (
+            <Link href={`/registrer?plan=${bn}`} className="btn btn-primary">
+              {t.sok.komIGang}
+            </Link>
+          )}
         </div>
       )}
 
