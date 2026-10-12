@@ -316,6 +316,12 @@ export const sv: Ordbok = {
       sePriser: "Se priser",
       note: "Från 590 NOK per kontroll, exkl. moms. Ingen bindningstid.",
     },
+    tallet: {
+      av: "av",
+      setning: "städverksamheter i Arbeidstilsynets register är inte godkända.",
+      poeng: "En träff i registret betyder inte att bolaget är godkänt. Det har varit olagligt att köpa städtjänster av ett bolag utan godkännande sedan 2012 — och registret innehåller båda delarna. Vi läser statusfältet.",
+      hentet: "Hämtat från registret",
+    },
     kilder: { byggerPa: "Bygger på" },
     regelverk: {
       eyebrow: "Regelverk",

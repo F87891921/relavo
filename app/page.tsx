@@ -1,9 +1,11 @@
 import { ord } from "@/lib/sprak";
+import { renholdstall } from "@/lib/renholdstall";
 import "./landing.css";
 
 import { LandingNav } from "@/components/landing/LandingNav";
 import { Hero } from "@/components/landing/Hero";
 import { Sources } from "@/components/landing/Sources";
+import { Tallet } from "@/components/landing/Tallet";
 import { Plattform } from "@/components/landing/Plattform";
 import { Regelverk } from "@/components/landing/Regelverk";
 import { Priser } from "@/components/landing/Priser";
@@ -18,8 +20,13 @@ import { Rullenav } from "@/components/landing/Rullenav";
  * demokontoer er byttet mot den ekte /logg-inn-ruten, som går mot
  * Supabase Auth — alt annet er samme innhold og samme uttrykk.
  */
-export default function Hjemmeside() {
+export default async function Hjemmeside() {
   const t = ord().landing;
+
+  // Tallet hentes, det skrives ikke inn. Går oppslaget ikke, vises
+  // seksjonen ikke i det hele tatt — en forside som gjetter på sin egen
+  // nøkkeltall er verre enn en forside uten.
+  const tall = await renholdstall();
 
   return (
     <div className="landing">
@@ -29,6 +36,14 @@ export default function Hjemmeside() {
       <main>
         <Hero />
         <Sources />
+        {tall && (
+          <Tallet
+            ikkeGodkjente={tall.ikkeGodkjente}
+            totalt={tall.totalt}
+            andel={tall.andel}
+            hentet={tall.hentet}
+          />
+        )}
         <Plattform />
         <Regelverk />
         <Priser />

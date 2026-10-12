@@ -2,18 +2,21 @@
 
 import { useOrd } from "@/components/Sprakgiver";
 
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState, type CSSProperties } from "react";
 
 /**
- * Leverandørkjeden med § 5k-grensen. Kjeden er hel til leseren faktisk ser
- * den — først da ryker det siste leddet. Poenget er at bruddet skal
- * oppdages, ikke stå ferdig brutt før noen har sett hva som brytes.
+ * Leverandørkjeden med § 5k-grensen, som en trapp.
+ *
+ * Hvert ledd trappes ned og inn. Dybden blir da noe leseren ser med en
+ * gang, i stedet for noe de må telle seg fram til — og det er dybden hele
+ * poenget handler om.
+ *
+ * Kjeden er hel til leseren faktisk ser den; først da ryker det siste
+ * leddet. Bruddet skal oppdages, ikke stå ferdig brutt før noen har sett
+ * hva som brytes.
  *
  * Respekterer prefers-reduced-motion: da vises bruddtilstanden med én gang.
  */
-
-// ­ er myk bindestrek: «Hovedleverandør» deles bare når det trengs,
-// og da på stavelsen — ikke midt i ordet slik overflow-wrap ville gjort.
 const SELSKAP = [
   { navn: "Demobygg", variant: "self" },
   { navn: "Demoanlegg", variant: "" },
@@ -66,20 +69,24 @@ export function Chain() {
     <div ref={ref} className={brutt ? "chain brutt" : "chain"}>
       {LEDD.map((ledd, i) => (
         <Fragment key={ledd.navn}>
-          <div className="chain-n">
-            <div className={`chain-box ${ledd.variant}`.trim()}>
-              <div className="chain-l">{ledd.label}</div>
-              <div className="chain-c">{ledd.navn}</div>
+          {/* Grensa står i flyten rett over leddet som bryter den, ikke på
+              en avstand målt i piksler. En hardkodet topp ville flyttet seg
+              av seg selv så snart et selskapsnavn ble to linjer. */}
+          {ledd.variant === "over" && (
+            <div className="chain-tak" aria-hidden="true">
+              <span>{s9.grense5k}</span>
+            </div>
+          )}
+          <div
+            className={`chain-n ${ledd.variant}`.trim()}
+            style={{ "--i": i } as CSSProperties}
+          >
+            <span className="chain-p" />
+            <div className="chain-box">
+              <span className="chain-l">{ledd.label}</span>
+              <span className="chain-c">{ledd.navn}</span>
             </div>
           </div>
-          {i < LEDD.length - 1 &&
-            (LEDD[i + 1].variant === "over" ? (
-              <span className="chain-k rev">
-                <span>{s9.grense5k}</span>
-              </span>
-            ) : (
-              <span className="chain-k" />
-            ))}
         </Fragment>
       ))}
     </div>

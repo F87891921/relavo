@@ -316,6 +316,12 @@ export const en: Ordbok = {
       sePriser: "See pricing",
       note: "From 590 NOK per check, excl. VAT. No lock-in.",
     },
+    tallet: {
+      av: "of",
+      setning: "cleaning businesses in the Norwegian Labour Inspection Authority's register are not approved.",
+      poeng: "A match in the register does not mean the company is approved. Buying cleaning services from an unapproved company has been illegal since 2012 — and the register holds both kinds. We read the status field.",
+      hentet: "Fetched from the register",
+    },
     kilder: { byggerPa: "Built on" },
     regelverk: {
       eyebrow: "The rules",

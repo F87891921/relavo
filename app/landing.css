@@ -177,85 +177,93 @@ html{scroll-behavior:smooth}
   .feats>*,.feats-3>*{min-width:0}
 }
 
-/* Kjedefragment */
-.chain{display:flex;width:100%;align-items:stretch;padding-top:36px;position:relative}
-.chain-n{flex:1;min-width:0;display:flex;align-items:center}
-.chain-n>*{width:100%}
-.chain-box{border-radius:10px;padding:10px 8px;text-align:center;background:var(--surface);
-  border:1.5px dashed transparent;
-  box-shadow:0 1px 2px rgba(40,31,42,0.05),0 2px 9px rgba(40,31,42,0.06);
-  transition:border-color 320ms var(--ease-out),background 320ms var(--ease-out),box-shadow 320ms var(--ease-out)}
-.chain-box.self{box-shadow:0 0 0 1.5px var(--accent),0 2px 9px rgba(101,75,112,0.13)}
+/* Kjedefragment — trappen
+   Hvert ledd trappes ned og inn, så dybden er noe man ser og ikke noe man
+   teller. Den er lodrett fra starten: det er den eneste formen som
+   fungerer like godt på en telefon som på en skjerm, og den slipper en
+   egen mobilvariant som skal holdes i takt med den vanlige.
+
+   Grensa ligger i flyten mellom ledd 2 og ledd 3, ikke på en avstand
+   målt i piksler. En hardkodet topp ville flyttet seg av seg selv så
+   snart noen endret skriftstørrelsen eller et selskapsnavn ble to linjer. */
+.chain{display:flex;flex-direction:column;gap:9px;width:100%;padding-top:4px}
+.chain-n{display:flex;align-items:center;gap:12px;padding-left:calc(var(--i, 0) * 26px);
+  transition:padding-left 420ms var(--ease-out)}
+
+/* Prikken markerer leddet uten å ta plass fra navnet. */
+.chain-p{width:7px;height:7px;border-radius:50%;flex:0 0 auto;background:var(--border-strong);
+  transition:background 420ms var(--ease-out)}
+.chain-n.self .chain-p{background:var(--accent)}
+.chain.brutt .chain-n.over .chain-p{background:var(--red)}
+
+.chain-box{flex:1;min-width:0;display:flex;align-items:baseline;gap:10px;
+  background:var(--surface);border:1.5px solid var(--border);border-radius:11px;
+  padding:11px 14px;
+  box-shadow:0 1px 2px rgba(40,31,42,0.05),0 2px 9px rgba(40,31,42,0.05);
+  transition:border-color 420ms var(--ease-out),background 420ms var(--ease-out),
+    box-shadow 420ms var(--ease-out)}
+.chain-n.self .chain-box{border-color:var(--accent)}
 /* Den eneste konturen på hele siden. Bruddet er det som er innrammet. */
-/* Bruddet skjer først når leseren faktisk ser kjeden. Fram til da er den hel. */
-.chain.brutt .chain-box.over{background:rgba(196,59,59,0.035);border-color:var(--red);box-shadow:none}
-/* Basregel — gjelder hele tiden, ikke bare etter bruddet.
-   Ingen orddeling midt i «Hovedleverandør»: teksten krympes til den får plass. */
-.chain-l{font-size:7.5px;font-weight:700;letter-spacing:0.03em;text-transform:uppercase;color:var(--text-faint);
-  line-height:1.3;min-height:2.6em;display:flex;align-items:center;justify-content:center;
-  transition:color 320ms var(--ease-out)}
-.chain.brutt .chain-box.over .chain-l{color:var(--red)}
-@media(max-width:600px){
-  /* «Hovedleverandør» får ikke plass på én linje her. Bindestrek på stavelse,
-     ikke midt i ordet — derfor &shy; i markupen og ingen overflow-wrap. */
-  .chain-l{font-size:6.5px;letter-spacing:0.01em;hyphens:manual;min-height:3.4em}
-  .chain-c{font-size:9.5px}.chain-box{padding:8px 5px}
-}
-.chain-box.self .chain-l{color:var(--accent)}
-.chain-c{font-size:10.5px;font-weight:600;margin-top:4px;line-height:1.3}
-/* Leddet er en faktisk lenke — og den siste er revet av */
-.chain-k{width:20px;height:1.5px;background:var(--border-strong);flex-shrink:0;border-radius:2px;align-self:center}
-/* Strekket er strukket i full høyde, så etiketten ligger alltid like langt
-   over nodens overkant uansett hvor høy noden blir. */
-.chain-k.rev{width:32px;height:auto;background:transparent;position:relative;align-self:stretch;display:block}
-/* To halvdeler som til sammen er én hel strek. De trekkes fra hverandre med
-   scaleX fra ytterkanten — bare transform, aldri fra null. */
-.chain-k.rev::before,.chain-k.rev::after{content:'';position:absolute;top:50%;
-  width:16px;height:1.5px;background:var(--border-strong);border-radius:2px;
-  transition:transform 420ms var(--ease-out),background 420ms var(--ease-out)}
-.chain-k.rev::before{left:0;transform:translateY(-50%) scaleX(1);transform-origin:left center}
-.chain-k.rev::after{right:0;transform:translateY(-50%) scaleX(1);transform-origin:right center}
-.chain.brutt .chain-k.rev::before{transform:translateY(-50%) scaleX(0.55);background:var(--red)}
-.chain.brutt .chain-k.rev::after{transform:translateY(-50%) scaleX(0.55);background:var(--red)}
-.chain-k.rev span{position:absolute;left:50%;top:-20px;font-size:8.5px;font-weight:700;
-  color:var(--red);white-space:nowrap;letter-spacing:0.03em;line-height:1;
-  opacity:0;transform:translateX(-50%) translateY(4px);
-  transition:opacity 320ms var(--ease-out) 240ms,transform 320ms var(--ease-out) 240ms}
-.chain.brutt .chain-k.rev span{opacity:1;transform:translateX(-50%)}
-@media (prefers-reduced-motion:reduce){
-  .chain-k.rev span{opacity:1;transform:translateX(-50%)}
-  .chain.brutt .chain-k.rev::before,.chain.brutt .chain-k.rev::after{transform:translateY(-50%) scaleX(0.55)}
-}
+.chain.brutt .chain-n.over .chain-box{border-style:dashed;border-color:var(--red);
+  background:rgba(196,59,59,0.035);box-shadow:none}
 
-/* På telefon går kjeden nedover.
-   Vannrett blir hvert ledd rundt femti piksler bredt, og da får ikke
-   selskapsnavnet plass — det klippes midt i ordet. En kjede der man ikke
-   kan lese hvem leddene er, viser ikke det den er der for å vise.
-   Samme valg som i appens egen kjedeliste. */
+.chain-l{font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--text-faint);flex:0 0 auto;transition:color 420ms var(--ease-out)}
+.chain-n.self .chain-l{color:var(--accent)}
+.chain.brutt .chain-n.over .chain-l{color:var(--red)}
+.chain-c{font-size:13.5px;font-weight:600;line-height:1.3;min-width:0}
+
+/* Taket. Står i flyten der det hører hjemme, og tones inn med bruddet. */
+.chain-tak{display:flex;align-items:center;gap:10px;margin:1px 0;
+  opacity:0;transform:translateY(-3px);
+  transition:opacity 380ms var(--ease-out) 160ms,transform 380ms var(--ease-out) 160ms}
+.chain.brutt .chain-tak{opacity:1;transform:none}
+.chain-tak::before{content:'';flex:1;height:1.5px;border-radius:2px;
+  background:repeating-linear-gradient(to right,var(--red) 0 6px,transparent 6px 12px)}
+.chain-tak span{font-size:10px;font-weight:700;letter-spacing:0.04em;color:var(--red);
+  white-space:nowrap}
+
 @media(max-width:520px){
-  .chain{flex-direction:column;align-items:stretch;padding-top:0}
-  .chain-n>*{width:100%}
-  .chain-box{text-align:left;display:flex;align-items:baseline;gap:8px;padding:9px 11px}
-  .chain-l{min-height:0;justify-content:flex-start;flex:0 0 auto;font-size:7px}
-  .chain-c{margin-top:0;font-size:11.5px}
-
-  /* Lenken står nå mellom to noder over hverandre, ikke ved siden av. */
-  .chain-k{width:1.5px;height:14px;align-self:center}
-  .chain-k.rev{width:1.5px;height:34px;align-self:center;background:transparent}
-  .chain-k.rev::before,.chain-k.rev::after{
-    left:50%;top:auto;width:1.5px;height:15px;transform:translateX(-50%) scaleY(1)}
-  .chain-k.rev::before{top:0;transform-origin:center top}
-  .chain-k.rev::after{bottom:0;transform-origin:center bottom}
-  .chain.brutt .chain-k.rev::before{transform:translateX(-50%) scaleY(0.5)}
-  .chain.brutt .chain-k.rev::after{transform:translateX(-50%) scaleY(0.5)}
-  /* Bruddteksten ved siden av strekket, ikke over — over ligger nå en node. */
-  .chain-k.rev span{left:calc(50% + 10px);top:50%;transform:translateY(-50%) translateX(-4px)}
-  .chain.brutt .chain-k.rev span{transform:translateY(-50%)}
+  /* Mindre trappesteg: fire ledd à 26 piksler spiser en fjerdedel av en
+     telefonskjerm, og da er det navnet som taper plassen. */
+  .chain-n{padding-left:calc(var(--i, 0) * 13px);gap:9px}
+  .chain-box{padding:10px 11px;gap:8px}
+  .chain-l{font-size:8px}
+  .chain-c{font-size:12.5px}
 }
-@media (prefers-reduced-motion:reduce) and (max-width:520px){
-  .chain-k.rev span{transform:translateY(-50%)}
-  .chain.brutt .chain-k.rev::before{transform:translateX(-50%) scaleY(0.5)}
-  .chain.brutt .chain-k.rev::after{transform:translateX(-50%) scaleY(0.5)}
+
+@media (prefers-reduced-motion:reduce){
+  .chain-tak{opacity:1;transform:none}
+}
+
+/* Tallet
+   Det ene stedet på siden der et tall får bære seg selv. Det står mellom
+   kildestripen og plattformen fordi det er svaret på «hvorfor trengs
+   dette» — før vi begynner å fortelle hva vi gjør.
+
+   Tallet er stort nok til å leses som en påstand, ikke som en statistikk
+   i en fotnote. Setningen ved siden av er det som gjør det til et
+   argument; uten den er det bare et tall. */
+.tallet{padding:0 24px;margin:0 auto 4px;max-width:1120px}
+.tallet-in{display:flex;align-items:center;gap:36px;flex-wrap:wrap;
+  padding:34px 36px;border-radius:18px;background:var(--surface);
+  box-shadow:0 1px 2px rgba(40,31,42,0.05),0 10px 34px -16px rgba(40,31,42,0.16)}
+.tallet-n{margin:0;flex:0 0 auto;font-size:68px;font-weight:700;letter-spacing:-0.045em;
+  line-height:1;color:var(--red);font-variant-numeric:tabular-nums}
+.tallet-t{flex:1;min-width:280px;display:flex;flex-direction:column;gap:9px}
+.tallet-l{margin:0;font-size:19px;font-weight:600;letter-spacing:-0.02em;line-height:1.35;
+  color:var(--text)}
+.tallet-d{margin:0;font-size:13.5px;line-height:1.6;color:var(--text-dim);max-width:62ch}
+.tallet-k{margin:0;font-size:11.5px;color:var(--text-faint);font-variant-numeric:tabular-nums}
+
+@media(max-width:720px){
+  .tallet{padding:0 16px}
+  .tallet-in{gap:18px;padding:26px 22px}
+  /* Tallet over setningen, ikke ved siden av: ved siden av blir det enten
+     et lite tall eller en setning på fire ord per linje. */
+  .tallet-n{font-size:54px}
+  .tallet-t{min-width:0}
+  .tallet-l{font-size:17px}
 }
 
 /* Lovkravfragment */

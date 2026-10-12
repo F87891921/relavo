@@ -325,6 +325,12 @@ export const no = {
       sePriser: "Se priser",
       note: "Fra 590 NOK per kontroll, eks. mva. Ingen bindingstid.",
     },
+    tallet: {
+      av: "av",
+      setning: "renholdsvirksomheter i Arbeidstilsynets register er ikke godkjent.",
+      poeng: "En treff i registeret betyr ikke at selskapet er godkjent. Det har vært ulovlig å kjøpe renholdstjenester av et selskap uten godkjenning siden 2012 — og registeret inneholder begge deler. Vi leser statusfeltet.",
+      hentet: "Hentet fra registeret",
+    },
     kilder: { byggerPa: "Bygger på" },
     regelverk: {
       eyebrow: "Regelverk",
