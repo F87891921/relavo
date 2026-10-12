@@ -368,7 +368,7 @@ export const sv: Ordbok = {
       kjedeD: "§ 5k tillåter högst två led underleverantörer i bygg, anläggning och städ. Lägg in kedjan du har, så flaggas överskridandet direkt — och du får de två vanliga vägarna ut.",
       kravD: "Rapporten följer lagen punkt för punkt, med samma paragrafhänvisning som du citerar i anskaffelsesprotokollen.",
       laveTilbudD: "Avvikelsen beräknas mot de övriga anbuden, och du får ett utkast till det redogörelsekrav som § 24-9 ålägger dig att skicka.",
-      overvakingD: "Konkurs, tvångslikvidation och nya anmärkningar fångas upp samma dag de registreras, inte vid nästa kontroll.",
+      overvakingD: "Konkurs, tvångslikvidation, förlorat renhållningsgodkännande och byte av VD fångas upp i den dagliga körningen, inte först vid nästa kontroll.",
       rapportD: "Varje körning sparas oförändrad med källa och datum på varje rad. Det som inte är kontrollerat står som ej kontrollerat.",
       rapport: "Rapport som håller",
     },
@@ -471,14 +471,14 @@ export const sv: Ordbok = {
       tittel: "Det folk frågar om först.",
       sporsmal: [
         { q: "Kollar ni om någon är dömd för brott?", a: "Nej, och ingen kommersiell aktör kan. Behandling av uppgifter om brottmålsdomar är enligt personopplysningsloven § 11 i praktiken förbehållen offentliga myndigheter, och Lovdata ger ingen maskinell åtkomst till rättsavgöranden. Vi kontrollerar bolag, inte enskilda personer. Den delen av kvalificeringen täcks av leverantörens ESPD-egenförsäkran, som sparas som bilaga till kontrollen." },
-        { q: "Tillkommer det avgifter utöver abonnemanget?", a: "Nej. Priset täcker den färdiga rapporten, oavsett hur många register den bygger på. Du köper bedömningen och dokumentationen, inte enskilda uppslag, och fakturan ser likadan ut varje månad." },
+        { q: "Tillkommer det avgifter utöver abonnemanget?", a: "Nej. Priset är detsamma under hela avtalet, utan tillägg per användare eller per kontroll. Du köper bedömningen och dokumentationen, inte enskilda uppslag. Kommuner faktureras ett år i taget i förskott." },
         { q: "Håller rapporten som dokumentation enligt § 5i?", a: "Varje körning sparas oförändrad med tidpunkt, källa och resultat på varje enskild rad, och kan hämtas fram i efterhand. Källor vi inte fått svar från står som ej kontrollerade i stället för att utelämnas — en rapport som tiger om sina luckor är sämre än ingen rapport." },
         { q: "Vi finns i Sverige. Fungerar det?", a: "Relavo är byggt för norska organisationsnummer och norskt regelverk. Kärnan i bedömningen följer samma EU-direktiv i hela EES, men datakällorna och paragraferna är norska." },
       ],
     },
     close: {
       tittel: "Hur djup är kedjan i ditt största kontrakt?",
-      tekst: "Kör en kontroll och se svaret. Du behöver inget abonnemang för att prova.",
+      tekst: "Kör en kontroll för 890 NOK och se svaret. Du behöver inget abonnemang.",
       snakkMedOss: "Prata med oss",
     },
     foot: {
@@ -1227,7 +1227,7 @@ export const sv: Ordbok = {
   },
   betaling: {
     faktura: "Faktura",
-    fakturaTekst: "Vi gör en kreditkontroll och öppnar kontot samma arbetsdag. Faktura skickas som EHF med 30 dagars förfall.",
+    fakturaTekst: "Vi gör en kreditkontroll och öppnar kontot samma arbetsdag. Faktura skickas elektroniskt med 30 dagars förfall.",
     kort: "Kort",
     kortTekst: "Betalas hos Stripe. Kontot öppnas så snart betalningen är bekräftad.",
     kortAv: "Inte inkopplat ännu. Välj faktura, så hör vi av oss.",
@@ -1280,7 +1280,7 @@ export const sv: Ordbok = {
     tilbake: "Tillbaka",
     finnKommune: "Hitta kommunen",
     kommuneHjelp: "Skriv namnet, så räknar vi ut nivån från invånarantalet.",
-    faktura: "Kommuner betalar alltid mot faktura (EHF), fakturerat årligen i förskott.",
+    faktura: "Kommuner betalar alltid mot faktura, fakturerat årligen i förskott.",
     stor: "Kommuner över 50 000 invånare får offert efter storlek.",
     storKnapp: "Be om offert",
     omSelskapet: "Om bolaget",

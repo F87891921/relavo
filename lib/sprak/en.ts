@@ -368,7 +368,7 @@ export const en: Ordbok = {
       kjedeD: "§ 5k allows at most two tiers of subcontractors in construction, civil engineering and cleaning. Enter the chain you have and any breach is flagged at once — along with the two usual ways out.",
       kravD: "The report follows the law point by point, citing the same provisions you quote in the procurement record.",
       laveTilbudD: "The deviation is calculated against the other tenders, and you get a draft of the written explanation § 24-9 requires you to request.",
-      overvakingD: "Bankruptcy, compulsory dissolution and new payment defaults are caught the day they are registered, not at the next check.",
+      overvakingD: "Bankruptcy, compulsory dissolution, lost cleaning approval and a change of managing director are caught in the daily run, not only at the next check.",
       rapportD: "Every run is stored unchanged with source and date on each line. What has not been checked is listed as not checked.",
       rapport: "A report that holds up",
     },
@@ -471,14 +471,14 @@ export const en: Ordbok = {
       tittel: "What people ask first.",
       sporsmal: [
         { q: "Do you check whether someone has a criminal conviction?", a: "No, and no commercial provider can. Under personopplysningsloven § 11, processing data on criminal convictions is in practice reserved for public authorities, and Lovdata offers no machine access to court decisions. We check companies, not individuals. That part of the qualification assessment is covered by the supplier's ESPD self-declaration, which is stored as an attachment to the check." },
-        { q: "Are there add-ons beyond the subscription?", a: "No. The price covers the finished report, however many registers it draws on. You are buying the assessment and the documentation, not individual lookups, and the invoice looks the same every month." },
+        { q: "Are there any charges beyond the subscription?", a: "No. The price is the same for the whole agreement, with nothing extra per user or per check. You buy the assessment and the documentation, not individual lookups. Municipalities are invoiced one year at a time, in advance." },
         { q: "Does the report hold up as evidence under § 5i?", a: "Every run is stored unchanged with the time, source and result on each line, and can be retrieved later. Sources we got no answer from are listed as not checked rather than left out — a report that stays quiet about its gaps is worse than no report." },
         { q: "We are based in Sweden. Does it work?", a: "Relavo is built for Norwegian organisation numbers and Norwegian rules. The core of the assessment follows the same EU directive across the EEA, but the data sources and the statutes are Norwegian." },
       ],
     },
     close: {
       tittel: "How deep is the chain in your largest contract?",
-      tekst: "Run one check and see. You do not need a subscription to try it.",
+      tekst: "Run one check for 890 NOK and see. You do not need a subscription.",
       snakkMedOss: "Talk to us",
     },
     foot: {
@@ -1227,7 +1227,7 @@ export const en: Ordbok = {
   },
   betaling: {
     faktura: "Invoice",
-    fakturaTekst: "We run a credit check and open the account the same working day. The invoice is sent as EHF with 30 days to pay.",
+    fakturaTekst: "We run a credit check and open the account the same working day. The invoice is sent electronically with 30 days to pay.",
     kort: "Card",
     kortTekst: "Paid at Stripe. The account opens as soon as the payment is confirmed.",
     kortAv: "Not connected yet. Choose invoice and we will get in touch.",
@@ -1280,7 +1280,7 @@ export const en: Ordbok = {
     tilbake: "Back",
     finnKommune: "Find the municipality",
     kommuneHjelp: "Type the name and we work out the tier from the population.",
-    faktura: "Municipalities always pay by invoice (EHF), invoiced annually in advance.",
+    faktura: "Municipalities always pay by invoice, invoiced annually in advance.",
     stor: "Municipalities over 50,000 inhabitants get a quote by size.",
     storKnapp: "Request a quote",
     omSelskapet: "About the company",
