@@ -64,6 +64,8 @@ export function opprettKasseokt(o: {
   beskrivelse: string;
   epost: string;
   gjentakende: boolean;
+  /** Hvor ofte en prenumerasjon trekkes. Selskap betaler ett år om gangen. */
+  intervall?: "month" | "year";
   suksessUrl: string;
   avbruttUrl: string;
   referanse: string;
@@ -80,10 +82,20 @@ export function opprettKasseokt(o: {
   p.set("line_items[0][price_data][currency]", "nok");
   p.set("line_items[0][price_data][product_data][name]", o.beskrivelse);
   p.set("line_items[0][price_data][unit_amount]", String(Math.round(o.belopNok * 100)));
-  if (o.gjentakende) p.set("line_items[0][price_data][recurring][interval]", "month");
+  if (o.gjentakende) p.set("line_items[0][price_data][recurring][interval]", o.intervall ?? "month");
 
   return kall<Kasseokt>("checkout/sessions", p);
 }
 
 export const hentKasseokt = (id: string) =>
   kall<Kasseokt>(`checkout/sessions/${encodeURIComponent(id)}`);
+
+/**
+ * Stripes kundeportal: kunden bytter kort og sier opp selv. Krever at portalen
+ * er slått på i Stripe (Innstillinger → Billing → Kundeportal).
+ */
+export const opprettPortal = (kunde: string, returUrl: string) =>
+  kall<{ url: string }>(
+    "billing_portal/sessions",
+    new URLSearchParams({ customer: kunde, return_url: returUrl }),
+  );

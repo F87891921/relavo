@@ -1,0 +1,90 @@
+import { NextResponse, type NextRequest } from "next/server";
+import { admin } from "@/lib/supabase/admin";
+import { vurder, type Aktivitetsrad } from "@/lib/aktivitet";
+
+export const runtime = "nodejs";
+export const maxDuration = 60;
+
+/**
+ * Daglig jobb for oss selv: fakturaer som snart forfaller, avtaler som snart
+ * går ut, og kunder som ikke bruker tjenesten.
+ *
+ * Alt går som varsler i «Å gjøre»-lista. Hvert varsel har en nøkkel, og samme
+ * nøkkel gir aldri to varsler — jobben kan kjøre hver natt uten å fylle lista
+ * med det samme om igjen.
+ */
+export async function GET(req: NextRequest) {
+  const hemmelighet = process.env.CRON_SECRET;
+  if (!hemmelighet) return NextResponse.json({ feil: "CRON_SECRET mangler" }, { status: 500 });
+  if (req.headers.get("authorization") !== `Bearer ${hemmelighet}`)
+    return NextResponse.json({ feil: "Ikke autorisert" }, { status: 401 });
+
+  const db = admin();
+  const na = Date.now();
+  const idag = new Date(na).toISOString().slice(0, 10);
+  const om30 = new Date(na + 30 * 86_400_000).toISOString().slice(0, 10);
+  const kr = (n: number) => n.toLocaleString("nb-NO").replace(/ /g, " ");
+
+  const varsler: { slag: string; tittel: string; tekst: string; lenke: string; noekkel: string }[] = [];
+
+  // --- Fakturaer: 30 dager før, og igjen hvis dagen er passert uten at den er sendt.
+  const { data: plan } = await db
+    .from("fakturaplan")
+    .select("id, aar, forfaller, belopp, organisasjoner(navn)")
+    .eq("status", "planlagt")
+    .lte("forfaller", om30);
+  for (const p of (plan ?? []) as unknown as { id: string; aar: number; forfaller: string; belopp: number; organisasjoner: { navn: string } | null }[]) {
+    const navn = p.organisasjoner?.navn ?? "Ukjent";
+    const sen = p.forfaller < idag;
+    varsler.push({
+      slag: sen ? "faktura_sen" : "faktura_snart",
+      tittel: sen ? `Faktura er forsinket — ${navn}` : `Fakturer ${navn} — år ${p.aar}`,
+      tekst: `${kr(p.belopp)} NOK eks. mva. Faktureringsdato ${p.forfaller}.`,
+      lenke: "/internt/fakturering",
+      noekkel: `${sen ? "faktura-sen" : "faktura"}:${p.id}`,
+    });
+  }
+
+  // --- Avtaler som går ut: 90 dager før. Kommunene fornyes ikke av seg selv, så her må en ny offert sendes.
+  const { data: alle } = await db.from("fakturaplan").select("organisasjon_id, forfaller, organisasjoner(navn)");
+  const sluttPer = new Map<string, { navn: string; slutt: string }>();
+  for (const p of (alle ?? []) as unknown as { organisasjon_id: string; forfaller: string; organisasjoner: { navn: string } | null }[]) {
+    const d = new Date(p.forfaller);
+    d.setFullYear(d.getFullYear() + 1);
+    const slutt = d.toISOString().slice(0, 10);
+    const forrige = sluttPer.get(p.organisasjon_id);
+    if (!forrige || slutt > forrige.slutt) sluttPer.set(p.organisasjon_id, { navn: p.organisasjoner?.navn ?? "Ukjent", slutt });
+  }
+  for (const [org, { navn, slutt }] of sluttPer) {
+    const dager = Math.floor((new Date(slutt).getTime() - na) / 86_400_000);
+    if (dager <= 90 && dager >= -30)
+      varsler.push({
+        slag: "avtale_slutt",
+        tittel: `Avtalen med ${navn} går ut ${slutt}`,
+        tekst: "Send en ny offert i god tid. Avtalen forlenges ikke av seg selv.",
+        lenke: "/internt/offerter",
+        noekkel: `slutt:${org}:${slutt}`,
+      });
+  }
+
+  // --- Kunder som ikke bruker tjenesten.
+  const { data: akt } = await db.rpc("aktivitet_data");
+  for (const r of (akt ?? []) as Aktivitetsrad[]) {
+    const v = vurder(r, na);
+    if (!v.segment || v.nyligKontaktet) continue;
+    if (v.segment === "aldri")
+      varsler.push({ slag: "inaktiv", tittel: `${r.navn} har aldri tatt tjenesten i bruk`, tekst: `Kontoen er ${v.dager} dager gammel uten en eneste kontroll. Ta kontakt og hør om de trenger hjelp i gang.`, lenke: "/internt/aktivitet", noekkel: `aldri:${r.id}` });
+    else if (v.segment === "inaktiv" && v.tersk && v.tersk >= 60)
+      varsler.push({ slag: "inaktiv", tittel: `${r.navn} har vært borte i ${v.tersk}+ dager`, tekst: "Ingen innlogging og ingen kontroller. Sjekk om de kommer til å fornye.", lenke: "/internt/aktivitet", noekkel: `inaktiv:${r.id}:${v.tersk}:${r.sist_kontroll ?? r.sist_innlogget ?? ""}`.slice(0, 120) });
+    else if (v.segment === "faller")
+      varsler.push({ slag: "inaktiv", tittel: `Bruken hos ${r.navn} faller`, tekst: `${r.kontroller_30d} kontroller siste 30 dager mot ${r.kontroller_forrige_30d} måneden før.`, lenke: "/internt/aktivitet", noekkel: `faller:${r.id}:${idag.slice(0, 7)}` });
+  }
+
+  let nye = 0;
+  for (const v of varsler) {
+    const { data } = await db.from("interne_varsler").upsert(v, { onConflict: "noekkel", ignoreDuplicates: true }).select("id");
+    if (data?.length) nye += 1;
+  }
+
+  return NextResponse.json({ sjekket: varsler.length, nye });
+}

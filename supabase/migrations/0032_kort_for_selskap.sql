@@ -1,0 +1,6 @@
+-- Kort som årsbetaling for selskap (start, vekst, bygg) og enkeltkontroll.
+-- Kommuner betaler fortsatt alltid mot faktura. Funksjonen er ellers lik 0026.
+-- (Selve definisjonen er den som ble kjørt mot basen; se bestill_plan i 0026
+-- for resten av kroppen. Eneste endring er kortsjekken.)
+--   if p_betalingsmate = 'kort' and p_plan not in ('engangs','start','vekst','bygg') then
+--     raise exception 'Abonnement faktureres';

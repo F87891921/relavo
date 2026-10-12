@@ -64,5 +64,30 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Årsprenumerasjonen til selskap som betaler med kort.
+  //  - betaling som feilet: vi varsles, kunden får en e-post fra Stripe
+  //  - abonnement avsluttet: perioden er ute og kontoen stenges
+  const obj = hendelse.data.object as { id: string; customer?: string | null };
+  if (hendelse.type === "invoice.payment_failed" || hendelse.type === "customer.subscription.deleted") {
+    const db = admin();
+    const { data: org } = obj.customer
+      ? await db.from("organisasjoner").select("id, navn").eq("stripe_kunde_id", obj.customer).maybeSingle()
+      : { data: null };
+    if (org) {
+      const stengt = hendelse.type === "customer.subscription.deleted";
+      if (stengt) await db.from("organisasjoner").update({ status: "stengt" }).eq("id", org.id);
+      await db.from("interne_varsler").upsert(
+        {
+          slag: stengt ? "abonnement_slutt" : "betaling_feilet",
+          tittel: stengt ? `${org.navn} har sagt opp kortabonnementet` : `Kortbetalingen feilet — ${org.navn}`,
+          tekst: stengt ? "Perioden er ute og kontoen er stengt. Ta kontakt hvis det var feil." : "Stripe prøver igjen. Ta kontakt hvis det fortsetter.",
+          lenke: "/internt",
+          noekkel: `${stengt ? "abonnement-slutt" : "betaling-feilet"}:${obj.id}`,
+        },
+        { onConflict: "noekkel", ignoreDuplicates: true },
+      );
+    }
+  }
+
   return NextResponse.json({ mottatt: true });
 }

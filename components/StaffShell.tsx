@@ -13,6 +13,7 @@ import type { Ordbok } from "@/lib/sprak";
 export const ANSATTMENY = [
   { id: "konton", href: "/internt" },
   { id: "attgora", href: "/internt/attgora" },
+  { id: "aktivitet", href: "/internt/aktivitet" },
   { id: "support", href: "/internt/support" },
   { id: "kontakt", href: "/internt/kontakt" },
   { id: "leads", href: "/internt/leads" },

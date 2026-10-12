@@ -26,7 +26,7 @@ const TOKENSIDER = ["/offert", "/ettersending"];
  * andre. Uten dette ble cron-kallet sendt til /port, og overvåkingen
  * hadde aldri kjørt en eneste natt.
  */
-const MASKINRUTER = ["/api/stripe/webhook", "/api/overvaking", "/api/synk-sanksjoner", "/api/synk-renhold"];
+const MASKINRUTER = ["/api/paminnelser", "/api/stripe/webhook", "/api/overvaking", "/api/synk-sanksjoner", "/api/synk-renhold"];
 
 export async function middleware(request: NextRequest) {
   const sti = request.nextUrl.pathname;

@@ -8,6 +8,10 @@
     {
       "path": "/api/overvaking",
       "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/paminnelser",
+      "schedule": "30 5 * * *"
     }
   ]
 }

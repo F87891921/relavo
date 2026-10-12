@@ -472,6 +472,9 @@ export async function godkjennKonto(
     .eq("plan", "engangs")
     .eq("kontroller_kjopt", 0);
 
+  // Fakturaplanen følger av avtalen: én rad per avtaleår, med påminnelse i god tid.
+  await supabase.rpc("lag_fakturaplan", { p_org: id });
+
   await logg(supabase, id, "Kontoen åpnet", begrunnelse);
 
   revalidatePath("/internt/onboarding");
@@ -674,5 +677,30 @@ export async function koblFortnox(fd: FormData): Promise<Svar> {
 
   if (error) return { ok: false, feil: error.message };
   revalidatePath("/internt/fakturering");
+  return { ok: true };
+}
+
+/* ---------------------------------------------------- Fakturaplan og kunder */
+
+export async function settPlanStatus(id: string, status: "fakturert" | "betalt"): Promise<Svar> {
+  const { supabase } = await krevAnsatt();
+  const { error } = await supabase
+    .from("fakturaplan")
+    .update({ status, ...(status === "fakturert" ? { fakturert: new Date().toISOString() } : {}) })
+    .eq("id", id);
+  if (error) return { ok: false, feil: error.message };
+  revalidatePath("/internt/fakturering");
+  return { ok: true };
+}
+
+/** Notat om at vi har tatt kontakt. Kunden hviler fra inaktivitetsvarsler i 30 dager. */
+export async function loggKontakt(organisasjonId: string, notat: string): Promise<Svar> {
+  const { supabase, user } = await krevAnsatt();
+  if (!notat.trim()) return { ok: false, feil: ord().feil.manglerNavn };
+  const { error } = await supabase
+    .from("kundekontakt")
+    .insert({ organisasjon_id: organisasjonId, notat: notat.trim(), opprettet_av: user.id });
+  if (error) return { ok: false, feil: error.message };
+  revalidatePath("/internt/aktivitet");
   return { ok: true };
 }

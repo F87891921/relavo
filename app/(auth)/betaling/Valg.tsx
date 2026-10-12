@@ -29,6 +29,8 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
   const o = useOrd();
   const [plan, setPlan] = useState("kommune");
   const [mate, setMate] = useState<"kort" | "faktura">("faktura");
+  // Kommuner betaler alltid mot faktura; kort er for selskap og enkeltkontroll.
+  const kortTillatt = ["engangs", "start", "vekst", "bygg"].includes(plan);
   const [feil, setFeil] = useState("");
   const [venter, start] = useTransition();
 
@@ -119,10 +121,10 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
         />
         <Mate
           valgt={mate === "kort"}
-          onVelg={() => kortMulig && setMate("kort")}
-          av={!kortMulig}
+          onVelg={() => kortMulig && kortTillatt && setMate("kort")}
+          av={!kortMulig || !kortTillatt}
           tittel={o.betaling.kort}
-          tekst={kortMulig ? o.betaling.kortTekst : o.betaling.kortAv}
+          tekst={!kortTillatt ? o.betaling.kortIkkeKommune : kortMulig ? (plan === "engangs" ? o.betaling.kortTekst : o.betaling.kortArlig) : o.betaling.kortAv}
         />
       </div>
 

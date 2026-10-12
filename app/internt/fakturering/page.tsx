@@ -2,11 +2,12 @@ import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
 import { Fortnox } from "@/components/internt/Fortnox";
 import type { Ordbok } from "@/lib/sprak";
-import { Side, Sidehode, Kort, Tabell, Tall, Rad, NOK } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Tall, Rad, NOK, Merke } from "@/components/ui";
 import { StatusMerke, type StatusVal } from "@/components/ui/StatusMerke";
 import { Skjema, Felt } from "@/components/internt/Skjema";
 import { KundeSok } from "@/components/internt/KundeSok";
 import { nyFaktura, settFakturaStatus } from "@/app/internt/handlinger";
+import { PlanKnapp } from "@/components/internt/PlanKnapp";
 
 const statusValg = (t: Ordbok): StatusVal[] => [
   { verdi: "obetald", tekst: t.internt.obetald, tone: "advarsel" },
@@ -33,6 +34,13 @@ export default async function InterntFaktureringSide() {
     .select("id, navn")
     .order("navn");
 
+  const { data: planrader } = await supabase
+    .from("fakturaplan")
+    .select("id, aar, forfaller, belopp, status, organisasjoner(navn)")
+    .in("status", ["planlagt", "fakturert"])
+    .order("forfaller");
+  const plan = (planrader ?? []) as unknown as { id: string; aar: number; forfaller: string; belopp: number; status: string; organisasjoner: { navn: string } | null }[];
+
   const alle = fakturaer ?? [];
   const utestaende = alle.filter(
     (f) => f.status === "obetald" || f.status === "forfallen",
@@ -52,6 +60,23 @@ export default async function InterntFaktureringSide() {
           sistSynk={(integrasjon as { sist_synk?: string } | null)?.sist_synk ?? null}
           sistFeil={(integrasjon as { sist_feil?: string } | null)?.sist_feil ?? null}
         />
+
+        <Kort tittel={t.fakturaplan.tittel} note={t.fakturaplan.tekst} className="mb-5">
+          <Tabell
+            kolonner={[t.fakturaplan.kunde, t.fakturaplan.ar, t.fakturaplan.dato, t.fakturaplan.belop, t.fakturaplan.status, ""]}
+            tom={t.fakturaplan.tom}
+            rader={plan.map((p) => [
+              <span key="k" className="font-semibold whitespace-nowrap">{p.organisasjoner?.navn ?? "—"}</span>,
+              <span key="a" className="tabular-nums">{p.aar}</span>,
+              <span key="d" className="whitespace-nowrap">{p.forfaller}</span>,
+              <span key="b" className="tabular-nums">{NOK(p.belopp)}</span>,
+              <Merke key="s" tone={p.status === "fakturert" ? "god" : p.forfaller < new Date().toISOString().slice(0, 10) ? "brudd" : "advarsel"}>
+                {p.status === "fakturert" ? t.fakturaplan.fakturert : t.fakturaplan.planlagt}
+              </Merke>,
+              <PlanKnapp key="h" id={p.id} status={p.status} />,
+            ])}
+          />
+        </Kort>
 
         <Rad>
           <Tall verdi={String(alle.length)} merke={t.internt.fakturor} />

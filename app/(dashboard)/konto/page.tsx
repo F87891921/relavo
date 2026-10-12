@@ -3,6 +3,7 @@ import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode, Kort, Tabell, Merke, Stripe } from "@/components/ui";
 import { planFor } from "@/lib/plan";
 import { MIN_LENGDE } from "@/lib/passord";
+import { aapneBetalingsportal } from "@/app/(auth)/betaling/handlinger";
 import { Tofaktor } from "@/components/konto/Tofaktor";
 import { KreverTofaktor } from "@/components/konto/KreverTofaktor";
 import { Sprakvelger } from "@/components/Sprakvelger";
@@ -24,7 +25,7 @@ export default async function KontoSide({
   const [{ data: org }, { data: kolleger }, { count: antallLeverandorer }, { count: antallKontroller }] = await Promise.all([
     supabase
       .from("organisasjoner")
-      .select("navn, org_nr, plan, opprettet, krever_tofaktor")
+      .select("navn, org_nr, plan, opprettet, krever_tofaktor, stripe_kunde_id, betalingsmate")
       .eq("id", profil.organisasjon_id)
       .maybeSingle(),
     supabase
@@ -139,6 +140,19 @@ export default async function KontoSide({
             )}
           </div>
         </Kort>
+
+        {admin && org?.betalingsmate === "kort" && org.stripe_kunde_id && (
+          <Kort tittel={t.betaling.betalingTittel} className="mb-4">
+            <div className="px-5 py-5 flex items-start justify-between gap-5">
+              <p className="text-[12.5px] text-dim leading-relaxed max-w-[62ch]">{t.betaling.portalTekst}</p>
+              <form action={aapneBetalingsportal}>
+                <button className="text-[12.5px] font-semibold px-3.5 py-2 rounded-lg bg-surface border border-border hover:border-border-strong transition whitespace-nowrap">
+                  {t.betaling.portalKnapp}
+                </button>
+              </form>
+            </div>
+          </Kort>
+        )}
 
         <Kort
           tittel={t.konto.tilgang}

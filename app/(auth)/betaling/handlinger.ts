@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { krevProfil } from "@/lib/tilgang";
 import { grunnUrl } from "@/lib/url";
 import { PLANER, type PlanId } from "@/lib/plan";
-import { opprettKasseokt, stripeOppsatt } from "@/lib/stripe";
+import { opprettKasseokt, opprettPortal, stripeOppsatt } from "@/lib/stripe";
 import { ord } from "@/lib/sprak";
 import { ENKELTKONTROLL } from "@/lib/priser";
 
@@ -62,10 +62,12 @@ export async function bestill(plan: string, betalingsmate: "kort" | "faktura"): 
   const base = grunnUrl();
 
   const okt = await opprettKasseokt({
-    belopNok: BELOP[(plan as PlanId) ?? "kommune"] ?? BELOP.kommune,
+    // Selskap betaler ett år i forskudd og fornyes hvert år; engangskontrollen er én betaling.
+    belopNok: plan === "engangs" ? BELOP.engangs : (BELOP[(plan as PlanId) ?? "vekst"] ?? BELOP.vekst) * 12,
     beskrivelse: `Relavo ${p.navn}`,
     epost: user.email ?? "",
     gjentakende: plan !== "engangs",
+    intervall: "year",
     suksessUrl: `${base}/betaling/klar?okt={CHECKOUT_SESSION_ID}`,
     avbruttUrl: `${base}/betaling?avbrutt=1`,
     referanse: user.id,
@@ -101,4 +103,19 @@ export async function kjopKontroll(): Promise<void> {
   });
   if (!okt.ok || !okt.data.url) redirect("/oversikt");
   redirect(okt.data.url);
+}
+
+/** Åpner Stripes kundeportal for den som betaler med kort. */
+export async function aapneBetalingsportal(): Promise<void> {
+  const { supabase, profil } = await krevProfil();
+  if (profil.rolle !== "administrator") redirect("/konto");
+  const { data: org } = await supabase
+    .from("organisasjoner")
+    .select("stripe_kunde_id")
+    .eq("id", profil.organisasjon_id)
+    .maybeSingle();
+  if (!org?.stripe_kunde_id) redirect("/konto");
+  const r = await opprettPortal(org.stripe_kunde_id, `${grunnUrl()}/konto`);
+  if (!r.ok) redirect("/konto?portal=feil");
+  redirect(r.data.url);
 }
