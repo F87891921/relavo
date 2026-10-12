@@ -387,6 +387,7 @@ export const no = {
         kilde: "Folketall 1. januar {ar}, SSB",
         niva: "Nivå",
         perMnd: "per måned",
+        avtale: "Avtaletid", mnd: "mnd",
         ved36: "Ved 36 måneders avtale:",
         fakturering: "Fakturert årlig i forskudd. Tolv måneder fast, uten automatisk fornyelse.",
         tillegg: "Ingen tillegg per bruker eller per kontroll.",
@@ -415,7 +416,7 @@ export const no = {
       },
       tabell: {
         tittel: "Slik regner vi",
-        tekst: "Prisen bestemmes av antall innbyggere i kommunen. Det er et offentlig tall dere kan budsjettere mot, og det gjør at prisen ikke vokser med bruken.",
+        tekst: "Prisen følger innbyggertallet i kommunen. Det er et offentlig tall dere kan budsjettere mot.",
         kolInnb: "Innbyggere",
         kolPris: "Per måned",
         offert: "Etter offert",

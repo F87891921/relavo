@@ -1,6 +1,6 @@
 import { ord } from "@/lib/sprak";
 import Link from "next/link";
-import { NIVAER, kr, ENKELTKONTROLL } from "@/lib/priser";
+import { kr, ENKELTKONTROLL } from "@/lib/priser";
 import { Prisfinner } from "./Prisfinner";
 
 export function Priser() {
@@ -21,31 +21,6 @@ export function Priser() {
 
         <div data-avsloj>
           <Prisfinner />
-        </div>
-
-        <div className="pf-tabell" data-avsloj>
-          <h3>{t.tabell.tittel}</h3>
-          <p>{t.tabell.tekst}</p>
-          <table>
-            <thead>
-              <tr>
-                <th>{t.tabell.kolInnb}</th>
-                <th>{t.tabell.kolPris}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {NIVAER.map((n) => (
-                <tr key={n.id}>
-                  <td>
-                    <b>{t.nivaer[n.id].navn}</b> · {t.nivaer[n.id].spenn}
-                  </td>
-                  <td>
-                    {n.mnd === null ? t.tabell.offert : `${kr(n.mnd)} NOK`}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
 
         <div className="pf-ingar" data-avsloj>

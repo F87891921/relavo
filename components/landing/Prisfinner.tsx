@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useOrd } from "@/components/Sprakgiver";
-import { kr } from "@/lib/priser";
+import { LOPETIDER, NIVAER, kr, mndFor, type Lopetid } from "@/lib/priser";
 
 type Treff = {
   kode: string;
@@ -11,8 +11,6 @@ type Treff = {
   innbyggere: number;
   ar: string;
   niva: "liten" | "kommune" | "medelstor" | "stor";
-  mnd: number | null;
-  mnd36: number | null;
 };
 
 /**
@@ -24,6 +22,7 @@ export function Prisfinner() {
   const [q, setQ] = useState("");
   const [treff, setTreff] = useState<Treff[]>([]);
   const [valgt, setValgt] = useState<Treff | null>(null);
+  const [lop, setLop] = useState<Lopetid>(12);
   const [status, setStatus] = useState<"hvile" | "soker" | "ingen" | "feil">("hvile");
   const teller = useRef(0);
 
@@ -57,7 +56,19 @@ export function Prisfinner() {
     setTreff([]);
   };
 
+  const niva = valgt ? NIVAER.find((x) => x.id === valgt.niva)! : null;
   const n = valgt ? t.nivaer[valgt.niva] : null;
+  const pris = niva ? mndFor(niva, lop) : null;
+
+  const velgerLop = (
+    <div className="pf-lop" role="group" aria-label={t.sok.avtale}>
+      {LOPETIDER.map((l) => (
+        <button key={l} type="button" aria-pressed={lop === l} onClick={() => setLop(l)}>
+          {l} {t.sok.mnd}
+        </button>
+      ))}
+    </div>
+  );
 
   return (
     <div className="pf">
@@ -105,16 +116,12 @@ export function Prisfinner() {
           <div className="pf-niva">
             {t.sok.niva}: <b>{n.navn}</b> <span>({n.spenn})</span>
           </div>
-          {valgt.mnd !== null ? (
+          {pris !== null ? (
             <>
+              {velgerLop}
               <div className="pf-pris">
-                {kr(valgt.mnd)} <em>NOK {t.sok.perMnd}</em>
+                {kr(pris)} <em>NOK {t.sok.perMnd}</em>
               </div>
-              {valgt.mnd36 !== null && (
-                <p className="pf-36">
-                  {t.sok.ved36} <b>{kr(valgt.mnd36)} NOK {t.sok.perMnd}</b>
-                </p>
-              )}
               <p className="pf-m">{t.sok.fakturering}</p>
               <p className="pf-m">{t.sok.tillegg}</p>
               <Link href={`/registrer?plan=${valgt.niva}`} className="btn btn-primary">
@@ -134,6 +141,27 @@ export function Prisfinner() {
           )}
         </div>
       )}
+
+      <details className="pf-regn">
+        <summary>{t.tabell.tittel}</summary>
+        <p>{t.tabell.tekst}</p>
+        {velgerLop}
+        <table>
+          <tbody>
+            {NIVAER.map((x) => {
+              const m = mndFor(x, lop);
+              return (
+                <tr key={x.id}>
+                  <td>
+                    <b>{t.nivaer[x.id].navn}</b> · {t.nivaer[x.id].spenn}
+                  </td>
+                  <td>{m === null ? t.tabell.offert : `${kr(m)} NOK`}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </details>
     </div>
   );
 }

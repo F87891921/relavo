@@ -552,3 +552,12 @@ html{scroll-behavior:smooth}
 .landing .pf-under { max-width: 640px; margin: 36px auto 0; display: grid; gap: 10px; font-size: 14px; color: var(--text-dim, #4a4548); }
 .landing .pf-under a { color: var(--accent, #654b70); font-weight: 600; }
 @media (max-width: 600px) { .landing .pf-ingar ul { columns: 1; } .landing .pf-pris { font-size: 32px; } }
+.landing .pf-lop { display: inline-flex; gap: 4px; padding: 3px; margin: 14px 0 0; background: #f4f1f6; border-radius: 100px; }
+.landing .pf-lop button { border: 0; background: none; font: inherit; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 100px; cursor: pointer; color: var(--text-dim, #4a4548); }
+.landing .pf-lop button[aria-pressed="true"] { background: #fff; color: #1d1d1f; box-shadow: 0 1px 3px rgba(40,31,42,.15); }
+.landing .pf-regn { margin-top: 22px; border-top: 1px solid var(--border, #e5e0e8); padding-top: 14px; }
+.landing .pf-regn summary { cursor: pointer; font-size: 14px; font-weight: 600; }
+.landing .pf-regn p { font-size: 13.5px; color: var(--text-dim, #4a4548); margin: 10px 0 0; }
+.landing .pf-regn table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
+.landing .pf-regn td { padding: 10px 0; border-top: 1px solid var(--border, #e5e0e8); }
+.landing .pf-regn td:last-child { text-align: right; }

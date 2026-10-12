@@ -378,6 +378,7 @@ export const sv: Ordbok = {
         kilde: "Folkmängd 1 januari {ar}, SSB",
         niva: "Nivå",
         perMnd: "per månad",
+        avtale: "Avtalstid", mnd: "mån",
         ved36: "Vid 36 månaders avtal:",
         fakturering: "Faktureras årligen i förskott. Tolv månader fast, utan automatisk förnyelse.",
         tillegg: "Inga tillägg per användare eller per kontroll.",
@@ -406,7 +407,7 @@ export const sv: Ordbok = {
       },
       tabell: {
         tittel: "Så räknar vi",
-        tekst: "Priset bestäms av antalet invånare i kommunen. Det är en offentlig siffra som ni kan budgetera mot, och det gör att priset inte växer med användningen.",
+        tekst: "Priset följer invånarantalet i kommunen. Det är en offentlig siffra ni kan budgetera mot.",
         kolInnb: "Invånare",
         kolPris: "Per månad",
         offert: "Efter offert",

@@ -378,6 +378,7 @@ export const en: Ordbok = {
         kilde: "Population 1 January {ar}, Statistics Norway",
         niva: "Tier",
         perMnd: "per month",
+        avtale: "Term", mnd: "mo",
         ved36: "On a 36-month agreement:",
         fakturering: "Invoiced annually in advance. Twelve months fixed, no automatic renewal.",
         tillegg: "No extra charge per user or per control.",
@@ -406,7 +407,7 @@ export const en: Ordbok = {
       },
       tabell: {
         tittel: "How we calculate it",
-        tekst: "The price is set by the number of inhabitants in the municipality. It is a public figure you can budget against, and it means the price does not grow with use.",
+        tekst: "The price follows the municipality's population. It is a public figure you can budget against.",
         kolInnb: "Inhabitants",
         kolPris: "Per month",
         offert: "By quote",

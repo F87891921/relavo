@@ -44,6 +44,17 @@ export const NIVAER: Niva[] = [
 /** Rabatt for 36 måneder. Gjelder ikke «stor», som er offert. */
 export const RABATT_36 = 0.15;
 
+/** Avtaletid kunden kan velge, og rabatten for hver. 24 er satt midt imellom. */
+export const LOPETIDER = [12, 24, 36] as const;
+export type Lopetid = (typeof LOPETIDER)[number];
+export const RABATT: Record<Lopetid, number> = { 12: 0, 24: 0.08, 36: RABATT_36 };
+
+/** Månedspris ved valgt avtaletid, rundet til nærmeste hundrelapp. Null: offert. */
+export function mndFor(n: Niva, lopetid: Lopetid): number | null {
+  if (n.mnd === null) return null;
+  return Math.round((n.mnd * (1 - RABATT[lopetid])) / 100) * 100;
+}
+
 /** Enkeltkontroll, kroner eksl. mva. Ingen abonnement. */
 export const ENKELTKONTROLL = 890;
 
