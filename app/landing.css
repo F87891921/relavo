@@ -229,27 +229,41 @@ html{scroll-behavior:smooth}
    setningen under seg bortover. Begge deler er forskjellen mellom noe som
    teller og noe som ser ut til å laste.
 
-   Blekk, ikke rødt: rødt er varselsignalet og hører til brudd i en
-   kontroll. */
+   Selektorene har «.landing» foran med vilje. Resten av siden nullstiller
+   avsnitt med «.landing p{margin:0}», som har høyere spesifisitet enn en
+   enkelt klasse — så alle marginer her var døde, avstandene ble like, og
+   auto-margene som skulle sentrere avsnittet ble ignorert.
+
+   Aksentfargen, ikke rødt: rødt er varselsignalet og hører til brudd i en
+   kontroll, og brukes det på en statistikk betyr det mindre neste gang det
+   står ved et faktisk avvik. Lilla er merkevaren — den løfter tallet uten å
+   si «feil». */
 .tallet{padding:84px 0 0;text-align:center}
 .tallet-in{max-width:700px;margin:0 auto;padding:0 26px}
-.tallet-n{margin:0;line-height:0.95;font-size:88px;font-weight:700;
-  letter-spacing:-0.05em;color:var(--text)}
+.landing .tallet-n{margin:0;line-height:1;font-size:92px;font-weight:700;
+  letter-spacing:-0.05em;color:var(--accent)}
 .tallet-siffer{display:inline-block;text-align:center;
   font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
-.tallet-l{margin:16px 0 0;font-size:20px;font-weight:600;letter-spacing:-0.022em;
-  line-height:1.38;color:var(--text);text-wrap:balance}
-.tallet-d{margin:16px 0 0;font-size:15px;line-height:1.65;color:var(--text-dim);
-  text-wrap:pretty}
-.tallet-k{margin:18px 0 0;font-size:11.5px;color:var(--text-faint);
+
+/* Radavstand: tallet og setningen er ÉN påstand, forklaringen er en annen.
+   Før var alle mellomrommene like (16–18 px), så ingenting grupperte seg og
+   hele blokka leste som fire løsrevne linjer. Nå står setningen tett under
+   tallet, forklaringen får tydelig luft, og datoen henger i kanten som
+   kilde — den hører til tallet, ikke til forklaringen. */
+.landing .tallet-l{margin:6px 0 0;font-size:20px;font-weight:600;letter-spacing:-0.022em;
+  line-height:1.4;color:var(--text);text-wrap:balance}
+.landing .tallet-d{margin:30px auto 0;max-width:54ch;font-size:15px;line-height:1.7;
+  color:var(--text-dim);text-wrap:pretty}
+.landing .tallet-k{margin:22px 0 0;font-size:11.5px;line-height:1.4;color:var(--text-faint);
   font-variant-numeric:tabular-nums}
 
 @media(max-width:700px){
   .tallet{padding:58px 0 0}
   .tallet-in{padding:0 22px}
-  .tallet-n{font-size:62px}
-  .tallet-l{font-size:17.5px}
-  .tallet-d{font-size:14.5px}
+  .landing .tallet-n{font-size:64px}
+  .landing .tallet-l{font-size:17.5px;margin-top:4px}
+  .landing .tallet-d{font-size:14.5px;margin-top:24px}
+  .landing .tallet-k{margin-top:18px}
 }
 
 /* Kjedefragment — trappen
