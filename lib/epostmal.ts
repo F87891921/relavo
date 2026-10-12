@@ -3,6 +3,9 @@ import { RELAVO, relavoOrgNr } from "@/lib/relavo";
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+/** Absolutt adresse: e-postklienter har ingen «samme sted» å hente bilder fra. */
+export const LOGO_URL = `https://${RELAVO.nett}/epost-logo.png`;
+
 const FONT = "Inter,Helvetica,Arial,sans-serif";
 
 export type Brev = {
@@ -76,7 +79,12 @@ export function brevHtml(o: Brev) {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1eef4;padding:36px 14px;">
  <tr><td align="center">
   <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
-   <tr><td style="padding:0 6px 16px 6px;font-family:${FONT};font-size:21px;font-weight:700;letter-spacing:-0.02em;color:#654b70;">Relavo</td></tr>
+   <tr><td style="padding:0 6px 18px 6px;">
+     <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+      <td style="vertical-align:middle;padding-right:10px;"><img src="${LOGO_URL}" width="30" height="29" alt="" style="display:block;border:0;"></td>
+      <td style="vertical-align:middle;font-family:${FONT};font-size:22px;font-weight:800;letter-spacing:-0.03em;color:#654b70;">Relavo</td>
+     </tr></table>
+   </td></tr>
    <tr><td>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:20px;border-top:4px solid #654b70;">
      <tr><td style="height:36px;font-size:0;line-height:0;">&nbsp;</td></tr>

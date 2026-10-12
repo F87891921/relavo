@@ -1,4 +1,6 @@
-import { writeFileSync } from "fs";
+import { writeFileSync, readFileSync } from "fs";
+import { LOGO_URL } from "../lib/epostmal";
+const LOGO = "data:image/png;base64," + readFileSync("public/epost-logo.png").toString("base64");
 import { no } from "../lib/sprak/no";
 import { en } from "../lib/sprak/en";
 import {
@@ -22,7 +24,7 @@ h1{font-size:22px;max-width:640px;margin:0 auto 24px}.b{max-width:640px;margin:0
 .b h2{font-size:15px;margin:0 0 2px}.b p{font-size:13px;color:#6b6469;margin:0 0 4px}
 .e{font-size:12.5px;margin:0 0 10px}iframe{width:100%;height:520px;border:0;border-radius:12px;background:#fff}</style></head><body>
 <h1>E-postene fra Relavo</h1>
-${lister.map(([t, h, b]) => `<div class="b"><h2>${t}</h2><p>${h}</p><p class="e"><b>Emne:</b> ${b.emne}</p><iframe srcdoc="${b.html.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}"></iframe></div>`).join("")}
+${lister.map(([t, h, b]) => `<div class="b"><h2>${t}</h2><p>${h}</p><p class="e"><b>Emne:</b> ${b.emne}</p><iframe srcdoc="${b.html.split(LOGO_URL).join(LOGO).replace(/&/g, "&amp;").replace(/"/g, "&quot;")}"></iframe></div>`).join("")}
 </body></html>`;
 writeFileSync("epost-forhandsvisning.html", html);
 console.log("ok", lister.length);
