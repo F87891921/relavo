@@ -1231,6 +1231,9 @@ export const sv: Ordbok = {
     forskudd: "Förskott",
   },
   registreringsveiviser: {
+    avtaleTittel: "Avtalat erbjudande",
+    avtaleSammendrag: "{plan}: {total} NOK exkl. moms över {mnd} månader, mot faktura.",
+    knappOffert: "Skapa konto",
     steg: ["Vem", "Om er", "Konto"],
     engangsT: "Enkelkontroll",
     engangsB: "890 NOK per kontroll, utan abonnemang. Full rapport som PDF.",
@@ -1291,6 +1294,9 @@ export const sv: Ordbok = {
     registrerDeg: "Skapa konto",
   },
   offertsvar: {
+    offertOpprettKonto: "Skapa kontot",
+    offertKontoFinnes: "Kontot är skapat. Logga in för att komma igång.",
+    offertLoggInn: "Logga in",
     godtaTilbudet: "Godkänn offerten",
     beOmEndring: "Be om en ändring",
     ikkeAktuelt: "Tack, inte aktuellt",

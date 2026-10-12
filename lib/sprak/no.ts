@@ -1240,6 +1240,9 @@ export const no = {
     forskudd: "Forskudd",
   },
   registreringsveiviser: {
+    avtaleTittel: "Avtalt tilbud",
+    avtaleSammendrag: "{plan}: {total} NOK eks. mva. over {mnd} måneder, mot faktura.",
+    knappOffert: "Opprett konto",
     steg: ["Hvem", "Om dere", "Konto"],
     engangsT: "Enkeltkontroll",
     engangsB: "890 NOK per kontroll, uten abonnement. Full rapport som PDF.",
@@ -1300,6 +1303,9 @@ export const no = {
     registrerDeg: "Opprett konto",
   },
   offertsvar: {
+    offertOpprettKonto: "Opprett kontoen",
+    offertKontoFinnes: "Kontoen er opprettet. Logg inn for å komme i gang.",
+    offertLoggInn: "Logg inn",
     godtaTilbudet: "Godta tilbudet",
     beOmEndring: "Be om en endring",
     ikkeAktuelt: "Takk, ikke aktuelt",

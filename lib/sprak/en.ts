@@ -1231,6 +1231,9 @@ export const en: Ordbok = {
     forskudd: "Prepayment",
   },
   registreringsveiviser: {
+    avtaleTittel: "Agreed quote",
+    avtaleSammendrag: "{plan}: {total} NOK excl. VAT over {mnd} months, by invoice.",
+    knappOffert: "Create account",
     steg: ["Who", "About you", "Account"],
     engangsT: "Single control",
     engangsB: "890 NOK per control, no subscription. Full report as PDF.",
@@ -1291,6 +1294,9 @@ export const en: Ordbok = {
     registrerDeg: "Create an account",
   },
   offertsvar: {
+    offertOpprettKonto: "Create the account",
+    offertKontoFinnes: "The account has been created. Sign in to get started.",
+    offertLoggInn: "Sign in",
     godtaTilbudet: "Accept the quote",
     beOmEndring: "Ask for a change",
     ikkeAktuelt: "Thanks, not for us",

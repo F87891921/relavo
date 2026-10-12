@@ -6,6 +6,7 @@ import { manglendeKrav, KRAV } from "@/lib/passord";
 import { ord } from "@/lib/sprak";
 import { kommuner } from "@/lib/kommuner";
 import { nivaFor } from "@/lib/priser";
+import { regnUt } from "@/lib/offert";
 
 export type Svar = { ok: true } | { ok: false; feil: string };
 
@@ -109,8 +110,24 @@ export async function opprettKonto(fd: FormData): Promise<OpprettSvar> {
   const person = String(fd.get("person") ?? "").trim();
   let plan = String(fd.get("plan") ?? "");
   let orgnavn = navn;
+  const offertToken = String(fd.get("offert") ?? "");
+  let offert: { id: string; plan: string; ar: number; totalt: number; kund: string } | null = null;
 
-  if (type === "kommune") {
+  if (type === "offert") {
+    // Tilbudet sjekkes på nytt her. Formen kan sende hva som helst; det er
+    // raden i basen som sier hva kunden har avtalt.
+    const { data: o } = await admin()
+      .from("offerter")
+      .select("id, kund, plan, ar, rabatt, fritt_antall, fritt_pris, svar, organisasjon_id")
+      .eq("token", offertToken)
+      .maybeSingle();
+    if (!o || o.svar !== "akseptert" || o.organisasjon_id)
+      return { ok: false, feil: ord().feil.tilbudIkkeApent };
+    plan = o.plan;
+    offert = { id: o.id, plan: o.plan, ar: o.ar, totalt: regnUt(o).totalt, kund: o.kund };
+    if (!orgnavn) orgnavn = o.kund;
+    if (!orgnavn) return { ok: false, feil: ord().feil.manglerNavn };
+  } else if (type === "kommune") {
     const kode = String(fd.get("kommunekode") ?? "");
     const alle = await kommuner().catch(() => []);
     const k = alle.find((x) => x.kode === kode);
@@ -133,13 +150,55 @@ export async function opprettKonto(fd: FormData): Promise<OpprettSvar> {
   const konto = await lagKonto(fd);
   if (!konto.ok) return konto;
   const { supabase } = konto;
-  const { error } = await supabase.rpc("opprett_organisasjon", {
+  const { data: orgId, error } = await supabase.rpc("opprett_organisasjon", {
     p_navn: orgnavn,
     p_brukernavn: person,
     p_org_nr: orgnr || null,
     p_plan: plan,
   });
-  if (error) return { ok: true, neste: "/velkommen" };
+  if (error || !orgId) return { ok: true, neste: "/velkommen" };
+
+  if (offert) {
+    // Avtalen skrives av serveren. Kunden kan ikke endre den fra nettleseren
+    // (vern_organisasjonsfelt). Kontoen står i venter_kreditt til vi har
+    // sendt fakturaen og åpnet den; betaling er alltid mot faktura her.
+    const db = admin();
+    const { data: tatt } = await db
+      .from("offerter")
+      .update({ organisasjon_id: orgId })
+      .eq("id", offert.id)
+      .is("organisasjon_id", null)
+      .select("id");
+    // Noen andre rakk det samme tilbudet først. Kontoen finnes, men uten avtale;
+    // da må vi se på den for hånd.
+    if (!tatt?.length) {
+      await db.from("interne_varsler").insert({
+        slag: "offert_konflikt",
+        tittel: `${orgnavn} brukte et tilbud som allerede var brukt`,
+        tekst: "Kontoen er opprettet uten avtalt pris. Se over før den åpnes.",
+        lenke: "/internt/onboarding",
+      });
+      return { ok: true, neste: "/venter" };
+    }
+    await db
+      .from("organisasjoner")
+      .update({
+        offert_id: offert.id,
+        avtalt_total: offert.totalt,
+        avtale_mnd: offert.ar * 12,
+        betalingsmate: "faktura",
+        status: "venter_kreditt",
+        bestilt: new Date().toISOString(),
+      })
+      .eq("id", orgId);
+    await db.from("interne_varsler").insert({
+      slag: "ny_bestilling",
+      tittel: `${orgnavn} har opprettet konto fra tilbud`,
+      tekst: `Avtalt ${offert.totalt} NOK over ${offert.ar * 12} måneder, mot faktura. Venter på kredittkontroll.`,
+      lenke: "/internt/onboarding",
+    });
+    return { ok: true, neste: "/venter" };
+  }
 
   if (type === "kommune") {
     const { error: bFeil } = await supabase.rpc("bestill_plan", {

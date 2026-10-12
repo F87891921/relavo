@@ -47,7 +47,7 @@ export default async function InterntOnboardingSide() {
   // Kontoer som venter på oss. Beslutningen om å åpne en konto tas her.
   const { data: venter } = await supabase
     .from("organisasjoner")
-    .select("id, navn, org_nr, plan, status, betalingsmate, forskuddsbetaling, bestilt")
+    .select("id, navn, org_nr, plan, status, betalingsmate, forskuddsbetaling, bestilt, avtalt_total, avtale_mnd")
     .in("status", ["venter_kreditt", "venter_betaling"])
     .order("bestilt", { ascending: true, nullsFirst: false });
 

@@ -21,6 +21,8 @@ export type Bestilling = {
   betalingsmate: string | null;
   forskuddsbetaling: boolean;
   bestilt: string | null;
+  avtalt_total?: number | null;
+  avtale_mnd?: number | null;
 };
 
 const KNAPP =
@@ -74,6 +76,12 @@ export function Bestillinger({ rader }: { rader: Bestilling[] }) {
                   {r.bestilt &&
                     ` · ${o.betaling.bestiltDen} ${new Date(r.bestilt).toLocaleDateString("sv-SE")}`}
                 </div>
+                {r.avtalt_total != null && r.avtale_mnd != null && (
+                  <div className="text-[12px] font-semibold mt-1">
+                    Avtalt: {r.avtalt_total.toLocaleString("nb-NO")} NOK over {r.avtale_mnd} mnd ·{" "}
+                    {Math.round(r.avtalt_total / Math.max(1, r.avtale_mnd / 12)).toLocaleString("nb-NO")} NOK per år, forskudd
+                  </div>
+                )}
               </div>
               <Merke tone={r.status === "venter_betaling" ? "advarsel" : "aksent"}>
                 {r.status === "venter_betaling"

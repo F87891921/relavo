@@ -4,6 +4,8 @@ import { Offertdokument, type Offertdata } from "@/components/offert/Offertdokum
 import { Svarskjema } from "./Svarskjema";
 import { RELAVO } from "@/lib/relavo";
 import { ord } from "@/lib/sprak";
+import Link from "next/link";
+import { admin } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
   title: "Tilbud fra Relavo",
@@ -42,6 +44,14 @@ export default async function OffertLenke({ params }: { params: { token: string 
   // slippe å ringe og spørre om den kom fram.
   await supabase.rpc("offert_sett", { t: params.token });
 
+  // Har kunden allerede opprettet konto fra dette tilbudet?
+  const { data: knyttet } = await admin()
+    .from("offerter")
+    .select("organisasjon_id")
+    .eq("token", params.token)
+    .maybeSingle();
+  const harKonto = Boolean(knyttet?.organisasjon_id);
+
   const utlopt =
     !o.svar && o.giltig_til ? new Date(o.giltig_til) < new Date(new Date().toDateString()) : false;
 
@@ -74,6 +84,19 @@ export default async function OffertLenke({ params }: { params: { token: string 
                   ? o9.onsketTekst
                   : o9.svaretTekst}
             </p>
+            {o.svar === "akseptert" && (
+              <div className="mt-4">
+                {harKonto ? (
+                  <Link href="/logg-inn" className="inline-block bg-accent hover:bg-accent-hover text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+                    {o9.offertLoggInn}
+                  </Link>
+                ) : (
+                  <Link href={`/registrer?offert=${params.token}`} className="inline-block bg-accent hover:bg-accent-hover text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+                    {o9.offertOpprettKonto}
+                  </Link>
+                )}
+              </div>
+            )}
             {o.svar_navn && (
               <p className="text-[11.5px] mt-2 opacity-80">
                 {o9.svartAv} {o.svar_navn}

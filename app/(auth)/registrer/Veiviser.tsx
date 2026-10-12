@@ -21,7 +21,16 @@ type Selskapsplan = "start" | "vekst" | "bygg";
  * man har oppgitt e-post. Hele skjemaet sendes samlet til serveren først i
  * siste steg; ingenting lagres før det.
  */
-export function Veiviser({ forvalgt }: { forvalgt?: string }) {
+export type AvtaltTilbud = {
+  token: string;
+  kund: string;
+  orgNr: string;
+  planNavn: string;
+  total: number;
+  mnd: number;
+};
+
+export function Veiviser({ forvalgt, avtalt }: { forvalgt?: string; avtalt?: AvtaltTilbud }) {
   const o = useOrd();
   const v = o.registreringsveiviser;
   const t = o.landing.priser;
@@ -29,16 +38,16 @@ export function Veiviser({ forvalgt }: { forvalgt?: string }) {
 
   const erSelskapPlan = forvalgt === "start" || forvalgt === "vekst" || forvalgt === "bygg";
   const erEngangs = forvalgt === "engangs";
-  const [steg, setSteg] = useState(erSelskapPlan || erEngangs ? 2 : 1);
-  const [type, setType] = useState<"kommune" | "selskap" | "engangs">(erSelskapPlan ? "selskap" : erEngangs ? "engangs" : "kommune");
+  const [steg, setSteg] = useState(avtalt || erSelskapPlan || erEngangs ? 2 : 1);
+  const [type, setType] = useState<"kommune" | "selskap" | "engangs" | "offert">(avtalt ? "offert" : erSelskapPlan ? "selskap" : erEngangs ? "engangs" : "kommune");
 
   const [q, setQ] = useState("");
   const [treff, setTreff] = useState<Treff[]>([]);
   const [kommune, setKommune] = useState<Treff | null>(null);
   const teller = useRef(0);
 
-  const [selskap, setSelskap] = useState("");
-  const [orgnr, setOrgnr] = useState("");
+  const [selskap, setSelskap] = useState(avtalt?.kund ?? "");
+  const [orgnr, setOrgnr] = useState(avtalt?.orgNr ?? "");
   const [plan, setPlan] = useState<Selskapsplan>(erSelskapPlan ? (forvalgt as Selskapsplan) : "vekst");
 
   const [person, setPerson] = useState("");
@@ -73,7 +82,12 @@ export function Veiviser({ forvalgt }: { forvalgt?: string }) {
           .replace("{navn}", /kommune/i.test(kommune.navn) ? kommune.navn : `${kommune.navn} kommune`)
           .replace("{niva}", niva.navn)
           .replace("{pris}", kr(kommune.mnd))
-      : type === "engangs"
+      : type === "offert" && avtalt
+        ? v.avtaleSammendrag
+            .replace("{plan}", avtalt.planNavn)
+            .replace("{total}", kr(avtalt.total))
+            .replace("{mnd}", String(avtalt.mnd))
+        : type === "engangs"
         ? v.sammendragEngangs
         : type === "selskap"
         ? v.sammendragSelskap
@@ -122,6 +136,7 @@ export function Veiviser({ forvalgt }: { forvalgt?: string }) {
 
         <form className="bg-surface rounded-2xl shadow-lift px-6 py-6" onSubmit={send}>
           <input type="hidden" name="type" value={type} />
+          <input type="hidden" name="offert" value={avtalt?.token ?? ""} />
           <input type="hidden" name="plan" value={type === "engangs" ? "engangs" : plan} />
           <input type="hidden" name="kommunekode" value={kommune?.kode ?? ""} />
           <input type="hidden" name="orgnavn" value={selskap} />
@@ -216,6 +231,7 @@ export function Veiviser({ forvalgt }: { forvalgt?: string }) {
           {steg === 2 && type !== "kommune" && (
             <>
               <h1 className="text-[15px] font-semibold mb-3">{v.omSelskapet}</h1>
+              {avtalt && sammendrag && <div className="mb-4 rounded-xl bg-canvas px-4 py-3 text-[13px]"><b>{v.avtaleTittel}</b><div className="text-dim mt-0.5">{sammendrag}</div></div>}
               <label htmlFor="vs" className="block text-xs font-semibold mb-1.5">{v.selskapsnavn}</label>
               <input id="vs" value={selskap} onChange={(e) => setSelskap(e.target.value)} className={`${FELT_FULL} max-w-none mb-3.5`} />
               <label htmlFor="vo" className="block text-xs font-semibold mb-1.5">{v.orgnrValg}</label>
@@ -234,9 +250,9 @@ export function Veiviser({ forvalgt }: { forvalgt?: string }) {
                 ))}
               </div>}
               <div className="flex gap-2">
-                <button type="button" className="px-4 text-[13px] font-semibold text-dim" onClick={() => setSteg(1)}>
+                {!avtalt && <button type="button" className="px-4 text-[13px] font-semibold text-dim" onClick={() => setSteg(1)}>
                   {v.tilbake}
-                </button>
+                </button>}
                 <button type="button" className={knapp} disabled={!detaljerKlar} onClick={() => setSteg(3)}>
                   {v.fortsett}
                 </button>
@@ -272,7 +288,7 @@ export function Veiviser({ forvalgt }: { forvalgt?: string }) {
                   {v.tilbake}
                 </button>
                 <button type="submit" disabled={venter || !kontoKlar} className={knapp}>
-                  {venter ? o.felles.sender : type === "kommune" ? v.knappKommune : v.knappSelskap}
+                  {venter ? o.felles.sender : type === "kommune" ? v.knappKommune : type === "offert" ? v.knappOffert : v.knappSelskap}
                 </button>
               </div>
             </>
