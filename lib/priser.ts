@@ -102,7 +102,9 @@ export const MND_PAASLAG = 0.15;
 
 export function mndBedrift(b: { mnd: number | null }, l: BedriftLopetid): number | null {
   if (b.mnd === null) return null;
-  if (l === 1) return Math.round((b.mnd * (1 + MND_PAASLAG)) / 100) * 100;
+  // Nedover, ikke til nærmeste hundrelapp: da kan en høyere nivå aldri havne på
+  // eller over firedobbelt pris for firedobbelt plass («lønner seg å gå opp»).
+  if (l === 1) return Math.floor((b.mnd * (1 + MND_PAASLAG)) / 100) * 100;
   return mndFor(b, l);
 }
 
