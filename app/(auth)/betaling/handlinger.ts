@@ -38,7 +38,11 @@ const BELOP: Record<PlanId, number> = {
  * en administrator som bestiller — en vanlig bruker skal ikke kunne binde
  * organisasjonen til en avtale.
  */
-export async function bestill(plan: string, betalingsmate: "kort" | "faktura"): Promise<Svar> {
+export async function bestill(
+  plan: string,
+  betalingsmate: "kort" | "faktura",
+  intervall: "month" | "year" = "year",
+): Promise<Svar> {
   const { supabase, user, profil } = await krevProfil();
 
   const { data, error } = await supabase.rpc("bestill_plan", {
@@ -63,11 +67,11 @@ export async function bestill(plan: string, betalingsmate: "kort" | "faktura"): 
 
   const okt = await opprettKasseokt({
     // Selskap betaler ett år i forskudd og fornyes hvert år; engangskontrollen er én betaling.
-    belopNok: plan === "engangs" ? BELOP.engangs : (BELOP[(plan as PlanId) ?? "vekst"] ?? BELOP.vekst) * 12,
+    belopNok: plan === "engangs" ? BELOP.engangs : (BELOP[(plan as PlanId) ?? "vekst"] ?? BELOP.vekst) * (intervall === "year" ? 12 : 1),
     beskrivelse: `Relavo ${p.navn}`,
     epost: user.email ?? "",
     gjentakende: plan !== "engangs",
-    intervall: "year",
+    intervall: plan === "engangs" ? undefined : intervall,
     suksessUrl: `${base}/betaling/klar?okt={CHECKOUT_SESSION_ID}`,
     avbruttUrl: `${base}/betaling?avbrutt=1`,
     referanse: user.id,

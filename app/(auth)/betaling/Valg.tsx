@@ -31,6 +31,7 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
   const [mate, setMate] = useState<"kort" | "faktura">("faktura");
   // Kommuner betaler alltid mot faktura; kort er for selskap og enkeltkontroll.
   const kortTillatt = ["engangs", "start", "vekst", "bygg"].includes(plan);
+  const [intervall, setIntervall] = useState<"month" | "year">("month");
   const [feil, setFeil] = useState("");
   const [venter, start] = useTransition();
 
@@ -124,9 +125,30 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
           onVelg={() => kortMulig && kortTillatt && setMate("kort")}
           av={!kortMulig || !kortTillatt}
           tittel={o.betaling.kort}
-          tekst={!kortTillatt ? o.betaling.kortIkkeKommune : kortMulig ? (plan === "engangs" ? o.betaling.kortTekst : o.betaling.kortArlig) : o.betaling.kortAv}
+          tekst={!kortTillatt ? o.betaling.kortIkkeKommune : kortMulig ? (plan === "engangs" ? o.betaling.kortTekst : o.betaling.kortAbonnement) : o.betaling.kortAv}
         />
       </div>
+
+      {mate === "kort" && kortTillatt && plan !== "engangs" && (
+        <div className="mb-6">
+          <div className="text-xs font-semibold mb-2">{o.betaling.intervallTittel}</div>
+          <div className="flex gap-2">
+            {(["month", "year"] as const).map((i) => (
+              <button
+                key={i}
+                type="button"
+                aria-pressed={intervall === i}
+                onClick={() => setIntervall(i)}
+                className={`flex-1 text-[13px] font-semibold py-2.5 rounded-xl border transition ${
+                  intervall === i ? "border-accent bg-accent-light text-accent" : "border-border text-dim hover:border-border-strong"
+                }`}
+              >
+                {i === "month" ? o.betaling.intervallManad : o.betaling.intervallAr}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {feil && (
         <div className="text-xs text-bad bg-bad-bg rounded-xl px-3.5 py-2.5 mb-4">
@@ -140,7 +162,7 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
         onClick={() => {
           setFeil("");
           start(async () => {
-            const r = await bestill(plan, mate);
+            const r = await bestill(plan, mate, intervall);
             if (!r.ok) setFeil(r.feil);
             else window.location.href = "/venter";
           });

@@ -73,7 +73,7 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
-        "v": "Priser fremgår av prislisten og av avtalen. Prisen for abonnement følger kommunens innbyggertall (SSB) og oppgis per måned. Abonnement har tolv måneders bindingstid og faktureres årlig forskuddsvis. Avtaler som betales mot faktura fornyes ikke automatisk. Selskap som betaler med kort betaler ett år om gangen, og abonnementet fornyes automatisk for ett år av gangen til kunden sier det opp i betalingsportalen. Oppsigelse gjelder ut den perioden som er betalt, og betalt periode refunderes ikke. Kommuner betaler alltid mot faktura. Enkeltkontroller faktureres etterskuddsvis. Alle priser er oppgitt eksklusive merverdiavgift."
+        "v": "Priser fremgår av prislisten og av avtalen. Prisen for abonnement følger kommunens innbyggertall (SSB) og oppgis per måned. Abonnement har tolv måneders bindingstid og faktureres årlig forskuddsvis. Avtaler som betales mot faktura fornyes ikke automatisk. Selskap som betaler med kort velger å betale månedlig eller årlig, og abonnementet fornyes automatisk for en måned eller ett år av gangen til kunden sier det opp i betalingsportalen. Oppsigelse gjelder ut den perioden som er betalt, og betalt periode refunderes ikke. Kommuner betaler alltid mot faktura. Enkeltkontroller faktureres etterskuddsvis. Alle priser er oppgitt eksklusive merverdiavgift."
       },
       {
         "t": "p",
