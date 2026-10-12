@@ -89,3 +89,19 @@ export const BEDRIFT: { id: BedriftId; maks: number | null; mnd: number | null }
   { id: "bygg", maks: 300, mnd: 11_900 },
   { id: "stor", maks: null, mnd: null },
 ];
+
+/**
+ * Selskap kan også betale måned for måned, uten binding. Det er dyrest: den som
+ * binder seg lenger betaler mindre per måned (12 → 24 → 36), og den som ikke
+ * binder seg betaler et påslag. Kommuner har ikke månedspris — de kjøper
+ * alltid minst tolv måneder.
+ */
+export const BEDRIFT_LOPETIDER = [1, 12, 24, 36] as const;
+export type BedriftLopetid = (typeof BEDRIFT_LOPETIDER)[number];
+export const MND_PAASLAG = 0.15;
+
+export function mndBedrift(b: { mnd: number | null }, l: BedriftLopetid): number | null {
+  if (b.mnd === null) return null;
+  if (l === 1) return Math.round((b.mnd * (1 + MND_PAASLAG)) / 100) * 100;
+  return mndFor(b, l);
+}

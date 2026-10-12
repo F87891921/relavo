@@ -388,6 +388,7 @@ export const no = {
       eksMva: "Alle priser er eks. mva.",
       maltype: { kommune: "Kommune", selskap: "Selskap" },
       bedrift: {
+        manedNote: "Betales månedlig med kort. Ingen bindingstid, og du kan si opp når som helst.",
         etikett: "Leverandører dere følger",
         tekst: "Prisen følger hvor mange leverandører dere følger.",
         nivaer: {
@@ -409,6 +410,7 @@ export const no = {
         niva: "Nivå",
         perMnd: "per måned",
         avtale: "Avtaletid", mnd: "mnd",
+        manedsvis: "Månedlig",
         ved36: "Ved 36 måneders avtale:",
         fakturering: "Fakturert årlig i forskudd. Tolv måneder fast, uten automatisk fornyelse.",
         tillegg: "Ingen tillegg per bruker eller per kontroll.",

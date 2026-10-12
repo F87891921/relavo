@@ -379,6 +379,7 @@ export const sv: Ordbok = {
       eksMva: "Alla priser är exkl. moms.",
       maltype: { kommune: "Kommun", selskap: "Bolag" },
       bedrift: {
+        manedNote: "Betalas månadsvis med kort. Ingen bindningstid, och du kan säga upp när som helst.",
         etikett: "Leverantörer ni följer",
         tekst: "Priset följer hur många leverantörer ni följer.",
         nivaer: {
@@ -400,6 +401,7 @@ export const sv: Ordbok = {
         niva: "Nivå",
         perMnd: "per månad",
         avtale: "Avtalstid", mnd: "mån",
+        manedsvis: "Månadsvis",
         ved36: "Vid 36 månaders avtal:",
         fakturering: "Faktureras årligen i förskott. Tolv månader fast, utan automatisk förnyelse.",
         tillegg: "Inga tillägg per användare eller per kontroll.",

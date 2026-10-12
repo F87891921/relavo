@@ -379,6 +379,7 @@ export const en: Ordbok = {
       eksMva: "All prices are excl. VAT.",
       maltype: { kommune: "Municipality", selskap: "Company" },
       bedrift: {
+        manedNote: "Paid monthly by card. No commitment, and you can cancel at any time.",
         etikett: "Suppliers you follow",
         tekst: "The price follows how many suppliers you follow.",
         nivaer: {
@@ -400,6 +401,7 @@ export const en: Ordbok = {
         niva: "Tier",
         perMnd: "per month",
         avtale: "Term", mnd: "mo",
+        manedsvis: "Monthly",
         ved36: "On a 36-month agreement:",
         fakturering: "Invoiced annually in advance. Twelve months fixed, no automatic renewal.",
         tillegg: "No extra charge per user or per control.",

@@ -7,13 +7,25 @@ import { grunnUrl } from "@/lib/url";
 import { PLANER, type PlanId } from "@/lib/plan";
 import { opprettKasseokt, opprettPortal, stripeOppsatt } from "@/lib/stripe";
 import { ord } from "@/lib/sprak";
-import { ENKELTKONTROLL } from "@/lib/priser";
+import { BEDRIFT, ENKELTKONTROLL, mndBedrift } from "@/lib/priser";
 
 export type Svar =
   | { ok: true; status: string }
   | { ok: false; feil: string };
 
 /** Månedsprisen i kroner. Engangsplanen er én kontroll, ikke et abonnement. */
+/**
+ * Beløpet på kortet. Månedlig trekk bruker månedsprisen (med påslag), årlig
+ * trekk bruker tolvmånedersprisen × 12. Beregnes her, ikke hentes fra
+ * nettleseren.
+ */
+function kortBelop(plan: string, intervall: "month" | "year"): number {
+  if (plan === "engangs") return ENKELTKONTROLL;
+  const b = BEDRIFT.find((x) => x.id === plan);
+  if (b) return (mndBedrift(b, intervall === "year" ? 12 : 1) ?? 0) * (intervall === "year" ? 12 : 1);
+  return BELOP[(plan as PlanId) ?? "vekst"] ?? BELOP.vekst;
+}
+
 const BELOP: Record<PlanId, number> = {
   engangs: 890,
   liten: 3900,
@@ -67,7 +79,7 @@ export async function bestill(
 
   const okt = await opprettKasseokt({
     // Selskap betaler ett år i forskudd og fornyes hvert år; engangskontrollen er én betaling.
-    belopNok: plan === "engangs" ? BELOP.engangs : (BELOP[(plan as PlanId) ?? "vekst"] ?? BELOP.vekst) * (intervall === "year" ? 12 : 1),
+    belopNok: kortBelop(plan, intervall),
     beskrivelse: `Relavo ${p.navn}`,
     epost: user.email ?? "",
     gjentakende: plan !== "engangs",

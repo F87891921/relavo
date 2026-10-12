@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useOrd } from "@/components/Sprakgiver";
-import { BEDRIFT, LOPETIDER, NIVAER, kr, mndFor, type Lopetid } from "@/lib/priser";
+import { BEDRIFT, BEDRIFT_LOPETIDER, LOPETIDER, NIVAER, kr, mndBedrift, mndFor, type BedriftLopetid, type Lopetid } from "@/lib/priser";
 
 type Treff = {
   kode: string;
@@ -23,6 +23,7 @@ export function Prisfinner() {
   const [treff, setTreff] = useState<Treff[]>([]);
   const [valgt, setValgt] = useState<Treff | null>(null);
   const [lop, setLop] = useState<Lopetid>(12);
+  const [lopB, setLopB] = useState<BedriftLopetid>(12);
   const [bn, setBn] = useState<"start" | "vekst" | "bygg" | "stor">("vekst");
   const [modus, setModus] = useState<"kommune" | "selskap">("kommune");
   const [status, setStatus] = useState<"hvile" | "soker" | "ingen" | "feil">("hvile");
@@ -72,6 +73,16 @@ export function Prisfinner() {
     </div>
   );
 
+  const velgerLopB = (
+    <div className="pf-lop" role="group" aria-label={t.sok.avtale}>
+      {BEDRIFT_LOPETIDER.map((l) => (
+        <button key={l} type="button" aria-pressed={lopB === l} onClick={() => setLopB(l)}>
+          {l === 1 ? t.sok.manedsvis : `${l} ${t.sok.mnd}`}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <div className="pf">
       <div className="pf-lop pf-modus" role="group">
@@ -88,11 +99,11 @@ export function Prisfinner() {
             <b>{t.bedrift.etikett}</b>
             <span>{t.bedrift.tekst}</span>
           </div>
-          {velgerLop}
+          {velgerLopB}
           <table className="pf-bt">
             <tbody>
               {BEDRIFT.map((b) => {
-                const m = mndFor(b, lop);
+                const m = mndBedrift(b, lopB);
                 return (
                   <tr
                     key={b.id}
@@ -109,7 +120,7 @@ export function Prisfinner() {
               })}
             </tbody>
           </table>
-          <p className="pf-m">{t.sok.fakturering} {t.sok.tillegg}</p>
+          <p className="pf-m">{lopB === 1 ? t.bedrift.manedNote : t.sok.fakturering} {t.sok.tillegg}</p>
           {bn === "stor" ? (
             <Link href="/kontakt?om=priser" className="btn btn-primary">
               {t.bedrift.knapp}

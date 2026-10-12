@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useOrd } from "@/components/Sprakgiver";
 import { bestill } from "./handlinger";
+import { BEDRIFT, kr, mndBedrift } from "@/lib/priser";
 
 const PLANER = [
   { verdi: "liten", pris: "3 900", enhet: "NOK/mnd" },
@@ -49,6 +50,14 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
     const fra = new URLSearchParams(window.location.search).get("plan");
     if (fra && erSelskap(fra)) setMaltype("selskap");
   }, []);
+  // Selskap som betaler med kort ser prisen for valgt trekkintervall.
+  const visPris = (rad: { verdi: string; pris: string; selskap?: boolean }) => {
+    const b = BEDRIFT.find((x) => x.id === rad.verdi);
+    if (!b || mate !== "kort") return rad.pris;
+    const m = mndBedrift(b, intervall === "month" ? 1 : 12);
+    return m === null ? rad.pris : kr(m);
+  };
+
   const navn = (v: string) =>
     v === "engangs"
       ? t.enkelt.navn
@@ -99,7 +108,7 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
             >
               <div className="text-[14px] font-semibold">{navn(rad.verdi)}</div>
               <div className="text-[19px] font-bold tracking-tight mt-1">
-                {rad.pris}{" "}
+                {visPris(rad)}{" "}
                 <span className="text-[12px] font-medium text-dim">{rad.enhet}</span>
               </div>
               <div className="text-[10.5px] text-faint mt-0.5">
