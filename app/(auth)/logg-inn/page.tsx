@@ -129,7 +129,7 @@ export default function LoggInnSide() {
           <span className="h-px flex-1 bg-border" />
         </div>
 
-        <form onSubmit={loggInn} className="px-6 pt-3 pb-1.5">
+        <form onSubmit={loggInn} className="px-6 pt-3 pb-7">
           <div className="mb-3">
             <label htmlFor="epost" className="block text-xs font-semibold mb-1.5">
               {t.epost}
@@ -146,9 +146,14 @@ export default function LoggInnSide() {
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="passord" className="block text-xs font-semibold mb-1.5">
-              {t.passord}
-            </label>
+            <div className="flex items-baseline justify-between mb-1.5">
+              <label htmlFor="passord" className="block text-xs font-semibold">
+                {t.passord}
+              </label>
+              <Link href="/glemt-passord" className="text-[12px] text-accent hover:underline">
+                {ord.glemt.lenke}
+              </Link>
+            </div>
             <input
               id="passord"
               type="password"
@@ -170,7 +175,7 @@ export default function LoggInnSide() {
             {laster ? t.loggerInn : t.loggInn}
           </button>
 
-          <p className="text-[12.5px] text-dim text-center mt-4">
+          <p className="text-[12.5px] text-dim text-center mt-5">
             {ord.registrering.nyKunde}{" "}
             <Link href="/registrer" className="text-accent hover:underline">
               {ord.registrering.registrerDeg}

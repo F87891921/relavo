@@ -119,6 +119,7 @@ export async function middleware(request: NextRequest) {
     "/port",
     "/logg-inn",
     "/registrer",
+    "/glemt-passord",
     "/tofaktor",
     "/kontakt",
     "/juridisk",
