@@ -561,3 +561,7 @@ html{scroll-behavior:smooth}
 .landing .pf-regn table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
 .landing .pf-regn td { padding: 10px 0; border-top: 1px solid var(--border, #e5e0e8); }
 .landing .pf-regn td:last-child { text-align: right; }
+.landing .pf-mva { font-size: 13px; color: var(--text-faint, #8a8289); margin: 14px 0 0; }
+.landing .pf-ingar-l { margin: 14px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.7; columns: 2; column-gap: 24px; }
+@media (max-width: 600px) { .landing .pf-ingar-l { columns: 1; } }
+.landing .pf-under { font-size: 13.5px; }

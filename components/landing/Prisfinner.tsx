@@ -122,8 +122,9 @@ export function Prisfinner() {
               <div className="pf-pris">
                 {kr(pris)} <em>NOK {t.sok.perMnd}</em>
               </div>
-              <p className="pf-m">{t.sok.fakturering}</p>
-              <p className="pf-m">{t.sok.tillegg}</p>
+              <p className="pf-m">
+                {t.sok.fakturering} {t.sok.tillegg}
+              </p>
               <Link href={`/registrer?plan=${valgt.niva}`} className="btn btn-primary">
                 {t.sok.komIGang}
               </Link>
@@ -161,6 +162,11 @@ export function Prisfinner() {
             })}
           </tbody>
         </table>
+        <ul className="pf-ingar-l">
+          {t.ingar.punkter.map((x) => (
+            <li key={x}>{x}</li>
+          ))}
+        </ul>
       </details>
     </div>
   );

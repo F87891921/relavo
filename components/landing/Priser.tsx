@@ -14,7 +14,7 @@ export function Priser() {
           <h2 className="statement">
             {t.tittel} <span>{t.undertittel}</span>
           </h2>
-          <p className="mono" style={{ fontSize: "12px", color: "var(--text-faint)", marginTop: "14px" }}>
+          <p className="pf-mva">
             {t.eksMva}
           </p>
         </div>
@@ -23,18 +23,9 @@ export function Priser() {
           <Prisfinner />
         </div>
 
-        <div className="pf-ingar" data-avsloj>
-          <h3>{t.ingar.tittel}</h3>
-          <ul>
-            {t.ingar.punkter.map((p) => (
-              <li key={p}>{p}</li>
-            ))}
-          </ul>
-        </div>
-
         <div className="pf-under" data-avsloj>
           <div>
-            <b>{t.enkelt.navn}</b> — {kr(ENKELTKONTROLL)} {t.enkelt.enhet}. {t.enkelt.tekst}{" "}
+            <b>{t.enkelt.navn}</b> — {kr(ENKELTKONTROLL)} {t.enkelt.enhet}.{" "}
             <Link href="/registrer?plan=engangs">{t.enkelt.knapp}</Link>
           </div>
           <div>
