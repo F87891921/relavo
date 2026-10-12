@@ -125,6 +125,7 @@ export async function middleware(request: NextRequest) {
     "/juridisk",
     "/api/kommune",
     "/auth/callback",
+    "/auth/bekreft",
     ...TOKENSIDER,
   ];
   const apen = APNE.some((p) => sti === p || sti.startsWith(`${p}/`));

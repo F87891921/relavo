@@ -193,6 +193,7 @@ export default function LoggInnSide() {
  * etter i stedet for en generisk «noe gikk galt».
  */
 function feilTekst(kode: string) {
+  if (kode === "utlopt-lenke") return "Lenken er utløpt eller brukt. Be om en ny.";
   if (kode === "mangler-kode") return "Innloggingen ble avbrutt. Prøv igjen.";
   if (kode === "access_denied") return "Du avbrøt innloggingen hos Microsoft.";
   return kode;

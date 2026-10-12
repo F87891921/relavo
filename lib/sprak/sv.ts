@@ -1262,6 +1262,8 @@ export const sv: Ordbok = {
   },
   glemt: {
     lenke: "Glömt lösenord?",
+    epostEmne: "Välj nytt lösenord för Relavo",
+    epostTekst: "Hej,\n\nVi fick en förfrågan om att välja nytt lösenord för Relavo. Öppna länken nedan för att välja ett nytt. Den gäller i en timme och kan användas en gång.\n\n{lenke}\n\nHar du inte bett om detta kan du bortse från mejlet. Ditt lösenord är inte ändrat.\n\nRelavo",
     tittel: "Glömt lösenord",
     ingress: "Skriv din e-postadress, så skickar vi en länk för att välja ett nytt.",
     knapp: "Skicka länk",
