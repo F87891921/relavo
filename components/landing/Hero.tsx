@@ -1,6 +1,9 @@
 import { ord } from "@/lib/sprak";
 import Link from "next/link";
 import { HeroShot } from "./HeroShot";
+import { ShotRapport } from "./ShotRapport";
+import { ShotTilbud } from "./ShotTilbud";
+import { Bildespill } from "./Bildespill";
 
 export function Hero() {
   const t = ord().landing;
@@ -24,9 +27,10 @@ export function Hero() {
         <div className="hero-note">{t.hero.note}</div>
       </div>
       <div className="shot">
-        <div className="shot-frame">
-          <HeroShot />
-        </div>
+        <Bildespill
+          navn={[t.spill.leverandorer, t.spill.rapporten, t.spill.tilbud]}
+          bilder={[<HeroShot key="l" />, <ShotRapport key="r" />, <ShotTilbud key="t" />]}
+        />
       </div>
     </header>
   );

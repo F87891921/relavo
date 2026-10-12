@@ -40,7 +40,6 @@ export default async function Hjemmeside() {
           <Tallet
             ikkeGodkjente={tall.ikkeGodkjente}
             totalt={tall.totalt}
-            andel={tall.andel}
             hentet={tall.hentet}
           />
         )}
