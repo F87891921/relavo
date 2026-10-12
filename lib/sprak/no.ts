@@ -338,8 +338,8 @@ export const no = {
         "4": "Fire",
         "5": "Fem",
       },
-      brok: "{n} av fem renholdsvirksomheter",
-      staarIkke: "står ikke godkjent.",
+      brok: "{n} av fem renholdsselskaper er ikke godkjent.",
+      staarIkke: "Det er ulovlig å kjøpe av dem.",
       poeng: "En treff i Arbeidstilsynets register betyr ikke at selskapet er godkjent — registeret inneholder begge deler. Å kjøpe renholdstjenester av et selskap uten godkjenning har vært ulovlig siden 2012. Vi leser statusfeltet.",
       av: "av",
       virksomheter: "virksomheter",
@@ -400,6 +400,7 @@ export const no = {
       snakkMedOss: "Snakk med oss",
     },
     foot: {
+      avdeling: "norsk avdeling av",
       tekst: "Relavo kontrollerer selskaper, ikke enkeltpersoner. Opplysninger om straffedommer behandles ikke.",
       vilkar: "Vilkår",
       personvern: "Personvern",

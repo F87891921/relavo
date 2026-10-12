@@ -329,8 +329,8 @@ export const en: Ordbok = {
         "4": "Four",
         "5": "Five",
       },
-      brok: "{n} in five cleaning businesses",
-      staarIkke: "are not approved.",
+      brok: "{n} in five cleaning companies are not approved.",
+      staarIkke: "Buying from them is illegal.",
       poeng: "A match in the Norwegian Labour Inspection Authority's register does not mean the company is approved — the register holds both kinds. Buying cleaning services from an unapproved company has been illegal since 2012. We read the status field.",
       av: "of",
       virksomheter: "businesses",
@@ -391,6 +391,7 @@ export const en: Ordbok = {
       snakkMedOss: "Talk to us",
     },
     foot: {
+      avdeling: "Norwegian branch of",
       tekst: "Relavo checks companies, not individuals. Data on criminal convictions is not processed.",
       vilkar: "Terms",
       personvern: "Privacy",

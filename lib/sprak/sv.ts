@@ -329,8 +329,8 @@ export const sv: Ordbok = {
         "4": "Fyra",
         "5": "Fem",
       },
-      brok: "{n} av fem städverksamheter",
-      staarIkke: "står som inte godkända.",
+      brok: "{n} av fem städbolag är inte godkända.",
+      staarIkke: "Det är olagligt att köpa av dem.",
       poeng: "En träff i Arbeidstilsynets register betyder inte att bolaget är godkänt — registret innehåller båda delarna. Att köpa städtjänster av ett bolag utan godkännande har varit olagligt sedan 2012. Vi läser statusfältet.",
       av: "av",
       virksomheter: "verksamheter",
@@ -391,6 +391,7 @@ export const sv: Ordbok = {
       snakkMedOss: "Prata med oss",
     },
     foot: {
+      avdeling: "norsk filial av",
       tekst: "Relavo kontrollerar bolag, inte enskilda personer. Uppgifter om brottmålsdomar behandlas inte.",
       vilkar: "Villkor",
       personvern: "Integritet",
