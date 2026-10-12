@@ -15,7 +15,7 @@ import { Veiviser, type AvtaltTilbud } from "./Veiviser";
 export default async function RegistrerSide({
   searchParams,
 }: {
-  searchParams: { plan?: string; offert?: string };
+  searchParams: { plan?: string; offert?: string; mnd?: string };
 }) {
   let avtalt: AvtaltTilbud | undefined;
 
@@ -39,5 +39,6 @@ export default async function RegistrerSide({
     }
   }
 
-  return <Veiviser forvalgt={searchParams.plan} avtalt={avtalt} />;
+  const mnd = [1, 12, 24, 36].includes(Number(searchParams.mnd)) ? Number(searchParams.mnd) : undefined;
+  return <Veiviser forvalgt={searchParams.plan} avtalt={avtalt} mnd={mnd} />;
 }

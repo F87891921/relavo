@@ -126,7 +126,7 @@ export function Prisfinner() {
               {t.bedrift.knapp}
             </Link>
           ) : (
-            <Link href={`/registrer?plan=${bn}`} className="btn btn-primary">
+            <Link href={`/registrer?plan=${bn}&mnd=${lopB}`} className="btn btn-primary">
               {t.sok.komIGang}
             </Link>
           )}
@@ -187,7 +187,7 @@ export function Prisfinner() {
               <p className="pf-m">
                 {t.sok.fakturering} {t.sok.tillegg}
               </p>
-              <Link href={`/registrer?plan=${valgt.niva}`} className="btn btn-primary">
+              <Link href={`/registrer?plan=${valgt.niva}&mnd=${lop}`} className="btn btn-primary">
                 {t.sok.komIGang}
               </Link>
             </>

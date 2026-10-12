@@ -7,7 +7,7 @@ import { useOrd } from "@/components/Sprakgiver";
 import { RelavoMark } from "@/components/RelavoMark";
 import { FELT_FULL } from "@/components/ui/felt";
 import { KRAV } from "@/lib/passord";
-import { BEDRIFT, kr } from "@/lib/priser";
+import { BEDRIFT, NIVAER, kr, mndBedrift, mndFor, type Lopetid } from "@/lib/priser";
 import { opprettKonto } from "./handlinger";
 
 type Treff = { kode: string; navn: string; innbyggere: number; niva: "liten" | "kommune" | "medelstor" | "stor"; mnd: number | null };
@@ -30,7 +30,7 @@ export type AvtaltTilbud = {
   mnd: number;
 };
 
-export function Veiviser({ forvalgt, avtalt }: { forvalgt?: string; avtalt?: AvtaltTilbud }) {
+export function Veiviser({ forvalgt, avtalt, mnd }: { forvalgt?: string; avtalt?: AvtaltTilbud; mnd?: number }) {
   const o = useOrd();
   const v = o.registreringsveiviser;
   const t = o.landing.priser;
@@ -76,24 +76,29 @@ export function Veiviser({ forvalgt, avtalt }: { forvalgt?: string; avtalt?: Avt
   const stor = type === "kommune" && kommune?.niva === "stor";
 
   const niva = kommune ? t.nivaer[kommune.niva] : null;
+  const binding = mnd ?? 12;
+  const kommunePris = kommune && kommune.niva !== "stor" ? mndFor(NIVAER.find((x) => x.id === kommune.niva)!, (binding === 1 ? 12 : binding) as Lopetid) : null;
+  const selskapPris = mndBedrift(BEDRIFT.find((b) => b.id === plan)!, binding as 1 | 12 | 24 | 36);
   const sammendrag =
-    type === "kommune" && kommune && niva && kommune.mnd !== null
+    type === "kommune" && kommune && niva && kommunePris !== null
       ? v.sammendragKommune
           .replace("{navn}", /kommune/i.test(kommune.navn) ? kommune.navn : `${kommune.navn} kommune`)
           .replace("{niva}", niva.navn)
-          .replace("{pris}", kr(kommune.mnd))
+          .replace("{pris}", kr(kommunePris))
+          .replace("{mnd}", String(binding === 1 ? 12 : binding))
       : type === "offert" && avtalt
         ? v.avtaleSammendrag
             .replace("{plan}", avtalt.planNavn)
             .replace("{total}", kr(avtalt.total))
             .replace("{mnd}", String(avtalt.mnd))
         : type === "engangs"
-        ? v.sammendragEngangs
-        : type === "selskap"
-        ? v.sammendragSelskap
-            .replace("{niva}", t.bedrift.nivaer[plan].navn)
-            .replace("{pris}", kr(BEDRIFT.find((b) => b.id === plan)!.mnd!))
-        : "";
+          ? v.sammendragEngangs
+          : type === "selskap" && selskapPris !== null
+            ? (binding === 1 ? v.sammendragManed : v.sammendragSelskap)
+                .replace("{niva}", t.bedrift.nivaer[plan].navn)
+                .replace("{pris}", kr(selskapPris))
+                .replace("{mnd}", String(binding))
+            : "";
 
   function send(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -136,6 +141,7 @@ export function Veiviser({ forvalgt, avtalt }: { forvalgt?: string; avtalt?: Avt
 
         <form className="bg-surface rounded-2xl shadow-lift px-6 py-6" onSubmit={send}>
           <input type="hidden" name="type" value={type} />
+          <input type="hidden" name="mnd" value={binding} />
           <input type="hidden" name="offert" value={avtalt?.token ?? ""} />
           <input type="hidden" name="plan" value={type === "engangs" ? "engangs" : plan} />
           <input type="hidden" name="kommunekode" value={kommune?.kode ?? ""} />

@@ -31,7 +31,9 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
   const [plan, setPlan] = useState("kommune");
   const [mate, setMate] = useState<"kort" | "faktura">("faktura");
   // Kommuner betaler alltid mot faktura; kort er for selskap og enkeltkontroll.
-  const kortTillatt = ["engangs", "start", "vekst", "bygg"].includes(plan);
+  const [binding, setBinding] = useState(12);
+  // Flerårsavtaler faktureres; kort er månedlig eller ett år om gangen.
+  const kortTillatt = ["engangs", "start", "vekst", "bygg"].includes(plan) && binding < 24;
   const [intervall, setIntervall] = useState<"month" | "year">("month");
   const [feil, setFeil] = useState("");
   const [venter, start] = useTransition();
@@ -42,6 +44,12 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
   useEffect(() => {
     const fra = new URLSearchParams(window.location.search).get("plan");
     if (fra && PLANER.some((x) => x.verdi === fra)) setPlan(fra);
+    const mnd = Number(new URLSearchParams(window.location.search).get("mnd"));
+    if ([1, 12, 24, 36].includes(mnd)) setBinding(mnd);
+    if (mnd === 1) {
+      setMate("kort");
+      setIntervall("month");
+    }
   }, []);
 
   const erSelskap = (v: string) => ["start", "vekst", "bygg"].includes(v);
@@ -134,7 +142,7 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
           onVelg={() => kortMulig && kortTillatt && setMate("kort")}
           av={!kortMulig || !kortTillatt}
           tittel={o.betaling.kort}
-          tekst={!kortTillatt ? o.betaling.kortIkkeKommune : kortMulig ? (plan === "engangs" ? o.betaling.kortTekst : o.betaling.kortAbonnement) : o.betaling.kortAv}
+          tekst={!kortTillatt ? (binding >= 24 && erSelskap(plan) ? o.betaling.kortIkkeFlerar : o.betaling.kortIkkeKommune) : kortMulig ? (plan === "engangs" ? o.betaling.kortTekst : o.betaling.kortAbonnement) : o.betaling.kortAv}
         />
       </div>
 

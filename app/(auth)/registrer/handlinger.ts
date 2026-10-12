@@ -5,7 +5,7 @@ import { admin } from "@/lib/supabase/admin";
 import { manglendeKrav, KRAV } from "@/lib/passord";
 import { ord } from "@/lib/sprak";
 import { kommuner } from "@/lib/kommuner";
-import { nivaFor } from "@/lib/priser";
+import { BEDRIFT, NIVAER, mndBedrift, mndFor, nivaFor, type Lopetid } from "@/lib/priser";
 import { regnUt } from "@/lib/offert";
 
 export type Svar = { ok: true } | { ok: false; feil: string };
@@ -158,6 +158,22 @@ export async function opprettKonto(fd: FormData): Promise<OpprettSvar> {
   });
   if (error || !orgId) return { ok: true, neste: "/velkommen" };
 
+  // Bindingstiden kunden så på forsiden. Prisen regnes ut her fra tabellen, ikke
+  // tatt fra skjemaet, og bare for faktura (12, 24, 36 måneder). Månedlig er
+  // kortbetaling uten binding og har ingen avtalt sum.
+  const onsket = Number(fd.get("mnd"));
+  const bind = [12, 24, 36].includes(onsket) ? (onsket as Lopetid) : null;
+  if (bind && !offert) {
+    const niva = NIVAER.find((n) => n.id === plan);
+    const bedrift = BEDRIFT.find((b) => b.id === plan);
+    const pris = niva ? mndFor(niva, bind) : bedrift ? mndBedrift(bedrift, bind) : null;
+    if (pris !== null)
+      await admin()
+        .from("organisasjoner")
+        .update({ avtalt_total: pris * bind, avtale_mnd: bind })
+        .eq("id", orgId);
+  }
+
   // Kommuner krever tofaktor som utgangspunkt; administratoren kan slå det av.
   if (["liten", "kommune", "medelstor", "stor"].includes(plan))
     await admin().from("organisasjoner").update({ krever_tofaktor: true }).eq("id", orgId);
@@ -212,5 +228,5 @@ export async function opprettKonto(fd: FormData): Promise<OpprettSvar> {
     if (bFeil) return { ok: true, neste: "/betaling" };
     return { ok: true, neste: "/venter" };
   }
-  return { ok: true, neste: `/betaling?plan=${plan}` };
+  return { ok: true, neste: `/betaling?plan=${plan}${onsket ? `&mnd=${onsket}` : ""}` };
 }
