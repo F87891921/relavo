@@ -17,20 +17,22 @@ import { FELT_FULL } from "@/components/ui/felt";
  * med utvidede rettigheter og nekter å gjøre jobben to ganger for samme
  * bruker, så denne siden kan ikke misbrukes til å bytte organisasjon.
  */
-const PLANER = [
-  { verdi: "liten", navn: "Liten", pris: "3 900 NOK/mnd" },
-  { verdi: "kommune", navn: "Kommune", pris: "7 900 NOK/mnd" },
-  { verdi: "medelstor", navn: "Medelstor", pris: "12 900 NOK/mnd" },
-  { verdi: "engangs", navn: "Enkeltkontroll", pris: "890 NOK per kontroll" },
-];
+const KOMMUNE = ["liten", "kommune", "medelstor"] as const;
+const SELSKAP = ["start", "vekst", "bygg"] as const;
+const PRIS: Record<string, string> = {
+  liten: "3 900", kommune: "7 900", medelstor: "12 900",
+  start: "2 900", vekst: "5 900", bygg: "11 900",
+};
 
 export default function VelkommenSide() {
   const o = useOrd();
+  const t = o.landing.priser;
   const router = useRouter();
   const [navn, setNavn] = useState("");
   const [orgNr, setOrgNr] = useState("");
   const [brukernavn, setBrukernavn] = useState("");
   const [plan, setPlan] = useState("kommune");
+  const [maltype, setMaltype] = useState<"kommune" | "selskap">("kommune");
   const [feil, setFeil] = useState("");
   const [laster, setLaster] = useState(false);
 
@@ -38,7 +40,10 @@ export default function VelkommenSide() {
   // ta det samme valget to ganger.
   useEffect(() => {
     const fra = new URLSearchParams(window.location.search).get("plan");
-    if (fra && PLANER.map((p) => p.verdi).includes(fra)) setPlan(fra);
+    if (fra && [...KOMMUNE, ...SELSKAP, "engangs"].includes(fra)) {
+      setPlan(fra);
+      if ((SELSKAP as readonly string[]).includes(fra)) setMaltype("selskap");
+    }
   }, []);
 
   async function opprett(e: React.FormEvent) {
@@ -122,20 +127,39 @@ export default function VelkommenSide() {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="plan" className="block text-xs font-semibold mb-1.5">
-              Plan
-            </label>
-            <select
-              id="plan"
-              value={plan}
-              onChange={(e) => setPlan(e.target.value)}
-              className={FELT_FULL}
-            >
-              {PLANER.map((p) => (
-                <option key={p.verdi} value={p.verdi}>
-                  {p.navn} — {p.pris}
-                </option>
+            <div className="flex gap-2 mb-3" role="group">
+              {(["kommune", "selskap"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  aria-pressed={maltype === m}
+                  onClick={() => {
+                    setMaltype(m);
+                    setPlan(m === "kommune" ? "kommune" : "vekst");
+                  }}
+                  className={`flex-1 text-[13px] font-semibold py-2 rounded-xl border transition ${
+                    maltype === m ? "border-accent bg-accent-light text-accent" : "border-border text-dim hover:border-border-strong"
+                  }`}
+                >
+                  {t.maltype[m]}
+                </button>
               ))}
+            </div>
+            <label htmlFor="plan" className="block text-xs font-semibold mb-1.5">
+              {maltype === "kommune" ? "Plan" : t.bedrift.etikett}
+            </label>
+            <select id="plan" value={plan} onChange={(e) => setPlan(e.target.value)} className={FELT_FULL}>
+              {maltype === "kommune"
+                ? KOMMUNE.map((v) => (
+                    <option key={v} value={v}>
+                      {t.nivaer[v].navn} — {t.nivaer[v].spenn} — {PRIS[v]} NOK/mnd
+                    </option>
+                  ))
+                : SELSKAP.map((v) => (
+                    <option key={v} value={v}>
+                      {t.bedrift.nivaer[v].navn} — {t.bedrift.nivaer[v].spenn} — {PRIS[v]} NOK/mnd
+                    </option>
+                  ))}
             </select>
           </div>
 

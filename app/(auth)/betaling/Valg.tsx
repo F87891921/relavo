@@ -9,6 +9,9 @@ const PLANER = [
   { verdi: "kommune", pris: "7 900", enhet: "NOK/mnd", anbefalt: true },
   { verdi: "medelstor", pris: "12 900", enhet: "NOK/mnd" },
   { verdi: "engangs", pris: "890", enhet: "NOK" },
+  { verdi: "start", pris: "2 900", enhet: "NOK/mnd", selskap: true },
+  { verdi: "vekst", pris: "5 900", enhet: "NOK/mnd", selskap: true },
+  { verdi: "bygg", pris: "11 900", enhet: "NOK/mnd", selskap: true },
 ];
 
 /**
@@ -37,15 +40,47 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
     if (fra && PLANER.some((x) => x.verdi === fra)) setPlan(fra);
   }, []);
 
+  const erSelskap = (v: string) => ["start", "vekst", "bygg"].includes(v);
+  const [maltype, setMaltype] = useState<"kommune" | "selskap">("kommune");
+  useEffect(() => {
+    const fra = new URLSearchParams(window.location.search).get("plan");
+    if (fra && erSelskap(fra)) setMaltype("selskap");
+  }, []);
   const navn = (v: string) =>
-    v === "engangs" ? t.enkelt.navn : t.nivaer[v as "liten" | "kommune" | "medelstor"].navn;
+    v === "engangs"
+      ? t.enkelt.navn
+      : erSelskap(v)
+        ? t.bedrift.nivaer[v as "start" | "vekst" | "bygg"].navn
+        : t.nivaer[v as "liten" | "kommune" | "medelstor"].navn;
   const spenn = (v: string) =>
-    v === "engangs" ? t.enkelt.tekst : t.nivaer[v as "liten" | "kommune" | "medelstor"].spenn;
+    v === "engangs"
+      ? t.enkelt.tekst
+      : erSelskap(v)
+        ? t.bedrift.nivaer[v as "start" | "vekst" | "bygg"].spenn
+        : t.nivaer[v as "liten" | "kommune" | "medelstor"].spenn;
 
   return (
     <>
+      <div className="flex gap-2 mb-3" role="group">
+        {(["kommune", "selskap"] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            aria-pressed={maltype === m}
+            onClick={() => {
+              setMaltype(m);
+              setPlan(m === "kommune" ? "kommune" : "vekst");
+            }}
+            className={`text-[13px] font-semibold px-4 py-1.5 rounded-xl border transition ${
+              maltype === m ? "border-accent bg-accent-light text-accent" : "border-border text-dim hover:border-border-strong"
+            }`}
+          >
+            {t.maltype[m]}
+          </button>
+        ))}
+      </div>
       <div className="grid sm:grid-cols-2 gap-3 mb-6">
-        {PLANER.map((rad) => {
+        {PLANER.filter((r) => r.verdi === "engangs" || Boolean((r as { selskap?: boolean }).selskap) === (maltype === "selskap")).map((rad) => {
           const valgt = plan === rad.verdi;
           return (
             <button
