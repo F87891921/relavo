@@ -21,6 +21,8 @@
  * «Brønnøysund» til «Brnnysund» i et dokument som skal arkiveres.
  */
 
+import { RELAVO_PATH as RELAVO_BANE } from "@/components/relavo-path";
+
 /* ------------------------------------------------------------- Bredder */
 // Adobes egne tall for Helvetica, i 1/1000 em. Rekkefølgen er ASCII 32–126.
 const V_NORMAL = [
@@ -222,6 +224,84 @@ export class Pdf {
       `${MARG.venstre} ${this.y.toFixed(2)} m ${(A4.bredde - MARG.hoyre).toFixed(2)} ${this.y.toFixed(2)} l S\n`;
     this.luft(o.etter ?? 10);
   }
+
+  /**
+   * Relavo-merket, tegnet som vektor.
+   *
+   * Samme bane som RelavoMark bruker på skjermen — importert, ikke kopiert,
+   * så en endring i logoen ikke etterlater en gammel versjon i dokumentene
+   * vi sender ut. Et innbakt bilde ville dessuten vært punkter: en logo
+   * som er skarp på skjermen og grumsete i en utskrift er verre enn ingen
+   * logo på et dokument som skal legges ved en sak.
+   *
+   * SVG regner y nedover fra toppen, PDF oppover fra bunnen. Derfor snus
+   * y-aksen i omregningen; gjør man ikke det, står merket opp ned, og det
+   * oppdages ikke av noe annet enn øyet.
+   */
+  merke(o: { x: number; y: number; hoyde: number; farge?: Farge }) {
+    const k = o.hoyde / 312; // viewBox-høyden i RelavoMark
+    const f = o.farge ?? AKSENT;
+    const X = (v: number) => (o.x + v * k).toFixed(2);
+    const Y = (v: number) => (o.y + o.hoyde - v * k).toFixed(2);
+
+    this.na += `${f[0]} ${f[1]} ${f[2]} rg\n`;
+
+    // Banen er M, L, C og Z i absolutte koordinater — de fire som finnes i
+    // merket. Dukker det opp andre kommandoer en dag, hoppes de over her
+    // i stedet for å tegne noe galt.
+    const tegn = RELAVO_BANE.match(/[MLCZ][^MLCZ]*/gi) ?? [];
+    for (const bit of tegn) {
+      const k0 = bit[0].toUpperCase();
+      const tall = (bit.slice(1).match(/-?\d*\.?\d+/g) ?? []).map(Number);
+      if (k0 === "Z") {
+        this.na += "h\n";
+      } else if (k0 === "M" && tall.length >= 2) {
+        this.na += `${X(tall[0])} ${Y(tall[1])} m\n`;
+      } else if (k0 === "L") {
+        for (let i = 0; i + 1 < tall.length; i += 2)
+          this.na += `${X(tall[i])} ${Y(tall[i + 1])} l\n`;
+      } else if (k0 === "C") {
+        for (let i = 0; i + 5 < tall.length; i += 6)
+          this.na +=
+            `${X(tall[i])} ${Y(tall[i + 1])} ${X(tall[i + 2])} ${Y(tall[i + 3])} ` +
+            `${X(tall[i + 4])} ${Y(tall[i + 5])} c\n`;
+      }
+    }
+
+    // f*, ikke f: merket er tegnet med even-odd, samme som på skjermen.
+    this.na += "f*\n";
+  }
+
+  /**
+   * Hele ordmerket: merket pluss ordet. Målene er de samme som i
+   * RelavoLogo — merket 0–327 av 1033 brede, ordet fra x=404 med
+   * grunnlinje 241 og størrelse 190, alt i en viewBox 312 høy.
+   */
+  logo(o: { hoyde: number; x?: number; farge?: Farge; etter?: number } = { hoyde: 21 }) {
+    const k = o.hoyde / 312;
+    const x = o.x ?? MARG.venstre;
+    this.sikrePlass(o.hoyde + 4);
+    this.y -= o.hoyde;
+    const y = this.y;
+
+    this.merke({ x, y, hoyde: o.hoyde });
+
+    const f = o.farge ?? GRAFITT;
+    const tekst = "Relavo";
+    this.na +=
+      `${f[0]} ${f[1]} ${f[2]} rg\n` +
+      `BT /F2 ${(190 * k).toFixed(2)} Tf ${(-7 * k).toFixed(2)} Tc ` +
+      `${(x + 404 * k).toFixed(2)} ${(y + o.hoyde - 241 * k).toFixed(2)} Td ` +
+      `(${pdfStreng(tekst, true)}) Tj ET\n` +
+      // Tegnavstanden er satt for ordmerket og må nullstilles, ellers får
+      // all tekst etterpå samme knipe.
+      "BT 0 Tc ET\n";
+
+    if (o.etter) this.luft(o.etter);
+  }
+
+  /** Bredden ordmerket får med en gitt høyde. Til plassering. */
+  static logobredde = (hoyde: number) => (1033 / 312) * hoyde;
 
   /** Fylt flate bak noe — brukes til risikoboksen øverst. */
   flate(h: number, f: Farge) {

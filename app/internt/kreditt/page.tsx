@@ -76,11 +76,18 @@ export default async function InterntKredittSide() {
                 </div>
                 <dl className="divide-y divide-border">
                   {(s.begrunnelse as Punkt[]).map((p, i) => (
-                    <div key={i} className="flex gap-4 py-2.5 items-baseline">
-                      <dt className="text-[12.5px] font-semibold w-44 shrink-0">
+                    // Raden brytes på telefon. Etiketten på 176 piksler pluss
+                    // et merke som ikke kan brytes, fikk ikke plass ved siden
+                    // av hverandre på 375 — merket ble skjøvet utenfor kanten
+                    // og klippet bort.
+                    <div
+                      key={i}
+                      className="flex flex-wrap sm:flex-nowrap gap-x-4 gap-y-1.5 py-2.5 items-baseline"
+                    >
+                      <dt className="text-[12.5px] font-semibold w-full sm:w-44 sm:shrink-0">
                         {p.punkt}
                       </dt>
-                      <dd className="text-[12.5px] text-dim flex-1">{p.tekst}</dd>
+                      <dd className="text-[12.5px] text-dim flex-1 min-w-0">{p.tekst}</dd>
                       <Merke tone={PUNKT_TONE[p.status] ?? "noytral"}>
                         {p.status === "ok"
                           ? "OK"

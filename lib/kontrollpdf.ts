@@ -52,7 +52,11 @@ export function kontrollrapportPdf(r: Kontrollrapport): ArrayBuffer {
   const pdf = new Pdf(`${RELAVO.produkt} · ${r.leverandor.orgNr}`);
 
   /* ------------------------------------------------------------ Hode */
-  pdf.tekst(RELAVO.produkt, { storrelse: 19, fet: true, farge: AKSENT });
+  // Ordmerket som vektor, ikke ordet satt med Helvetica. Dokumentet går ut
+  // av huset og legges ved en sak; da skal det bære logoen og ikke en
+  // etterligning av den.
+  pdf.logo({ hoyde: 21, etter: 10 });
+
   pdf.tekst(
     `${RELAVO.navn} · org.nr ${relavoOrgNr()} · ${RELAVO.nett}`,
     { storrelse: 8, farge: DIM, etter: 16 },

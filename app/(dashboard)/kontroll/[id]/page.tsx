@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Kort, Merke, type Tone } from "@/components/ui";
+import { RelavoLogo } from "@/components/RelavoLogo";
+import { RELAVO, relavoOrgNr } from "@/lib/relavo";
 import {
   hentKontrollrapport,
   antallBrudd,
@@ -58,10 +60,21 @@ export default async function KontrollSide({
       <Side smal>
         <Link
           href="/leverandorer"
-          className="text-[12.5px] text-dim hover:text-accent transition inline-block mb-3"
+          className="skjul-i-utskrift text-[12.5px] text-dim hover:text-accent transition inline-block mb-3"
         >
           ← {t.meny.leverandorer}
         </Link>
+
+        {/* Brevhodet. Siden er et dokument som skrives ut og legges ved en
+            sak, og da skal den bære avsenderen — ikke bare ha logoen i en
+            sidemeny som forsvinner i utskriften. */}
+        <div className="flex items-end justify-between gap-4 pb-4 mb-5 border-b border-border">
+          <RelavoLogo className="w-[96px] h-auto text-ink" />
+          <p className="text-[11px] text-faint text-right leading-relaxed">
+            {RELAVO.navn} · org.nr {relavoOrgNr()}
+            <span className="block">{RELAVO.nett}</span>
+          </p>
+        </div>
 
         <div className="flex items-start justify-between gap-4 flex-wrap mb-1">
           <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">

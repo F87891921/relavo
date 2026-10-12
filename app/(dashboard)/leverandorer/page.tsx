@@ -87,8 +87,13 @@ export default async function LeverandorerSide() {
           </div>
         )}
 
+        {/* Vannrett rulling, som i den delte Tabell-komponenten. Denne
+            tabellen er håndskrevet og manglet den: på telefon var fire
+            kolonner 501 piksler brede inni et kort som klipper, så risiko
+            og «sist kontrollert» var borte uten at noe antydet det. */}
         <div className="bg-surface rounded-card shadow-card overflow-hidden">
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[520px]">
             <thead>
               <tr className="text-left text-[11px] uppercase tracking-wide text-faint border-b border-border">
                 <th className="px-4 sm:px-5 py-3 font-semibold">{t.ui.selskap}</th>
@@ -162,6 +167,7 @@ export default async function LeverandorerSide() {
               )}
             </tbody>
           </table>
+          </div>
         </div>
       </Side>
     </DashboardShell>

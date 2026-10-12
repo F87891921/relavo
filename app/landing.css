@@ -167,7 +167,15 @@ html{scroll-behavior:smooth}
 .feat-label:hover{box-shadow:none;transform:none}
 .feat-label .eyebrow{margin-bottom:0}
 .rcpt-dato{font-size:10.5px;color:var(--text-faint)}
-@media(max-width:900px){.feats,.feats-3{grid-template-columns:1fr}}
+@media(max-width:900px){
+  .feats,.feats-3{grid-template-columns:1fr}
+  /* Rutenettruter krymper ikke under innholdet sitt av seg selv —
+     min-width er auto på dem. Uten denne linja ble kortene liggende på
+     den bredden kjeden og lovlista trengte, og stakk ut til høyre der
+     seksjonen klipper dem bort. Det var ikke en rulling man kunne komme
+     forbi: innholdet var borte. */
+  .feats>*,.feats-3>*{min-width:0}
+}
 
 /* Kjedefragment */
 .chain{display:flex;width:100%;align-items:stretch;padding-top:36px;position:relative}
@@ -217,6 +225,37 @@ html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){
   .chain-k.rev span{opacity:1;transform:translateX(-50%)}
   .chain.brutt .chain-k.rev::before,.chain.brutt .chain-k.rev::after{transform:translateY(-50%) scaleX(0.55)}
+}
+
+/* På telefon går kjeden nedover.
+   Vannrett blir hvert ledd rundt femti piksler bredt, og da får ikke
+   selskapsnavnet plass — det klippes midt i ordet. En kjede der man ikke
+   kan lese hvem leddene er, viser ikke det den er der for å vise.
+   Samme valg som i appens egen kjedeliste. */
+@media(max-width:520px){
+  .chain{flex-direction:column;align-items:stretch;padding-top:0}
+  .chain-n>*{width:100%}
+  .chain-box{text-align:left;display:flex;align-items:baseline;gap:8px;padding:9px 11px}
+  .chain-l{min-height:0;justify-content:flex-start;flex:0 0 auto;font-size:7px}
+  .chain-c{margin-top:0;font-size:11.5px}
+
+  /* Lenken står nå mellom to noder over hverandre, ikke ved siden av. */
+  .chain-k{width:1.5px;height:14px;align-self:center}
+  .chain-k.rev{width:1.5px;height:34px;align-self:center;background:transparent}
+  .chain-k.rev::before,.chain-k.rev::after{
+    left:50%;top:auto;width:1.5px;height:15px;transform:translateX(-50%) scaleY(1)}
+  .chain-k.rev::before{top:0;transform-origin:center top}
+  .chain-k.rev::after{bottom:0;transform-origin:center bottom}
+  .chain.brutt .chain-k.rev::before{transform:translateX(-50%) scaleY(0.5)}
+  .chain.brutt .chain-k.rev::after{transform:translateX(-50%) scaleY(0.5)}
+  /* Bruddteksten ved siden av strekket, ikke over — over ligger nå en node. */
+  .chain-k.rev span{left:calc(50% + 10px);top:50%;transform:translateY(-50%) translateX(-4px)}
+  .chain.brutt .chain-k.rev span{transform:translateY(-50%)}
+}
+@media (prefers-reduced-motion:reduce) and (max-width:520px){
+  .chain-k.rev span{transform:translateY(-50%)}
+  .chain.brutt .chain-k.rev::before{transform:translateX(-50%) scaleY(0.5)}
+  .chain.brutt .chain-k.rev::after{transform:translateX(-50%) scaleY(0.5)}
 }
 
 /* Lovkravfragment */
