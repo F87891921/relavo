@@ -9,6 +9,8 @@ import { finnJav } from "@/lib/jav";
 import { erRenholdsbransje, tolkStatus } from "@/lib/renhold";
 import { hentSentralgodkjenning, type Sentralgodkjenning } from "@/lib/dibk";
 import { screenSanksjoner, type Sanksjonstreff } from "@/lib/screening";
+import { ord } from "@/lib/sprak";
+import { orgnrFeil, brregFeil } from "@/lib/orgnrtekst";
 
 /**
  * Kjører kontrollen og lagrer den. Oppslaget gjøres på nytt her, på
@@ -19,7 +21,7 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
   const { supabase, profil, user } = await krevProfil();
 
   const validering = validerOrgnr(svar.orgnr);
-  if (!validering.ok) return { ok: false, feil: validering.feil };
+  if (!validering.ok) return { ok: false, feil: orgnrFeil(ord(), validering.feil) };
 
   const oppslag = await slaOppEnhet(validering.orgnr);
   if (oppslag.status !== "funnet") {
@@ -27,8 +29,8 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
       ok: false,
       feil:
         oppslag.status === "ikke-funnet"
-          ? "Fant ingen enhet med dette nummeret."
-          : oppslag.melding,
+          ? ord().feil.fantIngenEnhet
+          : brregFeil(ord(), oppslag.melding),
     };
   }
   const enhet = oppslag.enhet;
@@ -112,7 +114,7 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
   // Etter grenen over er den alltid satt, men det ser ikke typene. Sjekken
   // er ekte nok: uten leverandør er det ingenting å knytte kontrollen til.
   if (!leverandorId)
-    return { ok: false, feil: "Kunne ikke knytte kontrollen til en leverandør." };
+    return { ok: false, feil: ord().feil.ingenLeverandorKnytning };
 
   const { data: kontroll, error } = await supabase
     .from("kontroller")

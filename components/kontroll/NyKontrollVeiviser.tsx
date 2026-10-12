@@ -9,6 +9,7 @@ import type { Enhet } from "@/lib/brreg";
 import { kjorKontroll } from "@/app/(dashboard)/ny-kontroll/handlinger";
 import { HMS_PUNKTER, type Svar } from "@/lib/kontroll";
 import { Steg, Foten, Kort, Felt, INPUT } from "./Steg";
+import { orgnrFeil } from "@/lib/orgnrtekst";
 
 type Anskfelt = { k: string; l: string; t: string; ph?: string; opt?: string[] };
 
@@ -79,7 +80,7 @@ export function NyKontrollVeiviser() {
     setOppslagFeil("");
     setEnhet(null);
     if (!validering.ok) {
-      setOppslagFeil(validering.feil);
+      setOppslagFeil(orgnrFeil(o, validering.feil));
       return;
     }
     setSlaarOpp(true);
@@ -128,7 +129,9 @@ export function NyKontrollVeiviser() {
       return v.hintNiSiffer;
     if (!fullLengde)
       return `${sifre.length} av 9 siffer — ${9 - sifre.length} igjen.`;
-    if (!validering.ok) return validering.feil;
+    // Nøkkelen, ikke teksten. Uten oppslaget sto det «orgnrKontrollsiffer»
+    // under feltet.
+    if (!validering.ok) return orgnrFeil(o, validering.feil);
     return v.hintKlar;
   }
 

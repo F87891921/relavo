@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { krevProfil } from "@/lib/tilgang";
 import { validerOrgnr } from "@/lib/orgnr";
 import { kjorKontroll } from "@/app/(dashboard)/ny-kontroll/handlinger";
+import { ord } from "@/lib/sprak";
 
 export type Oppgave = {
   org_nr: string;
@@ -60,7 +61,7 @@ export async function startBulk(
   );
 
   if (!gyldige.length)
-    return { ok: false, feil: "Ingen gyldige organisasjonsnumre i lista." };
+    return { ok: false, feil: ord().feil.ingenGyldigeOrgnr };
 
   const { data: jobb, error } = await supabase
     .from("bulkjobber")

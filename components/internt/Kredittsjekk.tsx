@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { validerOrgnr, formaterOrgnr } from "@/lib/orgnr";
 import { kjorKredittsjekk } from "@/app/internt/handlinger";
 import { INPUT } from "@/components/internt/Skjema";
+import { orgnrFeil } from "@/lib/orgnrtekst";
 
 export function Kredittsjekk() {
   const t = useOrd();
@@ -20,9 +21,9 @@ export function Kredittsjekk() {
   const full = sifre.length === 9;
 
   function hint() {
-    if (!sifre.length) return "Ni siffer. Kontrollsifferet valideres med modulus 11.";
+    if (!sifre.length) return t.internt.orgnrHint;
     if (!full) return `${sifre.length} av 9 siffer — ${9 - sifre.length} igjen.`;
-    if (!validering.ok) return validering.feil;
+    if (!validering.ok) return orgnrFeil(t, validering.feil);
     return t.internt.klarForKontroll;
   }
 

@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { validerOrgnr } from "@/lib/orgnr";
 import { slaOppEnhet } from "@/lib/brreg";
+import { orgnrFeil, brregFeil } from "@/lib/orgnrtekst";
+import { ord } from "@/lib/sprak";
 
 /**
  * Oppslag i Enhetsregisteret for veiviseren. Ruten går via serveren, ikke
@@ -20,19 +22,25 @@ export async function GET(request: NextRequest) {
   const rå = request.nextUrl.searchParams.get("orgnr") ?? "";
   const validering = validerOrgnr(rå);
   if (!validering.ok) {
-    return NextResponse.json({ feil: validering.feil }, { status: 400 });
+    return NextResponse.json(
+      { feil: orgnrFeil(ord(), validering.feil) },
+      { status: 400 },
+    );
   }
 
   const oppslag = await slaOppEnhet(validering.orgnr);
 
   if (oppslag.status === "ikke-funnet") {
     return NextResponse.json(
-      { feil: "Fant ingen enhet med dette nummeret i Enhetsregisteret." },
+      { feil: ord().feil.fantIngenEnhet },
       { status: 404 },
     );
   }
   if (oppslag.status === "feil") {
-    return NextResponse.json({ feil: oppslag.melding }, { status: 502 });
+    return NextResponse.json(
+      { feil: brregFeil(ord(), oppslag.melding) },
+      { status: 502 },
+    );
   }
 
   return NextResponse.json({ enhet: oppslag.enhet });

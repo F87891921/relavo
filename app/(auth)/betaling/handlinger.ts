@@ -6,6 +6,7 @@ import { krevProfil } from "@/lib/tilgang";
 import { grunnUrl } from "@/lib/url";
 import { PLANER, type PlanId } from "@/lib/plan";
 import { opprettKasseokt, stripeOppsatt } from "@/lib/stripe";
+import { ord } from "@/lib/sprak";
 
 export type Svar =
   | { ok: true; status: string }
@@ -46,7 +47,7 @@ export async function bestill(plan: string, betalingsmate: "kort" | "faktura"): 
   if (!stripeOppsatt())
     return {
       ok: false,
-      feil: "Kortbetaling er ikke koblet på ennå. Velg faktura, så tar vi kontakt.",
+      feil: ord().feil.kortIkkeKoblet,
     };
 
   const p = PLANER[(plan as PlanId) ?? "standard"] ?? PLANER.standard;
@@ -63,7 +64,7 @@ export async function bestill(plan: string, betalingsmate: "kort" | "faktura"): 
   });
 
   if (!okt.ok) return { ok: false, feil: okt.feil };
-  if (!okt.data.url) return { ok: false, feil: "Stripe ga ingen betalingslenke." };
+  if (!okt.data.url) return { ok: false, feil: ord().feil.ingenBetalingslenke };
 
   redirect(okt.data.url);
 }

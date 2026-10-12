@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { krevProfil } from "@/lib/tilgang";
 import { admin } from "@/lib/supabase/admin";
+import { ord } from "@/lib/sprak";
 
 export type Svar = { ok: true; id?: string } | { ok: false; feil: string };
 
@@ -19,7 +20,7 @@ export async function lagreRedegjorelse(fd: FormData): Promise<Svar> {
   const utkast = t(fd, "utkast");
   const leverandor = t(fd, "leverandor_navn");
   if (!utkast || !leverandor)
-    return { ok: false, feil: "Utkastet eller leverandøren mangler." };
+    return { ok: false, feil: ord().feil.utkastMangler };
 
   const { data, error } = await supabase
     .from("redegjorelser")
@@ -63,7 +64,7 @@ export async function lagreSvar(fd: FormData): Promise<Svar> {
   const { supabase } = await krevProfil();
   const id = t(fd, "id");
   const svar = t(fd, "svar");
-  if (!svar) return { ok: false, feil: "Lim inn svaret fra leverandøren." };
+  if (!svar) return { ok: false, feil: ord().feil.limInnSvar };
 
   const { error } = await supabase
     .from("redegjorelser")
@@ -87,11 +88,11 @@ export async function vurderSvar(fd: FormData): Promise<Svar> {
   const begrunnelse = t(fd, "begrunnelse");
 
   if (!["tilstrekkelig", "utilstrekkelig"].includes(vurdering))
-    return { ok: false, feil: "Velg om forklaringen er tilstrekkelig." };
+    return { ok: false, feil: ord().feil.velgTilstrekkelig };
   if (begrunnelse.length < 15)
     return {
       ok: false,
-      feil: "Skriv en begrunnelse. Den skal kunne føres i anskaffelsesprotokollen.",
+      feil: ord().feil.begrunnelseProtokoll,
     };
 
   const { error } = await supabase
@@ -173,7 +174,7 @@ export async function lagreESPDUtkast(fd: FormData): Promise<Svar> {
 
   const id = t(fd, "id");
   const utkast = t(fd, "utkast");
-  if (!utkast) return { ok: false, feil: "Brevet kan ikke være tomt." };
+  if (!utkast) return { ok: false, feil: ord().feil.brevTomt };
 
   const { error } = await supabase
     .from("espd_erklaringer")
@@ -205,7 +206,7 @@ export async function espdVedlegg(
     .eq("organisasjon_id", profil.organisasjon_id)
     .maybeSingle();
 
-  if (!data?.levert_filsti) return { ok: false, feil: "Ingen fil er levert." };
+  if (!data?.levert_filsti) return { ok: false, feil: ord().feil.ingenFilLevert };
 
   const { data: lenke, error } = await admin()
     .storage.from("espd")

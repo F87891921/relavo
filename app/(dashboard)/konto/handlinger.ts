@@ -5,6 +5,7 @@ import { krevProfil } from "@/lib/tilgang";
 import { admin } from "@/lib/supabase/admin";
 import { planFor } from "@/lib/plan";
 import { erGyldig, manglendeKrav, KRAV } from "@/lib/passord";
+import { ord } from "@/lib/sprak";
 
 export type Svar = { ok: true; melding?: string } | { ok: false; feil: string };
 
@@ -15,13 +16,13 @@ const t = (fd: FormData, n: string) => String(fd.get(n) ?? "").trim();
 export async function oppdaterEgetNavn(fd: FormData): Promise<Svar> {
   const { supabase, user } = await krevProfil();
   const navn = t(fd, "navn");
-  if (!navn) return { ok: false, feil: "Navnet kan ikke være tomt." };
+  if (!navn) return { ok: false, feil: ord().feil.navnTomt };
 
   const { error } = await supabase.from("profiler").update({ navn }).eq("id", user.id);
   if (error) return { ok: false, feil: error.message };
 
   revalidatePath("/konto");
-  return { ok: true, melding: "Navnet er oppdatert." };
+  return { ok: true, melding: ord().kvittering.navnOppdatert };
 }
 
 export async function byttEgetPassord(fd: FormData): Promise<Svar> {
@@ -30,19 +31,22 @@ export async function byttEgetPassord(fd: FormData): Promise<Svar> {
   const nytt = t(fd, "nytt");
   const gjenta = t(fd, "gjenta");
 
-  if (nytt !== gjenta) return { ok: false, feil: "De to passordene er ikke like." };
+  if (nytt !== gjenta) return { ok: false, feil: ord().feil.passordUlike };
 
   if (!erGyldig(nytt, user.email ?? "")) {
     const mangler = manglendeKrav(nytt, user.email ?? "")
       .map((id) => KRAV.find((k) => k.id === id)?.tekst)
       .filter(Boolean);
-    return { ok: false, feil: `Passordet mangler: ${mangler.join(", ")}.` };
+    return {
+      ok: false,
+      feil: ord().feil.passordMangler.replace("{krav}", mangler.join(", ")),
+    };
   }
 
   const { error } = await supabase.auth.updateUser({ password: nytt });
   if (error) return { ok: false, feil: error.message };
 
-  return { ok: true, melding: "Passordet er byttet." };
+  return { ok: true, melding: ord().kvittering.passordByttet };
 }
 
 /* ------------------------------------------------------ Organisasjonen */
@@ -50,10 +54,10 @@ export async function byttEgetPassord(fd: FormData): Promise<Svar> {
 export async function oppdaterOrganisasjon(fd: FormData): Promise<Svar> {
   const { supabase, profil } = await krevProfil();
   if (profil.rolle !== "administrator")
-    return { ok: false, feil: "Bare administrator kan endre organisasjonen." };
+    return { ok: false, feil: ord().feil.bareAdminOrganisasjon };
 
   const navn = t(fd, "navn");
-  if (!navn) return { ok: false, feil: "Navnet kan ikke være tomt." };
+  if (!navn) return { ok: false, feil: ord().feil.navnTomt };
 
   const { error } = await supabase
     .from("organisasjoner")
@@ -63,7 +67,7 @@ export async function oppdaterOrganisasjon(fd: FormData): Promise<Svar> {
   if (error) return { ok: false, feil: error.message };
 
   revalidatePath("/konto");
-  return { ok: true, melding: "Organisasjonen er oppdatert." };
+  return { ok: true, melding: ord().kvittering.organisasjonOppdatert };
 }
 
 /* ----------------------------------------------------------- Kolleger */
@@ -71,20 +75,23 @@ export async function oppdaterOrganisasjon(fd: FormData): Promise<Svar> {
 export async function nyBruker(fd: FormData): Promise<Svar> {
   const { supabase, profil } = await krevProfil();
   if (profil.rolle !== "administrator")
-    return { ok: false, feil: "Bare administrator kan legge til brukere." };
+    return { ok: false, feil: ord().feil.bareAdminBrukere };
 
   const epost = t(fd, "epost").toLowerCase();
   const navn = t(fd, "navn");
   const passord = t(fd, "passord");
   const rolle = t(fd, "rolle") === "administrator" ? "administrator" : "bruker";
 
-  if (!epost || !navn) return { ok: false, feil: "Navn og e-post må fylles ut." };
+  if (!epost || !navn) return { ok: false, feil: ord().feil.navnOgEpost };
 
   if (!erGyldig(passord, epost)) {
     const mangler = manglendeKrav(passord, epost)
       .map((id) => KRAV.find((k) => k.id === id)?.tekst)
       .filter(Boolean);
-    return { ok: false, feil: `Passordet mangler: ${mangler.join(", ")}.` };
+    return {
+      ok: false,
+      feil: ord().feil.passordMangler.replace("{krav}", mangler.join(", ")),
+    };
   }
 
   // Grensen sjekkes før vi oppretter innloggingen. Ellers ville en avvist
@@ -105,7 +112,13 @@ export async function nyBruker(fd: FormData): Promise<Svar> {
   if ((count ?? 0) >= plan.brukere) {
     return {
       ok: false,
-      feil: `${plan.navn} gir plass til ${plan.brukere} ${plan.brukere === 1 ? "bruker" : "brukere"}. Oppgrader planen for å legge til flere.`,
+      feil: ord()
+        .feil.planFullt.replace("{plan}", plan.navn)
+        .replace("{n}", String(plan.brukere))
+        .replace(
+          "{ord}",
+          plan.brukere === 1 ? ord().internt.bruker : ord().internt.brukere,
+        ),
     };
   }
 
@@ -118,7 +131,7 @@ export async function nyBruker(fd: FormData): Promise<Svar> {
   });
 
   if (authFeil || !ny.user)
-    return { ok: false, feil: authFeil?.message ?? "Kunne ikke opprette innlogging." };
+    return { ok: false, feil: authFeil?.message ?? ord().feil.ingenInnlogging };
 
   const { error: profilFeil } = await a.from("profiler").insert({
     id: ny.user.id,
@@ -134,14 +147,14 @@ export async function nyBruker(fd: FormData): Promise<Svar> {
   }
 
   revalidatePath("/konto");
-  return { ok: true, melding: `${navn} er lagt til.` };
+  return { ok: true, melding: ord().kvittering.lagtTil.replace("{navn}", navn) };
 }
 
 export async function fjernBruker(id: string): Promise<Svar> {
   const { profil, user } = await krevProfil();
   if (profil.rolle !== "administrator")
-    return { ok: false, feil: "Bare administrator kan fjerne brukere." };
-  if (id === user.id) return { ok: false, feil: "Du kan ikke fjerne deg selv." };
+    return { ok: false, feil: ord().feil.bareAdminFjerne };
+  if (id === user.id) return { ok: false, feil: ord().feil.kanIkkeFjerneSegSelv };
 
   const a = admin();
 
@@ -154,21 +167,21 @@ export async function fjernBruker(id: string): Promise<Svar> {
     .maybeSingle();
 
   if (!mal || mal.organisasjon_id !== profil.organisasjon_id)
-    return { ok: false, feil: "Brukeren hører ikke til din organisasjon." };
+    return { ok: false, feil: ord().feil.brukerIkkeIOrg };
 
   const { error } = await a.auth.admin.deleteUser(id);
   if (error) return { ok: false, feil: error.message };
 
   revalidatePath("/konto");
-  return { ok: true, melding: "Brukeren er fjernet." };
+  return { ok: true, melding: ord().kvittering.brukerFjernet };
 }
 
 export async function settRolle(id: string, rolle: string): Promise<Svar> {
   const { supabase, profil, user } = await krevProfil();
   if (profil.rolle !== "administrator")
-    return { ok: false, feil: "Bare administrator kan endre roller." };
+    return { ok: false, feil: ord().feil.bareAdminRoller };
   if (id === user.id)
-    return { ok: false, feil: "Du kan ikke endre din egen rolle." };
+    return { ok: false, feil: ord().feil.kanIkkeEndreEgenRolle };
 
   const { error } = await supabase
     .from("profiler")

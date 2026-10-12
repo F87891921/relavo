@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { krevProfil } from "@/lib/tilgang";
 import { finnJav, type JavTreff } from "@/lib/jav";
+import { ord } from "@/lib/sprak";
 
 export type Svar = { ok: true; melding?: string } | { ok: false; feil: string };
 
@@ -22,8 +23,8 @@ export async function nyDeltaker(fd: FormData): Promise<Svar> {
   const navn = t(fd, "navn");
   const rolle = t(fd, "rolle");
 
-  if (!navn) return { ok: false, feil: "Navnet kan ikke være tomt." };
-  if (!rolle) return { ok: false, feil: "Rollen må fylles ut." };
+  if (!navn) return { ok: false, feil: ord().feil.navnTomt };
+  if (!rolle) return { ok: false, feil: ord().feil.rolleKreves };
 
   // Samme person to ganger gir to identiske treff på hver kontroll. Det ser
   // ut som to funn, men er ett.
@@ -34,7 +35,7 @@ export async function nyDeltaker(fd: FormData): Promise<Svar> {
     .ilike("navn", navn)
     .maybeSingle();
 
-  if (finnes) return { ok: false, feil: `${navn} er allerede registrert.` };
+  if (finnes) return { ok: false, feil: ord().feil.alleredeRegistrert.replace("{navn}", navn) };
 
   const { error } = await supabase.from("prosjektdeltakere").insert({
     organisasjon_id: profil.organisasjon_id,
@@ -45,7 +46,7 @@ export async function nyDeltaker(fd: FormData): Promise<Svar> {
   if (error) return { ok: false, feil: error.message };
 
   revalidatePath("/jav");
-  return { ok: true, melding: `${navn} er lagt til.` };
+  return { ok: true, melding: ord().kvittering.lagtTil.replace("{navn}", navn) };
 }
 
 /**
@@ -65,7 +66,7 @@ export async function limInnDeltakere(fd: FormData): Promise<Svar> {
     .map((l) => l.trim())
     .filter(Boolean);
 
-  if (!linjer.length) return { ok: false, feil: "Lista er tom." };
+  if (!linjer.length) return { ok: false, feil: ord().feil.listaTom };
 
   const nye = linjer.map((linje) => {
     // Siste komma deler, ikke første: «Hansen, Ola, saksbehandler» finnes.
@@ -92,7 +93,7 @@ export async function limInnDeltakere(fd: FormData): Promise<Svar> {
   });
 
   if (!skalInn.length)
-    return { ok: false, feil: "Alle i lista er allerede registrert." };
+    return { ok: false, feil: ord().feil.alleAlleredeRegistrert };
 
   const { error } = await supabase.from("prosjektdeltakere").insert(
     skalInn.map((d) => ({
@@ -105,12 +106,15 @@ export async function limInnDeltakere(fd: FormData): Promise<Svar> {
   if (error) return { ok: false, feil: error.message };
 
   const hoppet = nye.length - skalInn.length;
+  const o = ord();
   revalidatePath("/jav");
   return {
     ok: true,
     melding:
-      `${skalInn.length} lagt til.` +
-      (hoppet ? ` ${hoppet} var allerede registrert.` : ""),
+      o.kvittering.antallLagtTil.replace("{n}", String(skalInn.length)) +
+      (hoppet
+        ? " " + o.kvittering.antallHoppet.replace("{n}", String(hoppet))
+        : ""),
   };
 }
 
@@ -132,7 +136,7 @@ export async function fjernDeltaker(id: string): Promise<Svar> {
     .eq("organisasjon_id", profil.organisasjon_id)
     .maybeSingle();
 
-  if (!deltaker) return { ok: false, feil: "Fant ikke deltakeren." };
+  if (!deltaker) return { ok: false, feil: ord().feil.fantIkkeDeltakeren };
 
   const { count } = await supabase
     .from("jav_treff")
@@ -142,7 +146,9 @@ export async function fjernDeltaker(id: string): Promise<Svar> {
   if (count)
     return {
       ok: false,
-      feil: `${deltaker.navn} har ${count} ${count === 1 ? "treff" : "treff"} i kontrollhistorikken og kan ikke fjernes. Sporet må stå.`,
+      feil: ord()
+        .feil.deltakerHarTreff.replace("{navn}", deltaker.navn)
+        .replace("{n}", String(count)),
     };
 
   const { error } = await supabase
@@ -154,7 +160,7 @@ export async function fjernDeltaker(id: string): Promise<Svar> {
   if (error) return { ok: false, feil: error.message };
 
   revalidatePath("/jav");
-  return { ok: true, melding: `${deltaker.navn} er fjernet.` };
+  return { ok: true, melding: ord().kvittering.fjernet.replace("{navn}", deltaker.navn) };
 }
 
 /**
@@ -178,7 +184,7 @@ export async function kjorJavPaNytt(): Promise<Svar> {
     .eq("organisasjon_id", profil.organisasjon_id);
 
   if (!deltakere?.length)
-    return { ok: false, feil: "Det er ingen deltakere å krysse mot." };
+    return { ok: false, feil: ord().feil.ingenDeltakere };
 
   const { data: leverandorer } = await supabase
     .from("leverandorer")
@@ -186,7 +192,7 @@ export async function kjorJavPaNytt(): Promise<Svar> {
     .eq("organisasjon_id", profil.organisasjon_id);
 
   if (!leverandorer?.length)
-    return { ok: false, feil: "Det er ingen leverandører å krysse." };
+    return { ok: false, feil: ord().feil.ingenLeverandorer };
 
   // Rolleoppslaget går mot Enhetsregisteret, ett kall per leverandør. Med
   // mange leverandører rekker ikke en serverhandling å bli ferdig, og en

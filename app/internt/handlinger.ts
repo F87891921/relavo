@@ -20,7 +20,7 @@ export async function nyttLead(fd: FormData): Promise<Svar> {
   const { supabase, user } = await krevAnsatt();
 
   const bolag = tekst(fd, "bolag");
-  if (!bolag) return { ok: false, feil: "Bolagsnamn saknas." };
+  if (!bolag) return { ok: false, feil: ord().feil.bolagsnamnMangler };
 
   const { error } = await supabase.from("leads").insert({
     bolag,
@@ -53,7 +53,7 @@ export async function nyOfferte(fd: FormData): Promise<Svar> {
   const { supabase, user } = await krevAnsatt();
 
   const kund = tekst(fd, "kund");
-  if (!kund) return { ok: false, feil: "Kund saknas." };
+  if (!kund) return { ok: false, feil: ord().feil.kundeMangler };
 
   // Fritt tilbud: et avtalt antall kontroller til en avtalt pris, utenfor
   // planene. Settes antallet, er det den prisen som gjelder.
@@ -61,9 +61,9 @@ export async function nyOfferte(fd: FormData): Promise<Svar> {
   const frittPris = Number(tekst(fd, "fritt_pris").replace(/\s/g, "")) || null;
 
   if (frittAntall && !frittPris)
-    return { ok: false, feil: "Ange ett pris för det fria erbjudandet." };
+    return { ok: false, feil: ord().feil.frittPris };
   if (frittPris && !frittAntall)
-    return { ok: false, feil: "Ange antal kontroller för det fria erbjudandet." };
+    return { ok: false, feil: ord().feil.frittAntall };
 
   const orgNr = tekst(fd, "org_nr").replace(/\s/g, "");
   if (orgNr) {
@@ -180,7 +180,7 @@ export async function sendOfferte(id: string, epost: string): Promise<Sendesvar>
     .eq("id", id)
     .maybeSingle();
 
-  if (hentFeil || !o) return { ok: false, feil: "Offerten finns inte." };
+  if (hentFeil || !o) return { ok: false, feil: ord().feil.offertFinnesIkke };
 
   const mottaker = (epost || o.kontakt_epost || "").trim();
 
@@ -203,14 +203,14 @@ export async function sendOfferte(id: string, epost: string): Promise<Sendesvar>
   revalidatePath(`/internt/offerter/${id}`);
 
   if (!mottaker)
-    return { ok: true, lenke, epostSendt: false, grunn: "Ingen e-postadress angiven." };
+    return { ok: true, lenke, epostSendt: false, grunn: ord().feil.ingenEpostadresse };
 
   if (!epostOppsatt())
     return {
       ok: true,
       lenke,
       epostSendt: false,
-      grunn: "Ingen e-postleverantör är kopplad. Skicka länken från din egen post.",
+      grunn: ord().feil.ingenEpostleverandor,
     };
 
   const r = regnUt(o);
@@ -279,10 +279,10 @@ export async function nyFaktura(fd: FormData): Promise<Svar> {
   const belopp = Number(tekst(fd, "belopp").replace(/\s/g, ""));
   const forfall = tekst(fd, "forfall");
 
-  if (!kunde) return { ok: false, feil: "Kund saknas." };
+  if (!kunde) return { ok: false, feil: ord().feil.kundeMangler };
   if (!Number.isFinite(belopp) || belopp < 0)
-    return { ok: false, feil: "Beloppet är inte ett giltigt tal." };
-  if (!forfall) return { ok: false, feil: "Förfallodatum saknas." };
+    return { ok: false, feil: ord().feil.belopUgyldig };
+  if (!forfall) return { ok: false, feil: ord().feil.forfallMangler };
 
   // Løpenummer per år. Krasjer to samtidige mot unique-regelen, feiler den
   // ene høyt i stedet for å skrive to fakturaer med samme nummer.
@@ -385,10 +385,10 @@ export async function settAnsatt(
   const { supabase, profil, user } = await krevAnsatt();
 
   if (profil.ansatt_rolle !== "superadmin")
-    return { ok: false, feil: "Bara superadmin kan ändra personalbehörighet." };
+    return { ok: false, feil: ord().feil.bareSuperadmin };
 
   if (id === user.id)
-    return { ok: false, feil: "Du kan inte ändra din egen behörighet." };
+    return { ok: false, feil: ord().feil.ikkeEgenTilgang };
 
   const { error } = await supabase
     .from("profiler")
@@ -482,7 +482,7 @@ export async function betalingMottatt(id: string): Promise<Svar> {
 export async function avslaKonto(id: string, grunn: string): Promise<Svar> {
   const { supabase } = await krevAnsatt();
   if (!grunn.trim())
-    return { ok: false, feil: "Skriv hvorfor. Kunden får se begrunnelsen." };
+    return { ok: false, feil: ord().feil.skrivAvslagsgrunn };
 
   const { error } = await supabase
     .from("organisasjoner")
@@ -635,7 +635,7 @@ export async function koblFortnox(fd: FormData): Promise<Svar> {
   const tilgang = String(fd.get("tilgangstoken") ?? "").trim();
   const fornyelse = String(fd.get("fornyelsestoken") ?? "").trim();
   if (!tilgang || !fornyelse)
-    return { ok: false, feil: "Begge tokenene må fylles ut." };
+    return { ok: false, feil: ord().feil.beggeTokens };
 
   const { admin } = await import("@/lib/supabase/admin");
   const { error } = await admin().from("integrasjoner").upsert({

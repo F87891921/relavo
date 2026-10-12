@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { krevProfil } from "@/lib/tilgang";
 import { varsleKundeOmSvar, varsleOssOmSak } from "@/lib/varsling";
+import { ord } from "@/lib/sprak";
 
 export type Svar = { ok: true; id?: string } | { ok: false; feil: string };
 
@@ -13,8 +14,8 @@ export async function nySak(fd: FormData): Promise<Svar> {
 
   const emne = t(fd, "emne");
   const melding = t(fd, "melding");
-  if (!emne) return { ok: false, feil: "Saken må ha et emne." };
-  if (!melding) return { ok: false, feil: "Skriv hva saken gjelder." };
+  if (!emne) return { ok: false, feil: ord().feil.sakEmne };
+  if (!melding) return { ok: false, feil: ord().feil.sakInnhold };
 
   const { data: sak, error } = await supabase
     .from("saker")
@@ -60,7 +61,7 @@ export async function svarPaSak(fd: FormData): Promise<Svar> {
 
   const sakId = t(fd, "sak_id");
   const tekst = t(fd, "tekst");
-  if (!sakId || !tekst) return { ok: false, feil: "Skriv et svar først." };
+  if (!sakId || !tekst) return { ok: false, feil: ord().feil.svarForst };
 
   const fraRelavo = profil.ansatt === true;
 

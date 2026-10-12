@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { krevProfil } from "@/lib/tilgang";
+import { ord } from "@/lib/sprak";
 
 export type Svar = { ok: true; melding?: string } | { ok: false; feil: string };
 
@@ -13,8 +14,8 @@ export async function nyAnskaffelse(fd: FormData): Promise<Svar> {
   const saksnummer = f(fd, "saksnummer");
   const navn = f(fd, "navn");
 
-  if (!saksnummer) return { ok: false, feil: "Saksnummeret må fylles ut." };
-  if (!navn) return { ok: false, feil: "Anskaffelsen må ha et navn." };
+  if (!saksnummer) return { ok: false, feil: ord().feil.saksnummerKreves };
+  if (!navn) return { ok: false, feil: ord().feil.anskaffelseNavn };
 
   const { error } = await supabase.from("anskaffelser").insert({
     organisasjon_id: profil.organisasjon_id,
@@ -30,14 +31,15 @@ export async function nyAnskaffelse(fd: FormData): Promise<Svar> {
       ok: false,
       // Unikhetsregelen er på (organisasjon_id, saksnummer). Den feilen er
       // ikke en databasefeil for brukeren, den er «den finnes allerede».
-      feil: error.code === "23505"
-        ? `${saksnummer} er allerede registrert.`
-        : error.message,
+      feil:
+        error.code === "23505"
+          ? ord().feil.alleredeRegistrert.replace("{navn}", saksnummer)
+          : error.message,
     };
 
   revalidatePath("/anskaffelser");
   revalidatePath("/tilbud");
-  return { ok: true, melding: `${saksnummer} er lagt til.` };
+  return { ok: true, melding: ord().kvittering.lagtTil.replace("{navn}", saksnummer) };
 }
 
 export async function fjernAnskaffelse(id: string): Promise<Svar> {
@@ -53,7 +55,7 @@ export async function fjernAnskaffelse(id: string): Promise<Svar> {
     .eq("organisasjon_id", profil.organisasjon_id)
     .maybeSingle();
 
-  if (!ansk) return { ok: false, feil: "Fant ikke anskaffelsen." };
+  if (!ansk) return { ok: false, feil: ord().feil.fantIkkeAnskaffelsen };
 
   const { count } = await supabase
     .from("redegjorelser")
@@ -63,7 +65,9 @@ export async function fjernAnskaffelse(id: string): Promise<Svar> {
   if (count)
     return {
       ok: false,
-      feil: `Det er sendt ${count} ${count === 1 ? "brev" : "brev"} i ${ansk.saksnummer}. Saken kan ikke fjernes.`,
+      feil: ord()
+        .feil.anskaffelseHarBrev.replace("{n}", String(count))
+        .replace("{ref}", ansk.saksnummer),
     };
 
   const { error } = await supabase
@@ -76,7 +80,7 @@ export async function fjernAnskaffelse(id: string): Promise<Svar> {
 
   revalidatePath("/anskaffelser");
   revalidatePath("/tilbud");
-  return { ok: true, melding: `${ansk.saksnummer} er fjernet.` };
+  return { ok: true, melding: ord().kvittering.fjernet.replace("{navn}", ansk.saksnummer) };
 }
 
 /**
@@ -91,8 +95,8 @@ export async function nyttTilbud(fd: FormData): Promise<Svar> {
   const navn = f(fd, "leverandor_navn");
   const rå = f(fd, "sum");
 
-  if (!anskaffelseId) return { ok: false, feil: "Velg en anskaffelse." };
-  if (!navn) return { ok: false, feil: "Tilbyderen må ha et navn." };
+  if (!anskaffelseId) return { ok: false, feil: ord().feil.velgAnskaffelse };
+  if (!navn) return { ok: false, feil: ord().feil.tilbyderNavn };
 
   // Mellomrom og hardt mellomrom er tusenskille. Komma er desimaltegn på
   // norsk; punktum kan være begge deler, så det tolkes som tusenskille når
@@ -103,11 +107,11 @@ export async function nyttTilbud(fd: FormData): Promise<Svar> {
     .replace(",", ".");
 
   if (!/^\d+(\.\d+)?$/.test(renset))
-    return { ok: false, feil: `«${rå}» er ikke et beløp.` };
+    return { ok: false, feil: ord().feil.ikkeEtBelop.replace("{verdi}", rå) };
 
   const sum = Number(renset);
   if (!Number.isFinite(sum) || sum < 0)
-    return { ok: false, feil: "Summen må være et positivt tall." };
+    return { ok: false, feil: ord().feil.summenPositiv };
 
   const { error } = await supabase.from("tilbud").insert({
     anskaffelse_id: anskaffelseId,
@@ -121,7 +125,7 @@ export async function nyttTilbud(fd: FormData): Promise<Svar> {
 
   revalidatePath("/anskaffelser");
   revalidatePath("/tilbud");
-  return { ok: true, melding: `${navn} er lagt til.` };
+  return { ok: true, melding: ord().kvittering.lagtTil.replace("{navn}", navn) };
 }
 
 export async function fjernTilbud(id: string): Promise<Svar> {

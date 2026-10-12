@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { admin } from "@/lib/supabase/admin";
+import { ord } from "@/lib/sprak";
 
 export type Svar = { ok: true } | { ok: false; feil: string };
 
@@ -33,21 +34,17 @@ export async function leverESPD(fd: FormData): Promise<Svar> {
   const bekreftet = fd.get("bekreftet") === "on";
   const fil = fd.get("fil");
 
-  if (!navn) return { ok: false, feil: "Skriv inn navnet ditt." };
-  if (!rolle) return { ok: false, feil: "Skriv inn hvilken rolle du har i selskapet." };
-  if (!bekreftet)
-    return { ok: false, feil: "Kryss av for at opplysningene er riktige." };
+  const o = ord();
+
+  if (!navn) return { ok: false, feil: o.feil.skrivNavnetDitt };
+  if (!rolle) return { ok: false, feil: o.feil.skrivRollenDin };
+  if (!bekreftet) return { ok: false, feil: o.feil.kryssAvRiktig };
   if (!(fil instanceof File) || fil.size === 0)
-    return { ok: false, feil: "Velg filen med egenerklæringen." };
-  if (fil.size > MAKS)
-    return { ok: false, feil: "Filen er større enn 15 MB. Send den som PDF." };
+    return { ok: false, feil: o.feil.velgEspdFil };
+  if (fil.size > MAKS) return { ok: false, feil: o.feil.filForStorPdf };
 
   const endelse = TYPER[fil.type];
-  if (!endelse)
-    return {
-      ok: false,
-      feil: "Filtypen støttes ikke. Send PDF, XML fra ESPD-tjenesten, Word-fil eller et bilde.",
-    };
+  if (!endelse) return { ok: false, feil: o.feil.filtypeEspd };
 
   const supabase = createClient();
 
@@ -55,8 +52,8 @@ export async function leverESPD(fd: FormData): Promise<Svar> {
   // en feil lenke ikke kan brukes til å legge igjen filer hos oss.
   const { data: rader } = await supabase.rpc("espd_ved_token", { t: token });
   const rad = Array.isArray(rader) ? rader[0] : null;
-  if (!rad) return { ok: false, feil: "Lenken er ikke gyldig." };
-  if (rad.levert) return { ok: false, feil: "Erklæringen er allerede levert." };
+  if (!rad) return { ok: false, feil: o.feil.lenkeUgyldig };
+  if (rad.levert) return { ok: false, feil: o.feil.alleredeLevert };
 
   // Leverandørens eget filnavn beholdes til visning, men ikke som sti.
   const trygtNavn = fil.name.replace(/[^\w.\- ]+/g, "_").slice(-80);
@@ -70,7 +67,11 @@ export async function leverESPD(fd: FormData): Promise<Svar> {
       upsert: false,
     });
 
-  if (lastFeil) return { ok: false, feil: `Opplastingen feilet: ${lastFeil.message}` };
+  if (lastFeil)
+    return {
+      ok: false,
+      feil: o.feil.opplastingFeilet.replace("{grunn}", lastFeil.message),
+    };
 
   // Registreringen går med service_role, ikke med anon. Funksjonen skriver
   // inn en filsti, og bare serveren vet hva som faktisk ble lastet opp — den
@@ -86,7 +87,7 @@ export async function leverESPD(fd: FormData): Promise<Svar> {
   if (error || ferdig !== true) {
     // Registreringen feilet — da skal ikke filen bli liggende igjen alene.
     await lager.storage.from("espd").remove([sti]);
-    return { ok: false, feil: error?.message ?? "Kunne ikke registrere leveransen." };
+    return { ok: false, feil: error?.message ?? o.feil.kunneIkkeRegistrere };
   }
 
   revalidatePath(`/ettersending/${token}`);
@@ -119,30 +120,30 @@ export async function leverSkatteattest(fd: FormData): Promise<Svar> {
   const utstedt = String(fd.get("utstedt") ?? "").trim();
   const fil = fd.get("attest");
 
-  if (!navn) return { ok: false, feil: "Skriv inn navnet ditt." };
-  if (!rolle) return { ok: false, feil: "Skriv inn hvilken rolle du har i selskapet." };
+  const o = ord();
+
+  if (!navn) return { ok: false, feil: o.feil.skrivNavnetDitt };
+  if (!rolle) return { ok: false, feil: o.feil.skrivRollenDin };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(utstedt))
-    return { ok: false, feil: "Fyll inn datoen som står på attesten." };
+    return { ok: false, feil: o.feil.attestDato };
 
   const dato = new Date(`${utstedt}T00:00:00Z`);
   if (Number.isNaN(dato.getTime()))
-    return { ok: false, feil: "Datoen er ikke gyldig." };
+    return { ok: false, feil: o.feil.datoUgyldig };
   if (dato.getTime() > Date.now())
-    return { ok: false, feil: "Datoen ligger fram i tid." };
+    return { ok: false, feil: o.feil.datoFramITid };
 
   if (!(fil instanceof File) || fil.size === 0)
-    return { ok: false, feil: "Velg filen med skatteattesten." };
-  if (fil.size > MAKS)
-    return { ok: false, feil: "Filen er større enn 15 MB." };
+    return { ok: false, feil: o.feil.velgAttestFil };
+  if (fil.size > MAKS) return { ok: false, feil: o.feil.filForStor };
 
   const endelse = ATTESTTYPER[fil.type];
-  if (!endelse)
-    return { ok: false, feil: "Send attesten som PDF eller bilde." };
+  if (!endelse) return { ok: false, feil: o.feil.filtypeAttest };
 
   const supabase = createClient();
   const { data: rader } = await supabase.rpc("espd_ved_token", { t: token });
   if (!(Array.isArray(rader) ? rader[0] : null))
-    return { ok: false, feil: "Lenken er ikke gyldig." };
+    return { ok: false, feil: o.feil.lenkeUgyldig };
 
   const trygtNavn = fil.name.replace(/[^\w.\- ]+/g, "_").slice(-80);
   const sti = `${token}/${Date.now()}.${endelse}`;
@@ -155,7 +156,11 @@ export async function leverSkatteattest(fd: FormData): Promise<Svar> {
       upsert: false,
     });
 
-  if (lastFeil) return { ok: false, feil: `Opplastingen feilet: ${lastFeil.message}` };
+  if (lastFeil)
+    return {
+      ok: false,
+      feil: o.feil.opplastingFeilet.replace("{grunn}", lastFeil.message),
+    };
 
   const { data: ferdig, error } = await lager.rpc("skatteattest_lever", {
     t: token,
@@ -168,7 +173,7 @@ export async function leverSkatteattest(fd: FormData): Promise<Svar> {
 
   if (error || ferdig !== true) {
     await lager.storage.from("skatteattest").remove([sti]);
-    return { ok: false, feil: error?.message ?? "Kunne ikke registrere attesten." };
+    return { ok: false, feil: error?.message ?? o.feil.kunneIkkeRegistrereAttest };
   }
 
   revalidatePath(`/ettersending/${token}`);

@@ -38,7 +38,10 @@ export async function slaOppEnhet(orgnr: string): Promise<Oppslag> {
   } catch {
     return {
       status: "feil",
-      melding: "Fikk ikke kontakt med Enhetsregisteret.",
+      // Nøkkel, ikke tekst. Modulen importeres også av en klientkomponent,
+      // så den kan ikke slå opp i ordboka selv — da ville next/headers
+      // havnet i nettleserbunten.
+      melding: "brregIngenKontakt",
     };
   }
 
@@ -46,7 +49,7 @@ export async function slaOppEnhet(orgnr: string): Promise<Oppslag> {
   if (!svar.ok) {
     return {
       status: "feil",
-      melding: `Enhetsregisteret svarte ${svar.status}.`,
+      melding: `brregSvarte:${svar.status}`,
     };
   }
 
@@ -54,7 +57,7 @@ export async function slaOppEnhet(orgnr: string): Promise<Oppslag> {
   try {
     j = await svar.json();
   } catch {
-    return { status: "feil", melding: "Uleselig svar fra Enhetsregisteret." };
+    return { status: "feil", melding: "brregUleselig" };
   }
 
   const hent = (o: unknown, n: string) =>

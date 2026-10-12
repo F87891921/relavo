@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { admin } from "@/lib/supabase/admin";
 import { manglendeKrav, KRAV } from "@/lib/passord";
+import { ord } from "@/lib/sprak";
 
 export type Svar = { ok: true } | { ok: false; feil: string };
 
@@ -27,14 +28,17 @@ export async function registrer(fd: FormData): Promise<Svar> {
   const passord = String(fd.get("passord") ?? "");
 
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(epost))
-    return { ok: false, feil: "Skriv en gyldig e-postadresse." };
+    return { ok: false, feil: ord().feil.ugyldigEpost };
 
   const mangler = manglendeKrav(passord, epost);
   if (mangler.length) {
     const tekst = KRAV.filter((k) => mangler.includes(k.id))
       .map((k) => k.tekst.toLowerCase())
       .join(", ");
-    return { ok: false, feil: `Passordet mangler: ${tekst}.` };
+    return {
+      ok: false,
+      feil: ord().feil.passordMangler.replace("{krav}", tekst),
+    };
   }
 
   const { data, error } = await admin().auth.admin.createUser({
@@ -57,7 +61,7 @@ export async function registrer(fd: FormData): Promise<Svar> {
         : error.message,
     };
   }
-  if (!data.user) return { ok: false, feil: "Kontoen ble ikke opprettet." };
+  if (!data.user) return { ok: false, feil: ord().feil.kontoIkkeOpprettet };
 
   // Logg inn med en gang, slik at neste steg har en økt å jobbe i.
   const supabase = createClient();

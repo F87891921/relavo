@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { ord } from "@/lib/sprak";
 
 export type Svar = { ok: true } | { ok: false; feil: string };
 
@@ -43,7 +44,7 @@ export async function svarPaOffert(
   if (data !== true)
     return {
       ok: false,
-      feil: "Tilbudet er ikke lenger åpent for svar. Ta kontakt med oss, så ser vi på det.",
+      feil: ord().feil.tilbudIkkeApent,
     };
 
   revalidatePath(`/offert/${token}`);

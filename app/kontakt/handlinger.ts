@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { varsleOssOmHenvendelse } from "@/lib/varsling";
+import { ord } from "@/lib/sprak";
 
 export type Svar = { ok: true } | { ok: false; feil: string };
 
@@ -17,11 +18,11 @@ export async function sendHenvendelse(fd: FormData): Promise<Svar> {
   const epost = t(fd, "epost");
   const melding = t(fd, "melding");
 
-  if (!navn) return { ok: false, feil: "Skriv navnet ditt." };
+  if (!navn) return { ok: false, feil: ord().feil.skrivNavnet };
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(epost))
-    return { ok: false, feil: "Skriv en gyldig e-postadresse." };
+    return { ok: false, feil: ord().feil.ugyldigEpost };
   if (melding.length < 10)
-    return { ok: false, feil: "Skriv litt mer om hva det gjelder." };
+    return { ok: false, feil: ord().feil.skrivMerOmHva };
 
   // Enkel sperre mot skjemaroboter: et felt mennesker ikke ser og derfor
   // aldri fyller ut.
@@ -38,7 +39,7 @@ export async function sendHenvendelse(fd: FormData): Promise<Svar> {
     melding,
   });
 
-  if (error) return { ok: false, feil: "Kunne ikke sende inn. Prøv igjen." };
+  if (error) return { ok: false, feil: ord().feil.kunneIkkeSendeInn };
 
   // Henvendelsen er lagret uansett. Varselet er for at noen skal se den i
   // dag og ikke neste gang noen åpner lista.

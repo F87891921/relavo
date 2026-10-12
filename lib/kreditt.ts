@@ -1,5 +1,7 @@
 import { slaOppEnhet, type Enhet } from "@/lib/brreg";
 import { hentRegnskap, type Arsregnskap } from "@/lib/regnskap";
+import { ord } from "@/lib/sprak";
+import { brregFeil } from "@/lib/orgnrtekst";
 
 /**
  * Kredittvurdering bygget på det som faktisk er offentlig og gratis:
@@ -30,7 +32,8 @@ export async function kredittvurder(orgnr: string): Promise<Kredittsvar> {
   const oppslag = await slaOppEnhet(orgnr);
   if (oppslag.status === "ikke-funnet")
     return { ok: false, feil: "Hittade inget bolag med det numret." };
-  if (oppslag.status === "feil") return { ok: false, feil: oppslag.melding };
+  if (oppslag.status === "feil")
+    return { ok: false, feil: brregFeil(ord(), oppslag.melding) };
 
   const enhet = oppslag.enhet;
   const regnskap = await hentRegnskap(orgnr);

@@ -13,3 +13,18 @@ export function orgnrFeil(t: Ordbok, nokkel: string): string {
   };
   return kart[nokkel] ?? nokkel;
 }
+
+/**
+ * Samme grep for oppslaget mot Enhetsregisteret. slaOppEnhet gir en nøkkel
+ * fordi modulen også importeres av veiviseren, som er en klientkomponent.
+ * «brregSvarte:503» bærer statuskoden med seg i nøkkelen.
+ */
+export function brregFeil(t: Ordbok, nokkel: string): string {
+  if (nokkel.startsWith("brregSvarte:"))
+    return t.feil.brregSvarte.replace("{status}", nokkel.slice("brregSvarte:".length));
+  const kart: Record<string, string> = {
+    brregIngenKontakt: t.feil.brregIngenKontakt,
+    brregUleselig: t.feil.brregUleselig,
+  };
+  return kart[nokkel] ?? nokkel;
+}
