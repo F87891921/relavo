@@ -8,6 +8,7 @@ import { ord } from "@/lib/sprak";
 import { kredittvurder } from "@/lib/kreditt";
 import { grunnUrl } from "@/lib/url";
 import { sendEpost, epostOppsatt } from "@/lib/epost";
+import { tilbudBrev } from "@/lib/epostbrev";
 import { offertnummer, regnUt } from "@/lib/offert";
 
 export type Svar = { ok: true } | { ok: false; feil: string };
@@ -214,24 +215,17 @@ export async function sendOfferte(id: string, epost: string): Promise<Sendesvar>
     };
 
   const r = regnUt(o);
-  const brev = `Hei${o.kontaktperson ? " " + o.kontaktperson : ""},
-
-Her er tilbudet fra Relavo på ${r.planNavn.toLowerCase()} — samlet kontraktsverdi ${new Intl.NumberFormat("nb-NO").format(r.totalt)} NOK eksklusive merverdiavgift.
-
-Tilbudet kan leses og besvares her:
-${lenke}
-${o.giltig_til ? `\nTilbudet er gyldig til ${o.giltig_til}.\n` : ""}
-Si fra om noe er uklart, så tar vi det derfra.
-
-Med vennlig hilsen
-${profil.navn ?? "Relavo"}
-Relavo`;
-
-  const sendt = await sendEpost({
-    til: mottaker,
-    emne: `Tilbud fra Relavo — ${offertnummer(o.id, o.opprettet)}`,
-    tekst: brev,
+  const brev = tilbudBrev({
+    kontakt: o.kontaktperson,
+    plan: r.planNavn,
+    total: new Intl.NumberFormat("nb-NO").format(r.totalt),
+    lenke,
+    giltigTil: o.giltig_til,
+    avsender: profil.navn ?? "Relavo",
+    nummer: offertnummer(o.id, o.opprettet),
   });
+
+  const sendt = await sendEpost({ til: mottaker, ...brev });
 
   if (!sendt.ok) return { ok: true, lenke, epostSendt: false, grunn: sendt.feil };
   return { ok: true, lenke, epostSendt: true };

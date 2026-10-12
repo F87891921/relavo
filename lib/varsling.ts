@@ -2,6 +2,7 @@ import { admin } from "@/lib/supabase/admin";
 import { sendEpost } from "@/lib/epost";
 import { RELAVO } from "@/lib/relavo";
 import { grunnUrl } from "@/lib/url";
+import { svarPaaSakBrev, nySakBrev, henvendelseBrev, overvakingBrev, type Ferdig } from "@/lib/epostbrev";
 
 /**
  * Varsler på e-post.
@@ -15,14 +16,10 @@ import { grunnUrl } from "@/lib/url";
  * Derfor returnerer ingenting her noe kallstedet må forholde seg til.
  * Feil havner i serverloggen, der de hører hjemme.
  */
-async function prov(o: {
-  til: string | null | undefined;
-  emne: string;
-  tekst: string;
-}): Promise<void> {
+async function prov(o: { til: string | null | undefined } & Ferdig): Promise<void> {
   if (!o.til) return;
   try {
-    const svar = await sendEpost({ til: o.til, emne: o.emne, tekst: o.tekst });
+    const svar = await sendEpost({ til: o.til, emne: o.emne, tekst: o.tekst, html: o.html });
     if (!svar.ok && !svar.mangler) console.error("[varsling]", svar.feil);
   } catch (e) {
     console.error("[varsling] kastet:", e);
@@ -51,20 +48,7 @@ export async function varsleKundeOmSvar(o: {
   tekst: string;
 }) {
   const til = await epostTil(o.tilBrukerId);
-  await prov({
-    til,
-    emne: `Svar på saken din — ${o.emne}`,
-    tekst: `${o.svarFra} har svart på saken «${o.emne}».
-
-${o.tekst}
-
-Svar direkte i Relavo:
-${grunnUrl()}/support
-
-Du får denne e-posten fordi varsling er slått på for saken. Du kan slå
-den av på samme side.`,
-  });
-}
+  await prov({ til, ...svarPaaSakBrev({ svarFra: o.svarFra, emne: o.emne, tekst: o.tekst, lenke: `${grunnUrl()}/support` }) });}
 
 export async function varsleOssOmSak(o: {
   emne: string;
@@ -72,18 +56,7 @@ export async function varsleOssOmSak(o: {
   tekst: string;
   nySak: boolean;
 }) {
-  await prov({
-    til: OSS(),
-    emne: o.nySak
-      ? `Ny støttesak — ${o.emne}`
-      : `Kunden har svart — ${o.emne}`,
-    tekst: `${o.organisasjon ?? "Ukjent organisasjon"}
-
-${o.tekst}
-
-${grunnUrl()}/internt/support`,
-  });
-}
+  await prov({ til: OSS(), ...nySakBrev({ ...o, lenke: `${grunnUrl()}/internt/support` }) });}
 
 /* -------------------------------------------------------- Kontaktskjemaet */
 
@@ -95,20 +68,7 @@ export async function varsleOssOmHenvendelse(o: {
   kategori: string;
   melding: string;
 }) {
-  await prov({
-    til: OSS(),
-    emne: `Kontaktskjema — ${o.navn}${o.organisasjon ? `, ${o.organisasjon}` : ""}`,
-    tekst: `${o.navn}
-${o.epost}${o.telefon ? `\n${o.telefon}` : ""}
-${o.organisasjon ?? ""}
-
-Gjelder: ${o.kategori}
-
-${o.melding}
-
-${grunnUrl()}/internt/kontakt`,
-  });
-}
+  await prov({ til: OSS(), ...henvendelseBrev({ ...o, lenke: `${grunnUrl()}/internt/kontakt` }) });}
 
 /* ------------------------------------------------------------ Overvåking */
 
@@ -151,22 +111,15 @@ export async function varsleOmHendelser(
   if (!mottakere?.length) return;
 
   const kritiske = verdt.filter((h) => h.alvor === "kritisk");
-  const linjer = verdt
-    .map((h) => `  ${h.alvor === "kritisk" ? "!" : "·"} ${h.navn} ${TEKST[h.slag] ?? h.slag}`)
-    .join("\n");
-
-  const emne = kritiske.length
-    ? `Endring som krever handling — ${kritiske[0].navn}`
-    : `${verdt.length} endring${verdt.length === 1 ? "" : "er"} hos leverandørene dere følger`;
-
-  const tekst = `Den daglige overvåkingen fant dette siden i går:
-
-${linjer}
-
-${kritiske.length ? "Linjene med utropstegn er avvisningsgrunner etter § 24-2, eller gjør det ulovlig å kjøpe tjenesten. De bør ses på i dag.\n\n" : ""}${grunnUrl()}/oversikt`;
+  const brev = overvakingBrev({
+    hendelser: verdt.map((h) => ({ tekst: `${h.navn} ${TEKST[h.slag] ?? h.slag}`, haster: h.alvor === "kritisk" })),
+    kritisk: kritiske.length > 0,
+    forsteNavn: kritiske[0]?.navn ?? "",
+    lenke: `${grunnUrl()}/oversikt`,
+  });
 
   for (const m of mottakere) {
     const til = await epostTil(m.id);
-    await prov({ til, emne, tekst });
+    await prov({ til, ...brev });
   }
 }

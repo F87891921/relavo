@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { admin } from "@/lib/supabase/admin";
 import { sendEpost } from "@/lib/epost";
 import { ord } from "@/lib/sprak";
-import { handlingsbrev } from "@/lib/epostmal";
+import { glemtPassordBrev } from "@/lib/epostbrev";
 
 /**
  * Send en lenke for å velge nytt passord.
@@ -35,20 +35,7 @@ export async function glemtPassord(epost: string): Promise<void> {
   const host = h.get("x-forwarded-host") ?? h.get("host");
   const lenke = `${proto}://${host}/auth/bekreft?token_hash=${encodeURIComponent(token)}&type=recovery`;
 
-  const t = ord().glemt;
-  const svar = await sendEpost({
-    til: adresse,
-    emne: t.epostEmne,
-    tekst: t.epostTekst.replace("{lenke}", lenke),
-    html: handlingsbrev({
-      hei: t.epostHei,
-      ingress: t.epostIngress,
-      knapp: t.epostKnapp,
-      lenke,
-      ellerLenke: t.epostEllerLenke,
-      ignorer: t.epostIgnorer,
-    }),
-  });
+  const svar = await sendEpost({ til: adresse, ...glemtPassordBrev(ord().glemt, lenke) });
   // Skjemaet svarer likt uansett, så feilen må stå i loggen — ellers får ingen vite at utsendingen ikke virker.
   if (!svar.ok) console.error("glemt-passord: e-post ikke sendt:", svar.feil);
 }
