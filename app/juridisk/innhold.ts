@@ -89,7 +89,7 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
-        "v": "Kunden kan når som helst eksportere sine rapporter. Etter avtaleslutt slettes kundens data innen 90 dager, med mindre kunden ber om sletting tidligere eller lovpålagt oppbevaring krever noe annet."
+        "v": "Kunden kan når som helst eksportere alle sine data som en fil fra kontosiden, og enkeltrapporter som PDF. Etter avtaleslutt slettes kundens data innen 90 dager, med mindre kunden ber om sletting tidligere eller lovpålagt oppbevaring krever noe annet."
       },
       {
         "t": "h3",
@@ -278,7 +278,7 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
-        "v": "Ved avtaleslutt sletter Relavo kundens personopplysninger innen 90 dager, med mindre kunden ber om utlevering først eller lovpålagt oppbevaring krever noe annet. Sikkerhetskopier slettes i tråd med ordinær rotasjon, senest innen 180 dager."
+        "v": "Administratoren kan selv slette kontoen fra kontosiden. Kontoen stenges da med en gang, og dataene slettes etter 14 dagers angrefrist. Fakturaer beholdes som regnskapsmateriale i den tiden loven krever. Ved avtaleslutt uten at kunden har slettet selv sletter Relavo kundens personopplysninger innen 90 dager, med mindre kunden ber om utlevering først eller lovpålagt oppbevaring krever noe annet. Sikkerhetskopier slettes i tråd med ordinær rotasjon, senest innen 180 dager."
       }
     ]
   },

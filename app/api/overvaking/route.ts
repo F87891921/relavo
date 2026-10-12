@@ -1,3 +1,4 @@
+import { hjerteslag, meldFeil, vaktJobb } from "@/lib/feil";
 import { NextResponse, type NextRequest } from "next/server";
 import { admin } from "@/lib/supabase/admin";
 import { sjekkLeverandor, sjekkRenhold, type Tilstand } from "@/lib/overvaking";
@@ -39,6 +40,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ feil: "Ikke autorisert" }, { status: 401 });
 
   const start = Date.now();
+  // Vakt: den andre daglige jobben skal ha meldt seg siste halvannet døgn.
+  await vaktJobb("paminnelser", 36);
   const db = admin();
 
   const { data: leverandorer } = await db
@@ -166,6 +169,9 @@ export async function GET(req: NextRequest) {
     sist_feil: feil.length ? feil.slice(0, 5).join(" · ") : null,
     oppdatert: new Date().toISOString(),
   });
+
+  await hjerteslag("overvaking");
+  if (feil.length) await meldFeil({ kilde: "jobb", melding: `Overvåkingen fikk ${feil.length} feil`, detaljer: feil.slice(0, 3).join(" · ") });
 
   return NextResponse.json({
     sett,

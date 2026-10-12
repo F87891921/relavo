@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { admin } from "@/lib/supabase/admin";
 import { vurder, type Aktivitetsrad } from "@/lib/aktivitet";
+import { hjerteslag, meldFeil, vaktJobb } from "@/lib/feil";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -86,5 +87,43 @@ export async function GET(req: NextRequest) {
     if (data?.length) nye += 1;
   }
 
-  return NextResponse.json({ sjekket: varsler.length, nye });
+  // --- Sletting: organisasjoner der angrefristen er ute.
+  let slettet = 0;
+  const { data: forfalt } = await db
+    .from("organisasjoner")
+    .select("id, navn")
+    .not("slettes_den", "is", null)
+    .lte("slettes_den", new Date(na).toISOString());
+  for (const o of forfalt ?? []) {
+    try {
+      // Filene i lageret først: radene som peker på dem forsvinner med organisasjonen.
+      for (const [bucket, tabell, kol] of [
+        ["skatteattest", "skatteattester", "filsti"],
+        ["espd", "espd_erklaringer", "levert_filsti"],
+      ] as const) {
+        const { data: rader } = await db.from(tabell).select(kol).eq("organisasjon_id", o.id);
+        const stier = ((rader ?? []) as unknown as Record<string, string | null>[]).map((r) => r[kol]).filter(Boolean) as string[];
+        if (stier.length) await db.storage.from(bucket).remove(stier);
+      }
+      const { data: brukere } = await db.from("profiler").select("id").eq("organisasjon_id", o.id);
+      const { error } = await db.from("organisasjoner").delete().eq("id", o.id);
+      if (error) throw new Error(error.message);
+      for (const b of brukere ?? []) await db.auth.admin.deleteUser(b.id);
+      await db.from("interne_varsler").insert({
+        slag: "sletting",
+        tittel: `Konto slettet: ${o.navn}`,
+        tekst: "Organisasjonen, brukerne og filene er slettet etter angrefristen. Fakturaer er beholdt.",
+        lenke: "/internt/logg",
+        noekkel: `slettet:${o.id}`,
+      });
+      slettet += 1;
+    } catch (e) {
+      await meldFeil({ kilde: "jobb", melding: `Sletting av ${o.navn} feilet`, detaljer: e instanceof Error ? e.message : String(e) });
+    }
+  }
+
+  await hjerteslag("paminnelser");
+  await vaktJobb("overvaking", 36);
+
+  return NextResponse.json({ sjekket: varsler.length, nye, slettet });
 }

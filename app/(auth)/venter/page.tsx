@@ -4,6 +4,8 @@ import { krevProfil } from "@/lib/tilgang";
 import { RelavoMark } from "@/components/RelavoMark";
 import { planFor } from "@/lib/plan";
 import { RELAVO } from "@/lib/relavo";
+import { ord } from "@/lib/sprak";
+import { angreSletting } from "@/app/(dashboard)/konto/handlinger";
 
 /**
  * Kontoen er bestilt, men ikke åpnet ennå.
@@ -17,12 +19,41 @@ export default async function VenterSide() {
 
   const { data: org } = await supabase
     .from("organisasjoner")
-    .select("navn, plan, status, betalingsmate, forskuddsbetaling, avslag_grunn, bestilt")
+    .select("navn, plan, status, betalingsmate, forskuddsbetaling, avslag_grunn, bestilt, slettes_den")
     .eq("id", profil.organisasjon_id)
     .maybeSingle();
 
   if (!org || org.status === "aktiv") redirect("/oversikt");
   if (!org.betalingsmate) redirect("/betaling");
+
+  // Kontoen er stengt fordi administratoren har bedt om sletting. De kan angre til fristen er ute.
+  if (org.slettes_den) {
+    const d = ord().datakort;
+    return (
+      <div className="min-h-screen bg-surface px-4 py-[10vh]">
+        <div className="w-full max-w-[520px] mx-auto text-center">
+          <RelavoMark className="w-12 h-auto mx-auto mb-4 text-accent" />
+          <h1 className="text-[20px] font-semibold tracking-tight mb-2">{d.stengtTittel}</h1>
+          <p className="text-[13.5px] text-dim leading-relaxed mb-6">
+            {d.stengtTekst.replace("{dato}", org.slettes_den.slice(0, 10))}
+          </p>
+          {profil.rolle === "administrator" && (
+            <form
+              action={async () => {
+                "use server";
+                await angreSletting();
+                redirect("/oversikt");
+              }}
+            >
+              <button className="bg-accent hover:bg-accent-hover transition text-white text-sm font-semibold px-5 py-2.5 rounded-xl">
+                {d.angre}
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   const plan = planFor(org.plan);
   const avslatt = org.status === "avslatt";

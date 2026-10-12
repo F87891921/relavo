@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { admin } from "@/lib/supabase/admin";
+import { meldFeil } from "@/lib/feil";
 
 export const runtime = "nodejs";
 
@@ -60,7 +61,10 @@ export async function POST(req: NextRequest) {
         p_kunde: okt.customer ?? null,
       });
       // 500 gjør at Stripe prøver igjen. Det er riktig: en betaling vi ikke fikk registrert må ikke gå tapt.
-      if (error) return NextResponse.json({ feil: error.message }, { status: 500 });
+      if (error) {
+        await meldFeil({ kilde: "server", melding: "Stripe-betaling kunne ikke registreres", detaljer: `${okt.id}: ${error.message}` });
+        return NextResponse.json({ feil: error.message }, { status: 500 });
+      }
     }
   }
 

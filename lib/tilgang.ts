@@ -25,7 +25,7 @@ export const krevProfil = cache(async () => {
 
   const { data: profil } = await supabase
     .from("profiler")
-    .select("organisasjon_id, navn, rolle, ansatt, ansatt_rolle, sprak, organisasjoner!profiler_organisasjon_id_fkey(navn, status, betalingsmate, krever_tofaktor)")
+    .select("organisasjon_id, navn, rolle, ansatt, ansatt_rolle, sprak, organisasjoner!profiler_organisasjon_id_fkey(navn, status, betalingsmate, krever_tofaktor, slettes_den)")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -50,6 +50,7 @@ export const krevProfil = cache(async () => {
     status: string;
     betalingsmate: string | null;
     krever_tofaktor: boolean | null;
+    slettes_den: string | null;
   } | null;
 
   // Organisasjonen krever tofaktor, og denne brukeren har ikke satt det opp.
@@ -72,7 +73,7 @@ export const krevProfil = cache(async () => {
   // står og venter, og uten dette ville de blitt låst ute av sin egen
   // godkjenningsside.
   const APEN_UTEN_AKTIV = ["/venter", "/betaling", "/tofaktor", "/konto"];
-  const dit = org?.betalingsmate ? "/venter" : "/betaling";
+  const dit = org?.betalingsmate || org?.slettes_den ? "/venter" : "/betaling";
   if (
     sti &&
     !profil.ansatt &&

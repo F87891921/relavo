@@ -6,6 +6,7 @@ import { admin } from "@/lib/supabase/admin";
 import { planFor } from "@/lib/plan";
 import { erGyldig, manglendeKrav, KRAV } from "@/lib/passord";
 import { ord } from "@/lib/sprak";
+import { avsluttAbonnementer } from "@/lib/stripe";
 
 export type Svar = { ok: true; melding?: string } | { ok: false; feil: string };
 
@@ -192,5 +193,68 @@ export async function settRolle(id: string, rolle: string): Promise<Svar> {
   if (error) return { ok: false, feil: error.message };
 
   revalidatePath("/konto");
+  return { ok: true };
+}
+
+/* ------------------------------------------------------------ Sletting */
+
+const ANGREFRIST_DAGER = 14;
+
+/**
+ * Administratoren ber om å slette organisasjonen.
+ *
+ * Kontoen stenges med en gang og et eventuelt kortabonnement avsluttes, men
+ * dataene ligger i fjorten dager. Den som har slettet ved en feil, eller en
+ * annen som har overtatt innloggingen, rekker å si fra. Så tar den daglige
+ * jobben resten. Navnet på organisasjonen må skrives for å bekrefte.
+ */
+export async function bestillSletting(bekreftNavn: string): Promise<Svar> {
+  const { supabase, profil } = await krevProfil();
+  if (profil.rolle !== "administrator") return { ok: false, feil: ord().feil.bareAdministrator };
+
+  const { data: org } = await supabase
+    .from("organisasjoner")
+    .select("navn, stripe_kunde_id")
+    .eq("id", profil.organisasjon_id)
+    .maybeSingle();
+  if (!org || bekreftNavn.trim().toLowerCase() !== org.navn.trim().toLowerCase())
+    return { ok: false, feil: ord().datakort.feilNavn };
+
+  if (org.stripe_kunde_id) await avsluttAbonnementer(org.stripe_kunde_id);
+
+  const db = admin();
+  const dato = new Date(Date.now() + ANGREFRIST_DAGER * 86_400_000).toISOString();
+  const { error } = await db
+    .from("organisasjoner")
+    .update({ status: "stengt", slettes_den: dato })
+    .eq("id", profil.organisasjon_id);
+  if (error) return { ok: false, feil: error.message };
+
+  await db.from("interne_varsler").insert({
+    slag: "sletting",
+    tittel: `${org.navn} har bedt om sletting`,
+    tekst: `Kontoen er stengt og slettes ${dato.slice(0, 10)} hvis de ikke angrer.`,
+    lenke: "/internt",
+    noekkel: `sletting:${profil.organisasjon_id}:${dato.slice(0, 10)}`,
+  });
+
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+/** Angrer slettingen så lenge fristen ikke er ute. */
+export async function angreSletting(): Promise<Svar> {
+  const { profil } = await krevProfil();
+  if (profil.rolle !== "administrator") return { ok: false, feil: ord().feil.bareAdministrator };
+  const db = admin();
+  const { data: org } = await db
+    .from("organisasjoner")
+    .select("slettes_den")
+    .eq("id", profil.organisasjon_id)
+    .maybeSingle();
+  if (!org?.slettes_den || new Date(org.slettes_den) < new Date())
+    return { ok: false, feil: ord().datakort.forSent };
+  await db.from("organisasjoner").update({ status: "aktiv", slettes_den: null }).eq("id", profil.organisasjon_id);
+  revalidatePath("/", "layout");
   return { ok: true };
 }

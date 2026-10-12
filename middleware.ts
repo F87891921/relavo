@@ -124,6 +124,7 @@ export async function middleware(request: NextRequest) {
     "/kontakt",
     "/juridisk",
     "/api/kommune",
+    "/api/feil",
     "/api/stripe/webhook",
     "/auth/callback",
     "/auth/bekreft",

@@ -30,6 +30,21 @@ export default function GlobalError({
       error.message,
     );
 
+  // Meld feilen til oss, bortsett fra utdaterte faner som bare lastes på nytt.
+  useEffect(() => {
+    if (bitMangler) return;
+    try {
+      navigator.sendBeacon?.(
+        "/api/feil",
+        new Blob(
+          [JSON.stringify({ melding: error.message || error.name, side: location.pathname, detaljer: error.digest ?? error.stack?.slice(0, 600) })],
+          { type: "application/json" },
+        ),
+      );
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (!bitMangler) return;
     try {

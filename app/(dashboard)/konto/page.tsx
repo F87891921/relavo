@@ -5,6 +5,7 @@ import { planFor } from "@/lib/plan";
 import { MIN_LENGDE } from "@/lib/passord";
 import { aapneBetalingsportal } from "@/app/(auth)/betaling/handlinger";
 import { Tofaktor } from "@/components/konto/Tofaktor";
+import { DataKort } from "@/components/konto/DataKort";
 import { KreverTofaktor } from "@/components/konto/KreverTofaktor";
 import { Sprakvelger } from "@/components/Sprakvelger";
 import {
@@ -140,6 +141,14 @@ export default async function KontoSide({
             )}
           </div>
         </Kort>
+
+        {admin && (
+          <Kort tittel={t.datakort.tittel} className="mb-4">
+            <div className="px-5 py-5">
+              <DataKort />
+            </div>
+          </Kort>
+        )}
 
         {admin && org?.betalingsmate === "kort" && org.stripe_kunde_id && (
           <Kort tittel={t.betaling.betalingTittel} className="mb-4">

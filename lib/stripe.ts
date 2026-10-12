@@ -99,3 +99,24 @@ export const opprettPortal = (kunde: string, returUrl: string) =>
     "billing_portal/sessions",
     new URLSearchParams({ customer: kunde, return_url: returUrl }),
   );
+
+/** Avslutter alle aktive abonnementer for en kunde, brukt når en konto slettes. */
+export async function avsluttAbonnementer(kunde: string): Promise<{ ok: boolean; feil?: string }> {
+  const nokkel = process.env.STRIPE_SECRET_KEY;
+  if (!nokkel) return { ok: true };
+  try {
+    const liste = await fetch(`https://api.stripe.com/v1/subscriptions?customer=${encodeURIComponent(kunde)}&status=active&limit=20`, {
+      headers: { Authorization: `Bearer ${nokkel}` },
+    });
+    const d = (await liste.json()) as { data?: { id: string }[]; error?: { message: string } };
+    if (!liste.ok) return { ok: false, feil: d.error?.message };
+    for (const s of d.data ?? [])
+      await fetch(`https://api.stripe.com/v1/subscriptions/${encodeURIComponent(s.id)}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${nokkel}` },
+      });
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, feil: e instanceof Error ? e.message : "Ukjent feil" };
+  }
+}
