@@ -9,7 +9,7 @@ export default async function InterntKontaktSide() {
 
   const { data: henvendelser } = await supabase
     .from("kontakt_henvendelser")
-    .select("id, navn, epost, organisasjon, telefon, kategori, melding, behandlet, opprettet")
+    .select("id, navn, epost, organisasjon, telefon, kategori, melding, behandlet, opprettet, sprak")
     .order("opprettet", { ascending: false });
 
   const alle = henvendelser ?? [];
@@ -46,7 +46,12 @@ export default async function InterntKontaktSide() {
             tom={t.internt.ingenMeldinger}
             rader={alle.map((h) => [
               <div key="a">
-                <div className="font-semibold">{h.navn}</div>
+                <div className="font-semibold">
+                  {h.navn}
+                  {h.sprak !== "no" && (
+                    <span className="ml-1.5 text-[10.5px] font-bold text-accent">{String(h.sprak).toUpperCase()}</span>
+                  )}
+                </div>
                 <a
                   href={`mailto:${h.epost}`}
                   className="text-[11.5px] text-accent hover:underline"

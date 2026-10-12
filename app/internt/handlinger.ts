@@ -73,6 +73,23 @@ export async function nyOfferte(fd: FormData): Promise<Svar> {
     if (!sjekk.ok) return { ok: false, feil: orgnrFeil(ord(), sjekk.feil) };
   }
 
+  // «Auto»: samme språk som kunden hadde på siden da de skrev til oss.
+  // Finnes ingen henvendelse fra den adressen, er det norsk.
+  let sprak = tekst(fd, "sprak");
+  if (!erSprak(sprak)) {
+    const adresse = tekst(fd, "kontakt_epost").toLowerCase();
+    const { data: h } = adresse
+      ? await supabase
+          .from("kontakt_henvendelser")
+          .select("sprak")
+          .ilike("epost", adresse)
+          .order("opprettet", { ascending: false })
+          .limit(1)
+          .maybeSingle()
+      : { data: null };
+    sprak = erSprak(h?.sprak) ? h.sprak : "no";
+  }
+
   const { error } = await supabase.from("offerter").insert({
     kund,
     lead_id: tekst(fd, "lead_id") || null,
@@ -86,7 +103,7 @@ export async function nyOfferte(fd: FormData): Promise<Svar> {
     fakturaadresse: tekst(fd, "fakturaadresse") || null,
     kontaktperson: tekst(fd, "kontaktperson") || null,
     kontakt_epost: tekst(fd, "kontakt_epost") || null,
-    sprak: erSprak(tekst(fd, "sprak")) ? tekst(fd, "sprak") : "no",
+    sprak,
     fritt_antall: frittAntall,
     fritt_pris: frittPris,
     notat: tekst(fd, "notat") || null,

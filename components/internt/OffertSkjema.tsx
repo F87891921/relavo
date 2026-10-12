@@ -139,7 +139,8 @@ export function OffertSkjema({
           <label htmlFor="sprak" className="block text-xs font-semibold mb-1.5">
             {t.internt.brevsprak}
           </label>
-          <select id="sprak" name="sprak" defaultValue="no" className={FELT_FULL}>
+          <select id="sprak" name="sprak" defaultValue="auto" className={FELT_FULL}>
+            <option value="auto">Auto</option>
             <option value="no">Norsk</option>
             <option value="en">English</option>
           </select>

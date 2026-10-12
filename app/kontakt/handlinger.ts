@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { varsleOssOmHenvendelse } from "@/lib/varsling";
-import { ord } from "@/lib/sprak";
+import { ord, aktivtSprak } from "@/lib/sprak";
 
 export type Svar = { ok: true } | { ok: false; feil: string };
 
@@ -37,6 +37,7 @@ export async function sendHenvendelse(fd: FormData): Promise<Svar> {
     telefon: t(fd, "telefon") || null,
     kategori: t(fd, "kategori") || "annet",
     melding,
+    sprak: aktivtSprak(),
   });
 
   if (error) return { ok: false, feil: ord().feil.kunneIkkeSendeInn };
