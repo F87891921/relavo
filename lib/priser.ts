@@ -84,7 +84,7 @@ export const kr = (n: number) =>
  */
 export type BedriftId = "start" | "vekst" | "bygg" | "stor";
 export const BEDRIFT: { id: BedriftId; maks: number | null; mnd: number | null }[] = [
-  { id: "start", maks: 25, mnd: 2_900 },
+  { id: "start", maks: 25, mnd: 2_000 },
   { id: "vekst", maks: 100, mnd: 5_900 },
   { id: "bygg", maks: 300, mnd: 11_900 },
   { id: "stor", maks: null, mnd: null },

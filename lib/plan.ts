@@ -23,7 +23,7 @@ export const PLANER = {
   kommune: nivaPlan("kommune", "Kommune"),
   medelstor: nivaPlan("medelstor", "Medelstor"),
   stor: nivaPlan("stor", "Stor"),
-  start: { navn: "Start", brukere: 1000, pris: "2 900 NOK/mnd", manedspris: 2900 },
+  start: { navn: "Start", brukere: 1000, pris: "2 000 NOK/mnd", manedspris: 2000 },
   vekst: { navn: "Vekst", brukere: 1000, pris: "5 900 NOK/mnd", manedspris: 5900 },
   bygg: { navn: "Bygg", brukere: 1000, pris: "11 900 NOK/mnd", manedspris: 11900 },
   standard: { navn: "Standard", brukere: 3, pris: "6 900 NOK/mnd", manedspris: 6900 },

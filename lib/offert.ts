@@ -14,7 +14,7 @@ export const PRIS: Record<string, { navn: string; mnd: number }> = {
   kommune: { navn: "Kommune", mnd: 7900 },
   medelstor: { navn: "Medelstor", mnd: 12900 },
   stor: { navn: "Stor", mnd: 0 },
-  start: { navn: "Start (selskap)", mnd: 2900 },
+  start: { navn: "Start (selskap)", mnd: 2000 },
   vekst: { navn: "Vekst (selskap)", mnd: 5900 },
   bygg: { navn: "Bygg (selskap)", mnd: 11900 },
   standard: { navn: "Standard", mnd: 6900 },
