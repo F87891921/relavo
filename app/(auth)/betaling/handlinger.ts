@@ -14,7 +14,11 @@ export type Svar =
 
 /** Månedsprisen i kroner. Engangsplanen er én kontroll, ikke et abonnement. */
 const BELOP: Record<PlanId, number> = {
-  engangs: 590,
+  engangs: 890,
+  liten: 3900,
+  kommune: 7900,
+  medelstor: 12900,
+  stor: 0,
   standard: 6900,
   enterprise: 12900,
 };
@@ -50,11 +54,11 @@ export async function bestill(plan: string, betalingsmate: "kort" | "faktura"): 
       feil: ord().feil.kortIkkeKoblet,
     };
 
-  const p = PLANER[(plan as PlanId) ?? "standard"] ?? PLANER.standard;
+  const p = PLANER[(plan as PlanId) ?? "kommune"] ?? PLANER.kommune;
   const base = grunnUrl();
 
   const okt = await opprettKasseokt({
-    belopNok: BELOP[(plan as PlanId) ?? "standard"] ?? BELOP.standard,
+    belopNok: BELOP[(plan as PlanId) ?? "kommune"] ?? BELOP.kommune,
     beskrivelse: `Relavo ${p.navn}`,
     epost: user.email ?? "",
     gjentakende: plan !== "engangs",

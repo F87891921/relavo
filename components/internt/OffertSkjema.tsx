@@ -227,7 +227,7 @@ export function OffertSkjema({
               <label htmlFor="plan" className="block text-xs font-semibold mb-1.5">
                 {t.internt.plan}
               </label>
-              <select id="plan" name="plan" defaultValue="standard" className={FELT_FULL}>
+              <select id="plan" name="plan" defaultValue="kommune" className={FELT_FULL}>
                 {Object.entries(PRIS).map(([v, p]) => (
                   <option key={v} value={v}>
                     {p.mnd ? `${p.navn} — ${p.mnd} NOK/mån` : p.navn}

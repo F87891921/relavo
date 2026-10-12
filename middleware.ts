@@ -122,6 +122,7 @@ export async function middleware(request: NextRequest) {
     "/tofaktor",
     "/kontakt",
     "/juridisk",
+    "/api/kommune",
     "/auth/callback",
     ...TOKENSIDER,
   ];

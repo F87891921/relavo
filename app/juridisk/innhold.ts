@@ -40,7 +40,7 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
-        "v": "Relavo treffer ingen beslutninger. Vurderingen av om en leverandør skal avvises, kvalifiseres eller tildeles kontrakt tas av kunden. Risikonivåer, flagg og anbefalinger i tjenesten er beslutningsstøtte, ikke konklusjoner."
+        "v": "Relavo treffer ingen beslutninger. Vurderingen av om en leverandør skal avvises, kvalifiseres eller tildeles kontrakt tas av kunden. Risikonivåer, flagg og anbefalinger i tjenesten er beslutningsstøtte, ikke konklusjoner. Relavo er et beslutningsstøtteverktøy: den endelige vurderingen, og ansvaret for den, ligger hos kunden. Kunden må selv se over rapportens innhold og kilder, og vurdere dem opp mot anskaffelsen, før den legges til grunn for en beslutning eller føres inn i anskaffelsesprotokollen."
       },
       {
         "t": "h3",
@@ -62,6 +62,7 @@ export const JURIDISK: Seksjon[] = [
         "t": "liste",
         "v": [
           "Å ha et selvstendig behandlingsgrunnlag for kontrollene som gjennomføres.",
+          "Å foreta den endelige vurderingen av hver leverandør selv. Rapporter og flagg fra Relavo er beslutningsstøtte og erstatter ikke kundens egen vurdering, og kunden svarer for beslutningene som tas.",
           "Å sørge for at brukere hos kunden har den tilgangen de skal ha, og ikke mer.",
           "Å ikke bruke tjenesten til å kontrollere virksomheter uten saklig grunn knyttet til en anskaffelse, et kontraktsforhold eller en forestående inngåelse av et slikt forhold."
         ]
@@ -72,7 +73,7 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
-        "v": "Priser fremgår av prislisten og av avtalen. Abonnement faktureres forskuddsvis månedlig/årlig. Enkeltkontroller faktureres etterskuddsvis. Alle priser er oppgitt eksklusive merverdiavgift."
+        "v": "Priser fremgår av prislisten og av avtalen. Prisen for abonnement følger kommunens innbyggertall (SSB) og oppgis per måned. Abonnement har tolv måneders bindingstid, faktureres årlig forskuddsvis og fornyes ikke automatisk. Enkeltkontroller faktureres etterskuddsvis. Alle priser er oppgitt eksklusive merverdiavgift."
       },
       {
         "t": "p",

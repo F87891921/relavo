@@ -9,7 +9,11 @@ import type { Ordbok } from "@/lib/sprak/felles";
  * for samme avtale er verre enn at ett av dem mangler.
  */
 export const PRIS: Record<string, { navn: string; mnd: number }> = {
-  engangs: { navn: "Leverandørkontroll", mnd: 0 },
+  engangs: { navn: "Enkeltkontroll", mnd: 0 },
+  liten: { navn: "Liten", mnd: 3900 },
+  kommune: { navn: "Kommune", mnd: 7900 },
+  medelstor: { navn: "Medelstor", mnd: 12900 },
+  stor: { navn: "Stor", mnd: 0 },
   standard: { navn: "Standard", mnd: 6900 },
   enterprise: { navn: "Enterprise", mnd: 12900 },
 };

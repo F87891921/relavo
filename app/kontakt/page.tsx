@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function KontaktSide({
   searchParams,
 }: {
-  searchParams: { om?: string };
+  searchParams: { om?: string; kommune?: string };
 }) {
   const o = ord();
   return (
@@ -36,7 +36,7 @@ export default function KontaktSide({
           behandler opplysninger. Vi svarer normalt innen én virkedag.
         </p>
 
-        <KontaktSkjema forvalgt={searchParams.om} />
+        <KontaktSkjema forvalgt={searchParams.om} organisasjon={searchParams.kommune?.slice(0, 80)} />
       </div>
     </div>
   );

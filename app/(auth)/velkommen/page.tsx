@@ -18,9 +18,10 @@ import { FELT_FULL } from "@/components/ui/felt";
  * bruker, så denne siden kan ikke misbrukes til å bytte organisasjon.
  */
 const PLANER = [
-  { verdi: "engangs", navn: "Leverandørkontroll", pris: "590 NOK per kontroll" },
-  { verdi: "standard", navn: "Standard", pris: "6 900 NOK/mnd" },
-  { verdi: "enterprise", navn: "Enterprise", pris: "12 900 NOK/mnd" },
+  { verdi: "liten", navn: "Liten", pris: "3 900 NOK/mnd" },
+  { verdi: "kommune", navn: "Kommune", pris: "7 900 NOK/mnd" },
+  { verdi: "medelstor", navn: "Medelstor", pris: "12 900 NOK/mnd" },
+  { verdi: "engangs", navn: "Enkeltkontroll", pris: "890 NOK per kontroll" },
 ];
 
 export default function VelkommenSide() {
@@ -29,7 +30,7 @@ export default function VelkommenSide() {
   const [navn, setNavn] = useState("");
   const [orgNr, setOrgNr] = useState("");
   const [brukernavn, setBrukernavn] = useState("");
-  const [plan, setPlan] = useState("standard");
+  const [plan, setPlan] = useState("kommune");
   const [feil, setFeil] = useState("");
   const [laster, setLaster] = useState(false);
 
@@ -37,7 +38,7 @@ export default function VelkommenSide() {
   // ta det samme valget to ganger.
   useEffect(() => {
     const fra = new URLSearchParams(window.location.search).get("plan");
-    if (fra && ["engangs", "standard", "enterprise"].includes(fra)) setPlan(fra);
+    if (fra && PLANER.map((p) => p.verdi).includes(fra)) setPlan(fra);
   }, []);
 
   async function opprett(e: React.FormEvent) {

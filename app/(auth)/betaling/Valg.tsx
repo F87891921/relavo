@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useOrd } from "@/components/Sprakgiver";
 import { bestill } from "./handlinger";
 
 const PLANER = [
-  { verdi: "engangs", pris: "590", enhet: "NOK" },
-  { verdi: "standard", pris: "6 900", enhet: "NOK/mnd", anbefalt: true },
-  { verdi: "enterprise", pris: "12 900", enhet: "NOK/mnd" },
+  { verdi: "liten", pris: "3 900", enhet: "NOK/mnd" },
+  { verdi: "kommune", pris: "7 900", enhet: "NOK/mnd", anbefalt: true },
+  { verdi: "medelstor", pris: "12 900", enhet: "NOK/mnd" },
+  { verdi: "engangs", pris: "890", enhet: "NOK" },
 ];
 
 /**
@@ -23,17 +24,28 @@ const PLANER = [
  */
 export function Valg({ kortMulig }: { kortMulig: boolean }) {
   const o = useOrd();
-  const [plan, setPlan] = useState("standard");
+  const [plan, setPlan] = useState("kommune");
   const [mate, setMate] = useState<"kort" | "faktura">("faktura");
   const [feil, setFeil] = useState("");
   const [venter, start] = useTransition();
 
-  const p = o.landing.priser.planer;
+  const t = o.landing.priser;
+
+  // Nivået følger med fra prisfinneren på forsiden.
+  useEffect(() => {
+    const fra = new URLSearchParams(window.location.search).get("plan");
+    if (fra && PLANER.some((x) => x.verdi === fra)) setPlan(fra);
+  }, []);
+
+  const navn = (v: string) =>
+    v === "engangs" ? t.enkelt.navn : t.nivaer[v as "liten" | "kommune" | "medelstor"].navn;
+  const spenn = (v: string) =>
+    v === "engangs" ? t.enkelt.tekst : t.nivaer[v as "liten" | "kommune" | "medelstor"].spenn;
 
   return (
     <>
-      <div className="grid sm:grid-cols-3 gap-3 mb-6">
-        {PLANER.map((rad, i) => {
+      <div className="grid sm:grid-cols-2 gap-3 mb-6">
+        {PLANER.map((rad) => {
           const valgt = plan === rad.verdi;
           return (
             <button
@@ -47,21 +59,16 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
                   : "border-border hover:border-border-strong bg-surface"
               }`}
             >
-              {rad.anbefalt && (
-                <span className="inline-block text-[10.5px] font-bold uppercase tracking-wide text-accent mb-1.5">
-                  {o.landing.priser.vanligst}
-                </span>
-              )}
-              <div className="text-[14px] font-semibold">{p[i].navn}</div>
+              <div className="text-[14px] font-semibold">{navn(rad.verdi)}</div>
               <div className="text-[19px] font-bold tracking-tight mt-1">
                 {rad.pris}{" "}
-                <span className="text-[12px] font-medium text-dim">{p[i].enhet}</span>
+                <span className="text-[12px] font-medium text-dim">{rad.enhet}</span>
               </div>
               <div className="text-[10.5px] text-faint mt-0.5">
                 {o.internt.eksMva}
               </div>
               <p className="text-[12px] text-dim leading-snug mt-2">
-                {p[i].beskrivelse}
+                {spenn(rad.verdi)}
               </p>
             </button>
           );

@@ -9,7 +9,7 @@ import { sendHenvendelse } from "./handlinger";
 const FELT =
   "w-full text-[14px] px-3.5 py-3 rounded-xl bg-canvas border border-border transition placeholder:text-faint focus:outline-none focus:bg-surface focus:border-accent focus:ring-[3px] focus:ring-accent-light hover:border-border-strong";
 
-export function KontaktSkjema({ forvalgt }: { forvalgt?: string }) {
+export function KontaktSkjema({ forvalgt, organisasjon }: { forvalgt?: string; organisasjon?: string }) {
   const o = useOrd();
   const [sendt, setSendt] = useState(false);
   const [feil, setFeil] = useState("");
@@ -58,6 +58,7 @@ export function KontaktSkjema({ forvalgt }: { forvalgt?: string }) {
           <input
             id="organisasjon"
             name="organisasjon"
+            defaultValue={organisasjon}
             placeholder="Bergen kommune"
             className={FELT}
           />

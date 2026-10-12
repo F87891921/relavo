@@ -1,9 +1,7 @@
-import type React from "react";
 import { ord } from "@/lib/sprak";
 import Link from "next/link";
-
-const PRISER = ["590", "6 900", "12 900"];
-const ANBEFALT = 1;
+import { NIVAER, kr, ENKELTKONTROLL } from "@/lib/priser";
+import { Prisfinner } from "./Prisfinner";
 
 export function Priser() {
   const t = ord().landing.priser;
@@ -20,33 +18,53 @@ export function Priser() {
             {t.eksMva}
           </p>
         </div>
-        <div className="plans">
-          {t.planer.map((plan, i) => (
-            <div
-              key={plan.navn}
-              className={i === ANBEFALT ? "plan rec" : "plan"}
-              data-avsloj
-              style={{ "--i": i + 1 } as React.CSSProperties}
-            >
-              {i === ANBEFALT && <span className="plan-tag">{t.vanligst}</span>}
-              <div className="plan-n">{plan.navn}</div>
-              <div className="plan-p">
-                {PRISER[i]} <em>{plan.enhet}</em>
-              </div>
-              <p className="plan-d">{plan.beskrivelse}</p>
-              <ul>
-                {plan.punkter.map((p) => (
-                  <li key={p}>{p}</li>
-                ))}
-              </ul>
-              <Link
-                href="/registrer"
-                className={`btn ${i === ANBEFALT ? "btn-primary" : "btn-ghost"}`}
-              >
-                {plan.knapp}
-              </Link>
-            </div>
-          ))}
+
+        <div data-avsloj>
+          <Prisfinner />
+        </div>
+
+        <div className="pf-tabell" data-avsloj>
+          <h3>{t.tabell.tittel}</h3>
+          <p>{t.tabell.tekst}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>{t.tabell.kolInnb}</th>
+                <th>{t.tabell.kolPris}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {NIVAER.map((n) => (
+                <tr key={n.id}>
+                  <td>
+                    <b>{t.nivaer[n.id].navn}</b> · {t.nivaer[n.id].spenn}
+                  </td>
+                  <td>
+                    {n.mnd === null ? t.tabell.offert : `${kr(n.mnd)} NOK`}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="pf-ingar" data-avsloj>
+          <h3>{t.ingar.tittel}</h3>
+          <ul>
+            {t.ingar.punkter.map((p) => (
+              <li key={p}>{p}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="pf-under" data-avsloj>
+          <div>
+            <b>{t.enkelt.navn}</b> — {kr(ENKELTKONTROLL)} {t.enkelt.enhet}. {t.enkelt.tekst}{" "}
+            <Link href="/registrer?plan=engangs">{t.enkelt.knapp}</Link>
+          </div>
+          <div>
+            {t.andre.tekst} <Link href="/kontakt?om=priser">{t.andre.knapp}</Link>
+          </div>
         </div>
       </div>
     </section>

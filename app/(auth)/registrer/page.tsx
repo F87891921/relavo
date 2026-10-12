@@ -51,7 +51,7 @@ export default function RegistrerSide() {
             start(async () => {
               const r = await registrer(fd);
               if (!r.ok) setFeil(r.feil);
-              else router.push("/velkommen");
+              else router.push(`/velkommen${window.location.search}`);
             });
           }}
         >
