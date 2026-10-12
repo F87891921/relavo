@@ -2,6 +2,7 @@ import { admin } from "@/lib/supabase/admin";
 import { sendEpost } from "@/lib/epost";
 import { RELAVO } from "@/lib/relavo";
 import { grunnUrl } from "@/lib/url";
+import { erSprak, type Sprak } from "@/lib/sprak/felles";
 import { svarPaaSakBrev, nySakBrev, henvendelseBrev, overvakingBrev, type Ferdig } from "@/lib/epostbrev";
 
 /**
@@ -36,6 +37,16 @@ export async function epostTil(brukerId: string): Promise<string | null> {
   }
 }
 
+/** Språket brukeren har valgt, ellers norsk. Brevet skal komme på samme språk som siden. */
+export async function sprakTil(brukerId: string): Promise<Sprak> {
+  try {
+    const { data } = await admin().from("profiler").select("sprak").eq("id", brukerId).maybeSingle();
+    return erSprak(data?.sprak) ? data.sprak : "no";
+  } catch {
+    return "no";
+  }
+}
+
 /** Adressen hos oss som tar imot. Én felles, ikke en liste å holde ved like. */
 const OSS = () => process.env.RELAVO_VARSEL_EPOST?.trim() || RELAVO.epost;
 
@@ -48,7 +59,9 @@ export async function varsleKundeOmSvar(o: {
   tekst: string;
 }) {
   const til = await epostTil(o.tilBrukerId);
-  await prov({ til, ...svarPaaSakBrev({ svarFra: o.svarFra, emne: o.emne, tekst: o.tekst, lenke: `${grunnUrl()}/support` }) });}
+  const sprak = await sprakTil(o.tilBrukerId);
+  await prov({ til, ...svarPaaSakBrev({ sprak, svarFra: o.svarFra, emne: o.emne, tekst: o.tekst, lenke: `${grunnUrl()}/support` }) });
+}
 
 export async function varsleOssOmSak(o: {
   emne: string;
@@ -72,18 +85,6 @@ export async function varsleOssOmHenvendelse(o: {
 
 /* ------------------------------------------------------------ Overvåking */
 
-const TEKST: Record<string, string> = {
-  konkurs: "er registrert konkurs",
-  tvangsavvikling: "er under tvangsavvikling",
-  under_avvikling: "er under avvikling",
-  slettet_fra_register: "finnes ikke lenger i Enhetsregisteret",
-  renhold_mistet_godkjenning: "har mistet godkjenningen i renholdsregisteret",
-  renhold_godkjent: "er godkjent i renholdsregisteret",
-  ny_daglig_leder: "har fått ny daglig leder",
-  styreendring: "har endret styre",
-  navneendring: "har byttet navn",
-  nytt_regnskap: "har levert nytt årsregnskap",
-};
 
 /**
  * Ett varsel per organisasjon per kjøring, ikke ett per hendelse.
@@ -111,15 +112,19 @@ export async function varsleOmHendelser(
   if (!mottakere?.length) return;
 
   const kritiske = verdt.filter((h) => h.alvor === "kritisk");
-  const brev = overvakingBrev({
-    hendelser: verdt.map((h) => ({ tekst: `${h.navn} ${TEKST[h.slag] ?? h.slag}`, haster: h.alvor === "kritisk" })),
-    kritisk: kritiske.length > 0,
-    forsteNavn: kritiske[0]?.navn ?? "",
-    lenke: `${grunnUrl()}/oversikt`,
-  });
 
+  // Ett brev per mottaker, på mottakerens eget språk.
   for (const m of mottakere) {
     const til = await epostTil(m.id);
-    await prov({ til, ...brev });
+    const sprak = await sprakTil(m.id);
+    await prov({
+      til,
+      ...overvakingBrev({
+        sprak,
+        hendelser: verdt.map((h) => ({ navn: h.navn, slag: h.slag, haster: h.alvor === "kritisk" })),
+        forsteNavn: kritiske[0]?.navn ?? "",
+        lenke: `${grunnUrl()}/oversikt`,
+      }),
+    });
   }
 }

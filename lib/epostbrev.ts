@@ -1,14 +1,21 @@
 import { brevHtml, brevTekst, type Brev } from "@/lib/epostmal";
+import { ordbokFor, type Sprak } from "@/lib/sprak";
 
 /**
  * Alle brev vi sender, bygget ett sted. Samme funksjoner brukes når brevet
  * sendes og når vi viser en forhåndsvisning, slik at det man ser er det som
  * går ut.
+ *
+ * Språket velges av den som mottar: kundens profil for varsler og svar, og
+ * et eget valg på tilbudet. Interne brev til oss selv er på norsk.
  */
 export type Ferdig = { emne: string; tekst: string; html: string };
 
-const ferdig = (emne: string, b: Brev): Ferdig => {
-  const m = { tittel: emne, ...b };
+const fyll = (s: string, v: Record<string, string | number>) =>
+  s.replace(/\{(\w+)\}/g, (_, k) => String(v[k] ?? ""));
+
+const ferdig = (emne: string, b: Brev, sprak: Sprak = "no"): Ferdig => {
+  const m = { tittel: emne, sprak, ...b };
   return { emne, tekst: brevTekst(m), html: brevHtml(m) };
 };
 
@@ -22,16 +29,22 @@ export const glemtPassordBrev = (
     epostIgnorer: string;
   },
   lenke: string,
+  sprak: Sprak = "no",
 ) =>
-  ferdig(t.epostEmne, {
-    hei: t.epostHei,
-    avsnitt: [t.epostIngress],
-    knapp: { tekst: t.epostKnapp, lenke },
-    visLenke: t.epostEllerLenke,
-    liten: [t.epostIgnorer],
-  });
+  ferdig(
+    t.epostEmne,
+    {
+      hei: t.epostHei,
+      avsnitt: [t.epostIngress],
+      knapp: { tekst: t.epostKnapp, lenke },
+      visLenke: t.epostEllerLenke,
+      liten: [t.epostIgnorer],
+    },
+    sprak,
+  );
 
 export const tilbudBrev = (o: {
+  sprak: Sprak;
   kontakt: string | null;
   plan: string;
   total: string;
@@ -39,25 +52,37 @@ export const tilbudBrev = (o: {
   giltigTil: string | null;
   avsender: string;
   nummer: string;
-}) =>
-  ferdig(`Tilbud fra Relavo — ${o.nummer}`, {
-    tittel: "Her er tilbudet ditt",
-    hei: `Hei${o.kontakt ? " " + o.kontakt : ""},`,
-    avsnitt: [
-      `Her er tilbudet fra Relavo på ${o.plan.toLowerCase()} — samlet kontraktsverdi ${o.total} NOK eksklusive merverdiavgift.`,
-      ...(o.giltigTil ? [`Tilbudet er gyldig til ${o.giltigTil}.`] : []),
-    ],
-    knapp: { tekst: "Les og svar på tilbudet", lenke: o.lenke },
-    liten: ["Si fra om noe er uklart, så tar vi det derfra."],
-    signatur: `Med vennlig hilsen\n${o.avsender}\nRelavo`,
-  });
+}) => {
+  const t = ordbokFor(o.sprak).epost.tilbud;
+  return ferdig(
+    fyll(t.emne, { nr: o.nummer }),
+    {
+      tittel: t.tittel,
+      hei: o.kontakt ? fyll(t.heiNavn, { navn: o.kontakt }) : t.hei,
+      avsnitt: [
+        fyll(t.ingress, { plan: o.plan.toLowerCase(), total: o.total }),
+        ...(o.giltigTil ? [fyll(t.gyldig, { dato: o.giltigTil })] : []),
+      ],
+      knapp: { tekst: t.knapp, lenke: o.lenke },
+      liten: [t.liten],
+      signatur: `${t.hilsen}\n${o.avsender}\nRelavo`,
+    },
+    o.sprak,
+  );
+};
 
-export const svarPaaSakBrev = (o: { svarFra: string; emne: string; tekst: string; lenke: string }) =>
-  ferdig(`Svar på saken din — ${o.emne}`, {
-    avsnitt: [`${o.svarFra} har svart på saken «${o.emne}».`, o.tekst],
-    knapp: { tekst: "Svar i Relavo", lenke: o.lenke },
-    liten: ["Du får denne e-posten fordi varsling er slått på for saken. Du kan slå den av på samme side."],
-  });
+export const svarPaaSakBrev = (o: { sprak: Sprak; svarFra: string; emne: string; tekst: string; lenke: string }) => {
+  const t = ordbokFor(o.sprak).epost.svar;
+  return ferdig(
+    fyll(t.emne, { emne: o.emne }),
+    {
+      avsnitt: [fyll(t.ingress, { fra: o.svarFra, emne: o.emne }), o.tekst],
+      knapp: { tekst: t.knapp, lenke: o.lenke },
+      liten: [t.liten],
+    },
+    o.sprak,
+  );
+};
 
 export const nySakBrev = (o: { emne: string; organisasjon: string | null; tekst: string; nySak: boolean; lenke: string }) =>
   ferdig(o.nySak ? `Ny støttesak — ${o.emne}` : `Kunden har svart — ${o.emne}`, {
@@ -84,21 +109,26 @@ export const henvendelseBrev = (o: {
   });
 
 export const overvakingBrev = (o: {
-  hendelser: { tekst: string; haster: boolean }[];
-  kritisk: boolean;
+  sprak: Sprak;
+  hendelser: { navn: string; slag: string; haster: boolean }[];
   forsteNavn: string;
   lenke: string;
-}) =>
-  ferdig(
-    o.kritisk
-      ? `Endring som krever handling — ${o.forsteNavn}`
-      : `${o.hendelser.length} endring${o.hendelser.length === 1 ? "" : "er"} hos leverandørene dere følger`,
+}) => {
+  const t = ordbokFor(o.sprak).epost.overvaking;
+  const tekster = t.hendelser as Record<string, string>;
+  const kritisk = o.hendelser.some((h) => h.haster);
+  return ferdig(
+    kritisk
+      ? fyll(t.emneKritisk, { navn: o.forsteNavn })
+      : o.hendelser.length === 1
+        ? t.emne1
+        : fyll(t.emneN, { n: o.hendelser.length }),
     {
-      avsnitt: ["Den daglige overvåkingen fant dette siden i går:"],
-      punkter: o.hendelser.map((h) => ({ tekst: h.tekst, haster: h.haster })),
-      etterPunkter: o.kritisk
-        ? "De røde linjene er avvisningsgrunner etter § 24-2, eller gjør det ulovlig å kjøpe tjenesten. De bør ses på i dag."
-        : undefined,
-      knapp: { tekst: "Åpne oversikten", lenke: o.lenke },
+      avsnitt: [t.ingress],
+      punkter: o.hendelser.map((h) => ({ tekst: `${h.navn} ${tekster[h.slag] ?? h.slag}`, haster: h.haster })),
+      etterPunkter: kritisk ? t.haster : undefined,
+      knapp: { tekst: t.knapp, lenke: o.lenke },
     },
+    o.sprak,
   );
+};

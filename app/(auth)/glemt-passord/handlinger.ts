@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { admin } from "@/lib/supabase/admin";
 import { sendEpost } from "@/lib/epost";
-import { ord } from "@/lib/sprak";
+import { ord, aktivtSprak } from "@/lib/sprak";
 import { glemtPassordBrev } from "@/lib/epostbrev";
 
 /**
@@ -35,7 +35,7 @@ export async function glemtPassord(epost: string): Promise<void> {
   const host = h.get("x-forwarded-host") ?? h.get("host");
   const lenke = `${proto}://${host}/auth/bekreft?token_hash=${encodeURIComponent(token)}&type=recovery`;
 
-  const svar = await sendEpost({ til: adresse, ...glemtPassordBrev(ord().glemt, lenke) });
+  const svar = await sendEpost({ til: adresse, ...glemtPassordBrev(ord().glemt, lenke, aktivtSprak()) });
   // Skjemaet svarer likt uansett, så feilen må stå i loggen — ellers får ingen vite at utsendingen ikke virker.
   if (!svar.ok) console.error("glemt-passord: e-post ikke sendt:", svar.feil);
 }

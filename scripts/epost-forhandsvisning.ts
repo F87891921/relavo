@@ -9,13 +9,15 @@ import {
 
 const L = "https://relavo.no";
 const lister = [
-  ["1 · Glemt passord (norsk)", "Til kunden. Språket følger sidens språk.", glemtPassordBrev(no.glemt, `${L}/auth/bekreft?token_hash=…&type=recovery`)],
-  ["2 · Glemt passord (engelsk)", "Samme brev når siden står på engelsk.", glemtPassordBrev(en.glemt, `${L}/auth/bekreft?token_hash=…&type=recovery`)],
-  ["3 · Tilbud", "Fra oss til en kommune eller et selskap, med lenke til tilbudet.", tilbudBrev({ kontakt: "Marit", plan: "Kommune", total: "94 800", lenke: `${L}/offert/…`, giltigTil: "2026-11-30", avsender: "Fred", nummer: "O-2026-A1B2" })],
-  ["4 · Svar på støttesak", "Til kunden når vi har svart.", svarPaaSakBrev({ svarFra: "Relavo support", emne: "Spørsmål om skatteattest", tekst: "Attesten må ikke være eldre enn tre måneder. Last den opp under leverandøren, så ligger den ved rapporten.", lenke: `${L}/support` })],
+  ["1 · Glemt passord (norsk)", "Til kunden. Språket følger sidens språk.", glemtPassordBrev(no.glemt, `${L}/auth/bekreft?token_hash=…&type=recovery`, "no")],
+  ["2 · Glemt passord (engelsk)", "Samme brev når siden står på engelsk.", glemtPassordBrev(en.glemt, `${L}/auth/bekreft?token_hash=…&type=recovery`, "en")],
+  ["3 · Tilbud", "Fra oss til en kommune eller et selskap, med lenke til tilbudet.", tilbudBrev({ sprak: "no", kontakt: "Marit", plan: "Kommune", total: "94 800", lenke: `${L}/offert/…`, giltigTil: "2026-11-30", avsender: "Fred", nummer: "O-2026-A1B2" })],
+  ["3b · Tilbud (engelsk)", "Samme tilbud når språket er satt til engelsk.", tilbudBrev({ sprak: "en", kontakt: "Marit", plan: "Kommune", total: "94 800", lenke: `${L}/offert/…`, giltigTil: "2026-11-30", avsender: "Fred", nummer: "O-2026-A1B2" })],
+  ["4 · Svar på støttesak", "Til kunden når vi har svart.", svarPaaSakBrev({ sprak: "no", svarFra: "Relavo support", emne: "Spørsmål om skatteattest", tekst: "Attesten må ikke være eldre enn tre måneder. Last den opp under leverandøren, så ligger den ved rapporten.", lenke: `${L}/support` })],
   ["5 · Ny støttesak (til oss)", "Internt varsel når en kunde skriver.", nySakBrev({ emne: "Spørsmål om skatteattest", organisasjon: "Eksempelvik kommune", tekst: "Hvor gammel kan attesten være?", nySak: true, lenke: `${L}/internt/support` })],
   ["6 · Kontaktskjema (til oss)", "Internt varsel når noen fyller ut kontaktskjemaet på forsiden.", henvendelseBrev({ navn: "Marit Aasen", epost: "marit@eksempelvik.kommune.no", organisasjon: "Eksempelvik kommune", telefon: "900 00 000", kategori: "Vil se en demo", melding: "Vi vil gjerne se en demo for innkjøpsavdelingen.", lenke: `${L}/internt/kontakt` })],
-  ["7 · Overvåking, krever handling", "Til kundens administratorer når en leverandør går konkurs eller mister godkjenning.", overvakingBrev({ hendelser: [{ tekst: "Fjordservice AS er registrert konkurs", haster: true }, { tekst: "Nordrent AS har fått ny daglig leder", haster: false }], kritisk: true, forsteNavn: "Fjordservice AS", lenke: `${L}/oversikt` })],
+  ["7b · Overvåking på engelsk", "Samme varsel til en administrator som har siden på engelsk.", overvakingBrev({ sprak: "en", hendelser: [{ navn: "Fjordservice AS", slag: "konkurs", haster: true }, { navn: "Nordrent AS", slag: "ny_daglig_leder", haster: false }], forsteNavn: "Fjordservice AS", lenke: `${L}/oversikt` })],
+  ["7 · Overvåking, krever handling", "Til kundens administratorer når en leverandør går konkurs eller mister godkjenning.", overvakingBrev({ sprak: "no", hendelser: [{ navn: "Fjordservice AS", slag: "konkurs", haster: true }, { navn: "Nordrent AS", slag: "ny_daglig_leder", haster: false }], forsteNavn: "Fjordservice AS", lenke: `${L}/oversikt` })],
 ] as const;
 
 const html = `<!doctype html><html lang="no"><head><meta charset="utf-8"><title>E-postene fra Relavo</title>

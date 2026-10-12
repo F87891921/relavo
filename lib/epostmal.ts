@@ -9,6 +9,8 @@ export const LOGO_URL = `https://${RELAVO.nett}/epost-logo.png`;
 const FONT = "Inter,Helvetica,Arial,sans-serif";
 
 export type Brev = {
+  /** Språkkoden som settes på <html lang>. */
+  sprak?: string;
   /** Stor overskrift øverst i brevet. */
   tittel?: string;
   /** Teksten som vises i innboksen ved siden av emnet. */
@@ -73,7 +75,7 @@ export function brevHtml(o: Brev) {
   const pre = o.forhandsvis ?? o.avsnitt?.[0] ?? o.tittel ?? "";
 
   return `<!doctype html>
-<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"></head>
+<html lang="${esc(o.sprak ?? "no")}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"></head>
 <body style="margin:0;padding:0;background:#f1eef4;">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${esc(pre)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1eef4;padding:36px 14px;">

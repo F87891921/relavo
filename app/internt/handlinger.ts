@@ -9,6 +9,7 @@ import { kredittvurder } from "@/lib/kreditt";
 import { grunnUrl } from "@/lib/url";
 import { sendEpost, epostOppsatt } from "@/lib/epost";
 import { tilbudBrev } from "@/lib/epostbrev";
+import { erSprak } from "@/lib/sprak/felles";
 import { offertnummer, regnUt } from "@/lib/offert";
 
 export type Svar = { ok: true } | { ok: false; feil: string };
@@ -85,6 +86,7 @@ export async function nyOfferte(fd: FormData): Promise<Svar> {
     fakturaadresse: tekst(fd, "fakturaadresse") || null,
     kontaktperson: tekst(fd, "kontaktperson") || null,
     kontakt_epost: tekst(fd, "kontakt_epost") || null,
+    sprak: erSprak(tekst(fd, "sprak")) ? tekst(fd, "sprak") : "no",
     fritt_antall: frittAntall,
     fritt_pris: frittPris,
     notat: tekst(fd, "notat") || null,
@@ -176,7 +178,7 @@ export async function sendOfferte(id: string, epost: string): Promise<Sendesvar>
   const { data: o, error: hentFeil } = await supabase
     .from("offerter")
     .select(
-      "id, token, kund, kontaktperson, kontakt_epost, plan, ar, rabatt, fritt_antall, fritt_pris, giltig_til, opprettet, status",
+      "id, token, kund, kontaktperson, kontakt_epost, plan, ar, rabatt, fritt_antall, fritt_pris, giltig_til, opprettet, status, sprak",
     )
     .eq("id", id)
     .maybeSingle();
@@ -216,6 +218,7 @@ export async function sendOfferte(id: string, epost: string): Promise<Sendesvar>
 
   const r = regnUt(o);
   const brev = tilbudBrev({
+    sprak: erSprak(o.sprak) ? o.sprak : "no",
     kontakt: o.kontaktperson,
     plan: r.planNavn,
     total: new Intl.NumberFormat("nb-NO").format(r.totalt),
