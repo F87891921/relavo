@@ -1,4 +1,5 @@
 "use client";
+import { nullstillKollegaTofaktor } from "@/app/(dashboard)/konto/tofaktor";
 
 import { useOrd } from "@/components/Sprakgiver";
 
@@ -216,6 +217,7 @@ export function BrukerRad({
 }) {
   const ordbok = useOrd();
   const t = ordbok.konto;
+  const t2 = ordbok.tofaktorKrav;
   const [venter, start] = useTransition();
   const [feil, setFeil] = useState("");
 
@@ -247,7 +249,21 @@ export function BrukerRad({
   if (!kanEndre || erDegSelv) return <span />;
 
   return (
-    <span>
+    <span className="whitespace-nowrap">
+      <button
+        type="button"
+        disabled={venter}
+        onClick={() =>
+          start(async () => {
+            const res = await nullstillKollegaTofaktor(id);
+            if (!res.ok) setFeil(res.feil);
+            else setFeil("");
+          })
+        }
+        className="text-[12.5px] text-dim hover:underline disabled:opacity-50 mr-3"
+      >
+        {t2.nullstill}
+      </button>
       <button
         type="button"
         disabled={venter}

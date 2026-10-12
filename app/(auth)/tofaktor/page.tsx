@@ -6,13 +6,18 @@ import { createClient } from "@/lib/supabase/client";
 import { RelavoMark } from "@/components/RelavoMark";
 import { FELT_FULL } from "@/components/ui/felt";
 import { useOrd } from "@/components/Sprakgiver";
+import { brukReservekode } from "./handlinger";
 
 /**
  * Steg to i innloggingen. Vises bare når kontoen har tofaktor slått på og
  * sesjonen ennå står på aal1 — altså passord bekreftet, engangskode ikke.
  */
 export default function TofaktorSide() {
-  const t = useOrd().auth;
+  const ordbok = useOrd();
+  const t = ordbok.auth;
+  const rk = ordbok.tofaktorKrav;
+  const [reserve, setReserve] = useState(false);
+  const [rkode, setRkode] = useState("");
   const router = useRouter();
   const supabase = createClient();
 
@@ -96,6 +101,39 @@ export default function TofaktorSide() {
           >
             {venter ? t.bekrefter : t.fortsett}
           </button>
+
+          {!reserve ? (
+            <button type="button" onClick={() => setReserve(true)} className="w-full text-[12px] text-accent hover:underline mt-4">
+              {rk.mistetTelefon}
+            </button>
+          ) : (
+            <div className="mt-5 pt-4 border-t border-border">
+              <label htmlFor="rk" className="block text-xs font-semibold mb-1.5">{rk.reserveLabel}</label>
+              <input
+                id="rk"
+                value={rkode}
+                onChange={(e) => setRkode(e.target.value)}
+                placeholder="ABCD-EFGH"
+                className={`${FELT_FULL} font-mono max-w-none uppercase`}
+              />
+              <button
+                type="button"
+                disabled={venter || rkode.replace(/[^A-Za-z0-9]/g, "").length < 8}
+                onClick={() =>
+                  start(async () => {
+                    setFeil("");
+                    const r = await brukReservekode(rkode);
+                    if (!r.ok) return setFeil(r.feil);
+                    router.push("/konto?krav=tofaktor");
+                    router.refresh();
+                  })
+                }
+                className="w-full text-sm font-semibold py-2.5 rounded-xl border border-border hover:border-border-strong mt-3 disabled:opacity-50"
+              >
+                {rk.brukKode}
+              </button>
+            </div>
+          )}
 
           <button
             type="button"

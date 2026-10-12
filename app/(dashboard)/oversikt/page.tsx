@@ -4,9 +4,13 @@ import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode, Kort, Tabell, Merke, Tall, Rad, Stripe } from "@/components/ui";
 import { NesteSteg } from "@/components/NesteSteg";
 import { alleSteg } from "@/lib/nesteSteg";
+import { GrenserBanner } from "@/components/GrenserBanner";
+import { hentGrenser } from "@/lib/grenser";
 
 export default async function OversiktSide() {
   const { supabase, profil, t } = await krevProfil();
+
+  const grenser = await hentGrenser(supabase, profil.organisasjon_id);
 
   const { count: antallLeverandorer } = await supabase
     .from("leverandorer")
@@ -59,6 +63,8 @@ export default async function OversiktSide() {
           tittel={t.sider.oversikt.tittel}
           tekst={t.sider.oversikt.tekst}
         />
+
+        <GrenserBanner g={grenser} />
 
         <NesteSteg />
 

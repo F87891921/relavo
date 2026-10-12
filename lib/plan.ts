@@ -35,3 +35,8 @@ export type PlanId = keyof typeof PLANER;
 export function planFor(id: string | null | undefined) {
   return PLANER[(id ?? "kommune") as PlanId] ?? PLANER.kommune;
 }
+
+/** Speiler maks_leverandorer() i 0030. Null: ingen grense. */
+export function maksLeverandorer(id: string | null | undefined): number | null {
+  return ({ start: 25, vekst: 100, bygg: 300 } as Record<string, number>)[id ?? ""] ?? null;
+}

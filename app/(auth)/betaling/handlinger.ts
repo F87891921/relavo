@@ -7,6 +7,7 @@ import { grunnUrl } from "@/lib/url";
 import { PLANER, type PlanId } from "@/lib/plan";
 import { opprettKasseokt, stripeOppsatt } from "@/lib/stripe";
 import { ord } from "@/lib/sprak";
+import { ENKELTKONTROLL } from "@/lib/priser";
 
 export type Svar =
   | { ok: true; status: string }
@@ -38,7 +39,7 @@ const BELOP: Record<PlanId, number> = {
  * organisasjonen til en avtale.
  */
 export async function bestill(plan: string, betalingsmate: "kort" | "faktura"): Promise<Svar> {
-  const { supabase, user } = await krevProfil();
+  const { supabase, user, profil } = await krevProfil();
 
   const { data, error } = await supabase.rpc("bestill_plan", {
     p_plan: plan,
@@ -68,10 +69,36 @@ export async function bestill(plan: string, betalingsmate: "kort" | "faktura"): 
     suksessUrl: `${base}/betaling/klar?okt={CHECKOUT_SESSION_ID}`,
     avbruttUrl: `${base}/betaling?avbrutt=1`,
     referanse: user.id,
+    organisasjonId: profil.organisasjon_id,
   });
 
   if (!okt.ok) return { ok: false, feil: okt.feil };
   if (!okt.data.url) return { ok: false, feil: ord().feil.ingenBetalingslenke };
 
+  redirect(okt.data.url);
+}
+
+/**
+ * Kjøp én kontroll til. Brukes av kunder på enkeltkontroll som har brukt opp
+ * det de har betalt for. Kontoen er allerede åpen; bare kvoten øker, når
+ * betalingen er bekreftet (webhook eller «takk»-siden).
+ */
+export async function kjopKontroll(): Promise<void> {
+  const { user, profil } = await krevProfil();
+  if (profil.rolle !== "administrator") redirect("/oversikt");
+  if (!stripeOppsatt()) redirect("/oversikt");
+
+  const base = grunnUrl();
+  const okt = await opprettKasseokt({
+    belopNok: ENKELTKONTROLL,
+    beskrivelse: "Relavo enkeltkontroll",
+    epost: user.email ?? "",
+    gjentakende: false,
+    suksessUrl: `${base}/betaling/klar?okt={CHECKOUT_SESSION_ID}`,
+    avbruttUrl: `${base}/oversikt`,
+    referanse: user.id,
+    organisasjonId: profil.organisasjon_id,
+  });
+  if (!okt.ok || !okt.data.url) redirect("/oversikt");
   redirect(okt.data.url);
 }

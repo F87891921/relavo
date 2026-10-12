@@ -3,9 +3,12 @@ import { DashboardShell } from "@/components/DashboardShell";
 import { NyKontrollVeiviser } from "@/components/kontroll/NyKontrollVeiviser";
 import { Side } from "@/components/ui";
 import { Flikar } from "@/components/ui/Flikar";
+import { GrenserBanner } from "@/components/GrenserBanner";
+import { hentGrenser } from "@/lib/grenser";
 
 export default async function NyKontrollSide() {
-  const { profil, t } = await krevProfil();
+  const { supabase, profil, t } = await krevProfil();
+  const grenser = await hentGrenser(supabase, profil.organisasjon_id);
 
   return (
     <DashboardShell aktivtSteg="nyKontroll">
@@ -23,6 +26,7 @@ export default async function NyKontrollSide() {
           ]}
         />
 
+        <GrenserBanner g={grenser} />
         <NyKontrollVeiviser />
       </Side>
     </DashboardShell>

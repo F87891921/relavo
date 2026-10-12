@@ -29,17 +29,16 @@ export default async function BetalingKlar({
   const svar = await hentKasseokt(okt);
   const betalt = svar.ok && svar.data.payment_status === "paid";
 
+  // Samme funksjon som webhooken bruker. Hver økt teller bare én gang, så det
+  // gjør ingenting at begge melder den.
   if (betalt) {
-    await admin()
-      .from("organisasjoner")
-      .update({
-        status: "aktiv",
-        aktivert: new Date().toISOString(),
-        stripe_okt_id: svar.data.id,
-        stripe_kunde_id: svar.data.customer,
-      })
-      .eq("id", profil.organisasjon_id)
-      .eq("status", "venter_betaling");
+    const eier = svar.data.metadata?.organisasjon_id;
+    if (eier === profil.organisasjon_id)
+      await admin().rpc("registrer_betaling", {
+        p_okt: svar.data.id,
+        p_org: profil.organisasjon_id,
+        p_kunde: svar.data.customer,
+      });
   }
 
   return (

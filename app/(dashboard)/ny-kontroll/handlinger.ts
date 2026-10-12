@@ -10,6 +10,7 @@ import { erRenholdsbransje, tolkStatus } from "@/lib/renhold";
 import { hentSentralgodkjenning, type Sentralgodkjenning } from "@/lib/dibk";
 import { screenSanksjoner, type Sanksjonstreff } from "@/lib/screening";
 import { ord } from "@/lib/sprak";
+import { grenseFeil } from "@/lib/grenser";
 import { orgnrFeil, brregFeil } from "@/lib/orgnrtekst";
 
 /**
@@ -102,7 +103,7 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
       .select("id")
       .single();
 
-    if (leverandorFeil) return { ok: false, feil: leverandorFeil.message };
+    if (leverandorFeil) return { ok: false, feil: grenseFeil(leverandorFeil.message, ord()) };
     leverandorId = ny.id;
   } else {
     await supabase
@@ -129,7 +130,7 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
     .select("id")
     .single();
 
-  if (error) return { ok: false, feil: error.message };
+  if (error) return { ok: false, feil: grenseFeil(error.message, ord()) };
 
   // Jav-kontrollen kjøres etter at kontrollen er lagret, og får ikke velte
   // den. Feiler oppslaget mot rolleregisteret, er kontrollen fortsatt gyldig

@@ -48,6 +48,8 @@ export type Kasseokt = {
   payment_status: string;
   customer: string | null;
   amount_total: number | null;
+  client_reference_id?: string | null;
+  metadata?: Record<string, string> | null;
 };
 
 /**
@@ -65,6 +67,7 @@ export function opprettKasseokt(o: {
   suksessUrl: string;
   avbruttUrl: string;
   referanse: string;
+  organisasjonId?: string;
 }) {
   const p = new URLSearchParams();
   p.set("mode", o.gjentakende ? "subscription" : "payment");
@@ -72,6 +75,7 @@ export function opprettKasseokt(o: {
   p.set("cancel_url", o.avbruttUrl);
   p.set("customer_email", o.epost);
   p.set("client_reference_id", o.referanse);
+  if (o.organisasjonId) p.set("metadata[organisasjon_id]", o.organisasjonId);
   p.set("line_items[0][quantity]", "1");
   p.set("line_items[0][price_data][currency]", "nok");
   p.set("line_items[0][price_data][product_data][name]", o.beskrivelse);

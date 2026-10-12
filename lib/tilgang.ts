@@ -25,7 +25,7 @@ export const krevProfil = cache(async () => {
 
   const { data: profil } = await supabase
     .from("profiler")
-    .select("organisasjon_id, navn, rolle, ansatt, ansatt_rolle, sprak, organisasjoner!profiler_organisasjon_id_fkey(navn, status, betalingsmate)")
+    .select("organisasjon_id, navn, rolle, ansatt, ansatt_rolle, sprak, organisasjoner!profiler_organisasjon_id_fkey(navn, status, betalingsmate, krever_tofaktor)")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -49,7 +49,21 @@ export const krevProfil = cache(async () => {
     navn: string;
     status: string;
     betalingsmate: string | null;
+    krever_tofaktor: boolean | null;
   } | null;
+
+  // Organisasjonen krever tofaktor, og denne brukeren har ikke satt det opp.
+  // nextLevel er aal1 når ingen faktor er bekreftet. Ansatte er unntatt, som
+  // ellers, så ingen blir låst ute av sin egen godkjenningsside.
+  if (
+    org?.krever_tofaktor &&
+    org.status === "aktiv" &&
+    !profil.ansatt &&
+    niva?.nextLevel !== "aal2" &&
+    sti !== "/konto" &&
+    sti !== "/tofaktor"
+  )
+    redirect("/konto?krav=tofaktor");
 
   // Kontoen er ikke åpnet ennå. Har de ikke bestilt, mangler det et valg;
   // har de bestilt, venter det på betaling eller på oss.

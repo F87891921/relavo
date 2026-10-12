@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Merke } from "@/components/ui";
 import { FELT_FULL } from "@/components/ui/felt";
 import { useOrd } from "@/components/Sprakgiver";
+import { lagReservekoder } from "@/app/(dashboard)/konto/tofaktor";
 
 type Faktor = { id: string; status: string; friendly_name?: string };
 
@@ -32,6 +33,7 @@ export function Tofaktor() {
   const [kode, setKode] = useState("");
   const [feil, setFeil] = useState("");
   const [kvittering, setKvittering] = useState("");
+  const [koder, setKoder] = useState<string[] | null>(null);
   const [venter, start] = useTransition();
 
   async function hentFaktorer() {
@@ -103,6 +105,9 @@ export function Tofaktor() {
       setNyFaktorId(null);
       setKode("");
       setKvittering(t.slattPa);
+      // Reservekodene lages med en gang, mens brukeren er her og kan skrive dem ned.
+      const r = await lagReservekoder();
+      if (r.ok) setKoder(r.koder);
       await hentFaktorer();
       router.refresh();
     });
@@ -137,6 +142,25 @@ export function Tofaktor() {
         {t.tofaktorForklaring}
       </p>
 
+      {koder && (
+        <div className="bg-warn-bg rounded-xl p-5 mb-4">
+          <div className="text-[13.5px] font-semibold mb-1">{ordbok.tofaktorKrav.reserveTittel}</div>
+          <p className="text-[12.5px] text-dim leading-relaxed mb-3">{ordbok.tofaktorKrav.reserveTekst}</p>
+          <div className="grid grid-cols-2 gap-x-6 gap-y-1 font-mono text-[14px] mb-3">
+            {koder.map((k) => (
+              <span key={k}>{k}</span>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => navigator.clipboard?.writeText(koder.join("\n"))}
+            className="text-[12.5px] font-semibold underline"
+          >
+            {ordbok.tofaktorKrav.kopier}
+          </button>
+        </div>
+      )}
+
       {aktiv.length > 0 && (
         <div className="space-y-2 mb-4">
           {aktiv.map((f) => (
@@ -158,6 +182,23 @@ export function Tofaktor() {
             </div>
           ))}
         </div>
+      )}
+
+      {aktiv.length > 0 && !koder && (
+        <button
+          type="button"
+          disabled={venter}
+          onClick={() =>
+            start(async () => {
+              const r = await lagReservekoder();
+              if (r.ok) setKoder(r.koder);
+              else setFeil(r.feil);
+            })
+          }
+          className="text-[12.5px] font-semibold text-accent hover:underline mb-4 disabled:opacity-50"
+        >
+          {ordbok.tofaktorKrav.lagNye}
+        </button>
       )}
 
       {!aktiv.length && !qr && (

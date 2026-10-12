@@ -158,6 +158,10 @@ export async function opprettKonto(fd: FormData): Promise<OpprettSvar> {
   });
   if (error || !orgId) return { ok: true, neste: "/velkommen" };
 
+  // Kommuner krever tofaktor som utgangspunkt; administratoren kan slå det av.
+  if (["liten", "kommune", "medelstor", "stor"].includes(plan))
+    await admin().from("organisasjoner").update({ krever_tofaktor: true }).eq("id", orgId);
+
   if (offert) {
     // Avtalen skrives av serveren. Kunden kan ikke endre den fra nettleseren
     // (vern_organisasjonsfelt). Kontoen står i venter_kreditt til vi har

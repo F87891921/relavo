@@ -4,6 +4,7 @@ import { Side, Sidehode, Kort, Tabell, Merke, Stripe } from "@/components/ui";
 import { planFor } from "@/lib/plan";
 import { MIN_LENGDE } from "@/lib/passord";
 import { Tofaktor } from "@/components/konto/Tofaktor";
+import { KreverTofaktor } from "@/components/konto/KreverTofaktor";
 import { Sprakvelger } from "@/components/Sprakvelger";
 import {
   EgetNavn,
@@ -13,13 +14,17 @@ import {
   BrukerRad,
 } from "@/components/konto/Skjemaer";
 
-export default async function KontoSide() {
+export default async function KontoSide({
+  searchParams,
+}: {
+  searchParams: { krav?: string };
+}) {
   const { supabase, user, profil, t, sprak } = await krevProfil();
 
   const [{ data: org }, { data: kolleger }, { count: antallLeverandorer }, { count: antallKontroller }] = await Promise.all([
     supabase
       .from("organisasjoner")
-      .select("navn, org_nr, plan, opprettet")
+      .select("navn, org_nr, plan, opprettet, krever_tofaktor")
       .eq("id", profil.organisasjon_id)
       .maybeSingle(),
     supabase
@@ -43,6 +48,12 @@ export default async function KontoSide() {
           tittel={t.sider.konto.tittel}
           tekst={t.sider.konto.tekst}
         />
+
+        {searchParams.krav === "tofaktor" && (
+          <div className="bg-warn-bg text-warn rounded-card px-5 py-4 mb-4 text-[13.5px] font-semibold">
+            {t.tofaktorKrav.banner}
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-4 mb-4">
           <Kort tittel={t.konto.kontoDeg}>
@@ -89,6 +100,7 @@ export default async function KontoSide() {
         <Kort tittel={t.konto.kontoTofaktor} note={t.konto.engangskodeFraMobil} className="mb-4">
           <div className="px-5 py-5">
             <Tofaktor />
+            {admin && <KreverTofaktor pa={Boolean(org?.krever_tofaktor)} />}
           </div>
         </Kort>
 

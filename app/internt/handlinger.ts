@@ -464,6 +464,14 @@ export async function godkjennKonto(
     .eq("id", id);
   if (error) return { ok: false, feil: error.message };
 
+  // Enkeltkontroll mot faktura: en kontroll følger med når vi åpner kontoen.
+  await supabase
+    .from("organisasjoner")
+    .update({ kontroller_kjopt: 1 })
+    .eq("id", id)
+    .eq("plan", "engangs")
+    .eq("kontroller_kjopt", 0);
+
   await logg(supabase, id, "Kontoen åpnet", begrunnelse);
 
   revalidatePath("/internt/onboarding");
