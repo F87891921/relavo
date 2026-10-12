@@ -35,9 +35,11 @@ export async function glemtPassord(epost: string): Promise<void> {
   const lenke = `${proto}://${host}/auth/bekreft?token_hash=${encodeURIComponent(token)}&type=recovery`;
 
   const t = ord().glemt;
-  await sendEpost({
+  const svar = await sendEpost({
     til: adresse,
     emne: t.epostEmne,
     tekst: t.epostTekst.replace("{lenke}", lenke),
   });
+  // Skjemaet svarer likt uansett, så feilen må stå i loggen — ellers får ingen vite at utsendingen ikke virker.
+  if (!svar.ok) console.error("glemt-passord: e-post ikke sendt:", svar.feil);
 }
