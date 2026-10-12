@@ -104,12 +104,12 @@ k_slides = [
  <div><h3>Roller</h3><p>Styre og daglig leder, kontrollert mot andre i anskaffelsen for å varsle om mulig habilitetsspørsmål.</p></div>
  <div><h3>Sanksjonslister</h3><p>Selskap og tilknyttede roller sjekkes mot sanksjonslister.</p></div>
  <div><h3>Renholdsregisteret</h3><p>Godkjenning etter renholdsordningen. Å kjøpe fra et selskap uten godkjenning er ulovlig.</p></div>
- <div><h3>Leverandørkjeden (§ 5k)</h3><p>Legg inn kjeden, og Relavo viser hvor mange ledd det er og flagger det som går over taket.</p></div>
+ <div><h3>Leverandørkjeden (§ 5k)</h3><p>Leverandøren oppgir underleverandørene via en lenke. Relavo kontrollerer hvert ledd og flagger det som går over taket.</p></div>
  <div><h3>Skatteattest og ESPD</h3><p>Leverandøren laster selv opp attesten og egenerklæringen, og de lagres sammen med kontrollen.</p></div>
 </div>''', ""),
  ('''<div class="kick">Etter kontrollen</div><h2>Tilbudene og leverandørene følges opp.</h2>
 <div class="to">
- <div class="lys"><h3>Unormalt lave tilbud (§ 24-9)</h3><ul><li>Avvik per tilbud, regnet mot de øvrige</li><li>Flagg på de som ligger unormalt lavt</li><li>Utkast til den redegjørelsen kommunen må be om</li></ul></div>
+ <div class="lys"><h3>Unormalt lave tilbud (§ 24-9)</h3><ul><li>Avvik per tilbud, regnet mot de øvrige</li><li>Flagg på de som ligger unormalt lavt</li><li>Utkast til den redegjørelsen kommunen må be om</li><li>Indikasjoner fra årsregnskapet, for eksempel omsetning per ansatt</li></ul></div>
  <div class="lys"><h3>Daglig overvåking</h3><ul><li>Konkurs og tvangsavvikling</li><li>Tapt renholdsgodkjenning</li><li>Ny daglig leder og endringer i styret</li><li>Varsel på e-post når noe krever handling</li></ul></div>
 </div>''', ""),
  ('''<div class="kick">Pris og trygghet</div><h2>Pris etter kommunens innbyggertall.</h2>
@@ -148,7 +148,7 @@ b_slides = [
  <div><h3>Roller</h3><p>Styre og daglig leder, med varsel hvis personer går igjen hos flere leverandører.</p></div>
  <div><h3>Sanksjonslister</h3><p>Selskap og tilknyttede roller sjekkes mot sanksjonslister.</p></div>
  <div><h3>Renholdsregisteret</h3><p>Godkjenning etter renholdsordningen, for dere som kjøper renholdstjenester.</p></div>
- <div><h3>Underleverandørkjeden</h3><p>Se hvor mange ledd det er, og hvem som står bak hvert ledd.</p></div>
+ <div><h3>Underleverandørkjeden</h3><p>Leverandøren oppgir hvem som utfører arbeidet via en lenke. Hvert ledd kontrolleres, og du ser kjeden som et tre.</p></div>
  <div><h3>Skatteattest</h3><p>Leverandøren laster selv opp attesten, og den lagres med kontrollen.</p></div>
 </div>''', ""),
  ('''<div class="kick">Etter kontrollen</div><h2>Daglig overvåking av alle leverandørene.</h2>
@@ -220,7 +220,7 @@ def onepager(tittel, for_tekst, kicker, h1a, h1b, lead, kort, tall, prislinje, p
  "Kontrollen du må gjøre.", "Beviset du må ha.",
  "Fra 1. juli 2026 må kommunen kunne dokumentere at leverandørene er kontrollert. Relavo gjør kontrollen mot offentlige registre og lagrer resultatet, slik at du kan vise det i anskaffelsesprotokollen.",
  [("01","Én kontroll, alle registre","Selskapsdata, roller, sanksjonslister og renholdsregisteret i én rapport, med kilde og dato på hver linje."),
-  ("02","Hele leverandørkjeden","§ 5k tillater høyst to ledd underleverandører i bygg, anlegg og renhold. Relavo viser hvor dyp kjeden er og flagger det som går over."),
+  ("02","Hele leverandørkjeden","§ 5k tillater høyst to ledd underleverandører i bygg, anlegg og renhold. Leverandøren oppgir kjeden via en lenke, og Relavo kontrollerer hvert ledd og flagger det som går over."),
   ("03","Dokumentasjon som holder","Hver kjøring lagres uendret og kan hentes fram igjen. Det som ikke er kontrollert, står oppført som ikke kontrollert.")],
  [("2","ledd underleverandører er taket i bygg, anlegg og renhold"),("Daglig","overvåking av konkurs, tvangsavvikling og tapt renholdsgodkjenning"),("Ubegrenset","antall kontroller og brukere, uten tillegg")],
  ("Pris etter kommunens innbyggertall","Fra 3 900 kr","per måned, eks. mva."), "Fast pris i avtaleperioden, fakturert årlig. Enkeltkontroll 890 kr uten abonnement."))
@@ -229,7 +229,7 @@ def onepager(tittel, for_tekst, kicker, h1a, h1b, lead, kort, tall, prislinje, p
  "Sjekk leverandørene før de starter.", "Ha beviset når noen spør.",
  "Relavo kontrollerer underentreprenørene og leverandørene dine mot offentlige registre og lagrer resultatet. Du ser hvem du jobber med, hvor lang kjeden er, og du får varsel hvis noe endrer seg.",
  [("01","Alle registre i én rapport","Selskapsdata, roller, sanksjonslister og renholdsregisteret, med kilde og dato på hver linje."),
-  ("02","Hele underleverandørkjeden","Se hvor mange ledd det er og hvem som står bak hvert ledd, før de kommer på byggeplassen."),
+  ("02","Hele underleverandørkjeden","Be leverandøren oppgi hvem som utfører arbeidet. Relavo kontrollerer hvert ledd, og du ser kjeden som et tre."),
   ("03","Overvåking hver natt","Konkurs, tvangsavvikling, tapt renholdsgodkjenning og ny daglig leder fanges opp i den daglige kjøringen.")],
  [("50–400","leverandører i planen, fra Start til Bygg"),("−66 %","opptil, mot å kjøpe enkeltkontroller"),("Ubegrenset","antall kontroller og brukere")],
  ("Pris etter antall leverandører","Fra 2 900 kr","per måned, eks. mva."), "Månedlig uten binding, eller betal for 12, 24 eller 36 måneder og spar. Enkeltkontroll 890 kr uten abonnement.", h1mm=12.2, topp=14))

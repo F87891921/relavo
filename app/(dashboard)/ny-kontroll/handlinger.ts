@@ -11,6 +11,8 @@ import { hentSentralgodkjenning, type Sentralgodkjenning } from "@/lib/dibk";
 import { screenSanksjoner, type Sanksjonstreff } from "@/lib/screening";
 import { ord } from "@/lib/sprak";
 import { grenseFeil } from "@/lib/grenser";
+import { hentRegnskap } from "@/lib/regnskap";
+import { lagIndikatorer } from "@/lib/indikatorer";
 import { orgnrFeil, brregFeil } from "@/lib/orgnrtekst";
 
 /**
@@ -72,6 +74,9 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
     .limit(1)
     .maybeSingle();
 
+  // Indikasjoner fra årsregnskapet. Feiler oppslaget, er det bare ingen indikasjoner.
+  const indikatorer = lagIndikatorer(enhet, await hentRegnskap(enhet.orgnr).catch(() => []));
+
   const { krav, kilder, risiko } = vurder(
     enhet, svar, renhold, dibk, sanksjoner,
     attest ? { utstedt: attest.utstedt as string } : null,
@@ -126,6 +131,7 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
       risiko,
       krav,
       kilder,
+      indikatorer,
     })
     .select("id")
     .single();

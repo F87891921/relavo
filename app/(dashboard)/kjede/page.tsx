@@ -3,9 +3,10 @@ import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode } from "@/components/ui";
 import { Flikar } from "@/components/ui/Flikar";
 import { funnAntall } from "@/lib/funn";
-import { KjedeListe, type Kjede } from "@/components/kjede/KjedeListe";
+import { KjedeTre, NyKjede, dybde, type Kjede, type Ledd } from "@/components/kjede/KjedeTre";
+import { grenseFor } from "@/lib/kjede";
+import { SettGrense } from "@/components/kjede/SettGrense";
 import { formaterOrgnr } from "@/lib/orgnr";
-import { NyKjede } from "@/components/kjede/KjedeRedigering";
 
 /**
  * Leverandørkjedene, slik kontrollene har kartlagt dem.
@@ -16,7 +17,7 @@ import { NyKjede } from "@/components/kjede/KjedeRedigering";
  * med en dags mellomrom.
  */
 export default async function KjedeSide() {
-  const { supabase, t } = await krevProfil();
+  const { supabase, t, profil } = await krevProfil();
   const antall = await funnAntall();
 
   // Nyest først, så den første kontrollen vi møter per leverandør er den
@@ -39,28 +40,38 @@ export default async function KjedeSide() {
 
   const { data: ledd } = await supabase
     .from("kjede_ledd")
-    .select("kontroll_id, niva, navn, org_nr, merknader")
+    .select("id, forelder_id, kontroll_id, niva, navn, org_nr, merknader, kartlegging")
     .in("kontroll_id", [...siste.values()].map((v) => v.id))
     .order("niva");
 
-  const perKontroll = new Map<string, { org: string; navn: string; merknader: string[] }[]>();
-  const leverandorerListe = [...siste.values()].map((v) => ({ kontrollId: v.id, navn: v.navn }));
+  const perKontroll = new Map<string, Ledd[]>();
   for (const l of ledd ?? []) {
     const liste = perKontroll.get(l.kontroll_id) ?? [];
-    liste.push({ org: l.org_nr, navn: l.navn || formaterOrgnr(l.org_nr), merknader: (l.merknader as string[] | null) ?? [] });
+    liste.push({
+      id: l.id,
+      forelderId: l.forelder_id,
+      niva: l.niva,
+      navn: l.navn || formaterOrgnr(l.org_nr),
+      org: l.org_nr,
+      merknader: (l.merknader as string[] | null) ?? [],
+      kartlegging: l.kartlegging as Ledd["kartlegging"],
+    });
     perKontroll.set(l.kontroll_id, liste);
   }
 
-  // En kjede med bare hovedleverandøren er ikke en kjede. Den sier ingenting
-  // om § 5k, og en liste full av enkeltledd skjuler de som faktisk har en.
+  const leverandorerListe = [...siste.values()].map((v) => ({ kontrollId: v.id, navn: v.navn }));
   const kjeder: Kjede[] = [...siste.values()]
-    .map((lev) => ({
-      org: lev.org,
-      navn: lev.navn,
-      kontrollId: lev.id,
-      ledd: perKontroll.get(lev.id) ?? [],
-    }))
-    .filter((k) => k.ledd.length > 1);
+    .map((lev) => ({ kontrollId: lev.id, navn: lev.navn, org: lev.org, ledd: perKontroll.get(lev.id) ?? [] }))
+    .filter((k) => k.ledd.length > 1)
+    .sort((a, b) => dybde(b.ledd) - dybde(a.ledd));
+
+  const { data: org } = await supabase
+    .from("organisasjoner")
+    .select("plan, kjede_grense")
+    .eq("id", profil.organisasjon_id)
+    .maybeSingle();
+  const grense = grenseFor(org?.plan, org?.kjede_grense);
+  const erKommune = grenseFor(org?.plan, null) !== null;
 
   return (
     <DashboardShell aktivtSteg="kjede">
@@ -78,8 +89,16 @@ export default async function KjedeSide() {
           ]}
         />
 
+        {!erKommune && profil.rolle === "administrator" && <SettGrense grense={org?.kjede_grense ?? null} />}
         <NyKjede leverandorer={leverandorerListe} />
-        <KjedeListe kjeder={kjeder} />
+        <div className="space-y-4">
+          {kjeder.length === 0 && (
+            <div className="bg-surface rounded-card shadow-card px-5 py-10 text-center text-dim text-sm">{t.kjede.ingenKjeder}</div>
+          )}
+          {kjeder.map((k) => (
+            <KjedeTre key={k.kontrollId} kjede={k} grense={grense} />
+          ))}
+        </div>
       </Side>
     </DashboardShell>
   );

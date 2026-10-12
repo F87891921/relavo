@@ -148,6 +148,22 @@ export default async function KontrollSide({
           </ul>
         </Kort>
 
+        {r.indikatorer.length > 0 && (
+          <Kort tittel={t.kontroll.indikasjoner} note={t.kontroll.indikasjonerNote} className="mb-4">
+            <ul className="divide-y divide-border">
+              {r.indikatorer.map((i) => (
+                <li key={i.id} className="px-5 py-3.5">
+                  <div className="flex items-center gap-2.5 mb-0.5">
+                    <span className="text-[13px] font-semibold">{i.tittel}</span>
+                    <Merke tone={i.niva === "varsel" ? "advarsel" : "noytral"}>{i.niva === "varsel" ? t.kontroll.varsel : t.kontroll.info}</Merke>
+                  </div>
+                  <p className="text-[12.5px] text-dim leading-relaxed">{i.tekst}</p>
+                </li>
+              ))}
+            </ul>
+          </Kort>
+        )}
+
         <Kort tittel={t.kontroll.kilder} className="mb-4">
           <ul className="divide-y divide-border">
             {r.kilder.length ? (

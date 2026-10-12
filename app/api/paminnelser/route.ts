@@ -2,6 +2,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { admin } from "@/lib/supabase/admin";
 import { vurder, type Aktivitetsrad } from "@/lib/aktivitet";
 import { hjerteslag, meldFeil, vaktJobb } from "@/lib/feil";
+import { sendEpost } from "@/lib/epost";
+import { grunnUrl } from "@/lib/url";
+import { foresporselBrev } from "@/lib/epostbrev";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -85,6 +88,32 @@ export async function GET(req: NextRequest) {
   for (const v of varsler) {
     const { data } = await db.from("interne_varsler").upsert(v, { onConflict: "noekkel", ignoreDuplicates: true }).select("id");
     if (data?.length) nye += 1;
+  }
+
+  // --- Kjedeforespørsler: purring etter 5 og 10 dager, utløp når fristen er ute.
+  const { data: apne } = await db
+    .from("kjede_foresporsler")
+    .select("id, token, mottaker_epost, sendt, purringer, frist, opprettet_av, ledd_id, organisasjoner(navn), kjede_ledd(navn)")
+    .eq("status", "venter");
+  for (const f of (apne ?? []) as unknown as {
+    id: string; token: string; mottaker_epost: string | null; sendt: string; purringer: number; frist: string; opprettet_av: string | null; ledd_id: string;
+    organisasjoner: { navn: string } | null; kjede_ledd: { navn: string } | null;
+  }[]) {
+    const dager = Math.floor((na - new Date(f.sendt).getTime()) / 86_400_000);
+    const kunde = f.organisasjoner?.navn ?? "";
+    const lev = f.kjede_ledd?.navn ?? "";
+    if (f.frist < idag) {
+      await db.from("kjede_foresporsler").update({ status: "utlopt" }).eq("id", f.id);
+      await db.from("kjede_ledd").update({ kartlegging: "ikke_svart" }).eq("id", f.ledd_id);
+      if (f.opprettet_av) {
+        const { data } = await db.auth.admin.getUserById(f.opprettet_av);
+        if (data.user?.email)
+          await sendEpost({ til: data.user.email, emne: `${lev} har ikke svart på kjedeforespørselen`, tekst: `${lev} har ikke oppgitt underleverandører innen fristen. Kjeden står som ikke besvart i Relavo, og er ikke kartlagt lenger ned. ${grunnUrl()}/kjede` });
+      }
+    } else if (f.mottaker_epost && ((f.purringer === 0 && dager >= 5) || (f.purringer === 1 && dager >= 10))) {
+      await sendEpost({ til: f.mottaker_epost, ...foresporselBrev({ kunde, leverandor: lev, lenke: `${grunnUrl()}/underleverandorer/${f.token}`, frist: f.frist, purring: f.purringer + 1 }) });
+      await db.from("kjede_foresporsler").update({ purringer: f.purringer + 1 }).eq("id", f.id);
+    }
   }
 
   // --- Sletting: organisasjoner der angrefristen er ute.

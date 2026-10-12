@@ -15,7 +15,7 @@ import { KAPSEL_SPRAK, erSprak } from "@/lib/sprak/felles";
  * nøkkelen — det er derfor de også må slippe forbi passordsperren. Møter
  * mottakeren en passordrute, har lenken ingen hensikt.
  */
-const TOKENSIDER = ["/offert", "/ettersending"];
+const TOKENSIDER = ["/offert", "/ettersending", "/underleverandorer"];
 
 /**
  * Ruter som kjøres av maskiner, ikke av folk.

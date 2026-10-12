@@ -31,6 +31,8 @@ export type Ledd = {
   over_grense: boolean;
 };
 
+export type IndikatorRad = { id: string; niva: "info" | "varsel"; tittel: string; tekst: string };
+
 export type Javrad = {
   type_kobling: string;
   person_navn: string;
@@ -51,6 +53,7 @@ export type Kontrollrapport = {
   krav: Krav[];
   kilder: Kilde[];
   kjede: Ledd[];
+  indikatorer: IndikatorRad[];
   jav: Javrad[];
 };
 
@@ -72,7 +75,7 @@ export async function hentKontrollrapport(
     .from("kontroller")
     // Én sammenhengende streng: deles den i to, klarer ikke typene i
     // supabase-js å lese den, og raden blir til `unknown`.
-    .select("id, utfort, risiko, krav, kilder, utfort_av, organisasjon_id, leverandor_id, leverandorer(navn, org_nr, bransje, sted)")
+    .select("id, utfort, risiko, krav, kilder, indikatorer, utfort_av, organisasjon_id, leverandor_id, leverandorer(navn, org_nr, bransje, sted)")
     .eq("id", id)
     .maybeSingle();
 
@@ -118,6 +121,7 @@ export async function hentKontrollrapport(
     krav: (k.krav ?? []) as Krav[],
     kilder: (k.kilder ?? []) as Kilde[],
     kjede: (kjede ?? []) as Ledd[],
+    indikatorer: (k.indikatorer ?? []) as IndikatorRad[],
     jav: (jav ?? []).map((r) => {
       const d = (r.detaljer ?? {}) as Record<string, unknown>;
       return {

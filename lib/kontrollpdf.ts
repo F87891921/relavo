@@ -116,6 +116,13 @@ export function kontrollrapportPdf(r: Kontrollrapport): ArrayBuffer {
     pdf.punkt(m.ord, k.ref, [k.tekst, k.notat].filter(Boolean).join(" "), m.farge);
   }
 
+  /* ------------------------------------------------------- Indikasjoner */
+  if (r.indikatorer.length) {
+    pdf.overskrift("Indikasjoner");
+    pdf.tekst("Indikasjoner er ikke krav og ikke brudd. De er forhold som kan være verdt et spørsmål.", { storrelse: 9.5, farge: DIM, etter: 4 });
+    for (const i of r.indikatorer) pdf.punkt(i.niva === "varsel" ? "VARSEL" : "INFO", i.tittel, i.tekst, i.niva === "varsel" ? ROD : GRAFITT);
+  }
+
   /* ------------------------------------------------------------ Kilder */
   pdf.overskrift("Kilder");
   if (!r.kilder.length) {

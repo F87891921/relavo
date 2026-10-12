@@ -132,3 +132,31 @@ export const overvakingBrev = (o: {
     o.sprak,
   );
 };
+
+/** Til leverandøren: oppgi underleverandørene dine. Samme brev brukes til purring. */
+export const foresporselBrev = (o: { kunde: string; leverandor: string; lenke: string; frist: string; purring: number }) =>
+  ferdig(
+    o.purring ? `Påminnelse: underleverandører for ${o.kunde}` : `${o.kunde} ber om en oversikt over underleverandørene dine`,
+    {
+      tittel: o.purring ? "En liten påminnelse" : "Hvem utfører arbeidet?",
+      hei: "Hei,",
+      avsnitt: [
+        `${o.kunde} har en avtale med ${o.leverandor} og må dokumentere hvem som utfører arbeidet, også underleverandørene.`,
+        "Det tar noen minutter. Du legger inn organisasjonsnumrene til selskapene som utfører deler av oppdraget for dere, eller svarer at dere ikke bruker underleverandører.",
+        `Vi ber om svar innen ${o.frist}.`,
+      ],
+      knapp: { tekst: "Oppgi underleverandører", lenke: o.lenke },
+      liten: ["Du trenger ikke opprette konto. Lenken er personlig for dette oppdraget."],
+    },
+  );
+
+/** Til kunden: leverandøren har svart. */
+export const foresporselSvartBrev = (o: { leverandor: string; antall: number; ingen: boolean; lenke: string }) =>
+  ferdig(`${o.leverandor} har svart på kjedeforespørselen`, {
+    avsnitt: [
+      o.ingen
+        ? `${o.leverandor} har bekreftet at de ikke bruker underleverandører på oppdraget.`
+        : `${o.leverandor} har oppgitt ${o.antall} underleverandør${o.antall === 1 ? "" : "er"}. Hver av dem er slått opp og kontrollert.`,
+    ],
+    knapp: { tekst: "Se kjeden", lenke: o.lenke },
+  });
