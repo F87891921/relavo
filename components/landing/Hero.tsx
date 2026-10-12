@@ -11,8 +11,11 @@ export function Hero() {
   return (
     <header className="hero">
       <div className="wrap">
-        <a className="pill" href="#regelverk">
-          <em>{t.hero.nytt}</em> <b>§§ 5e–5k</b> {t.hero.pille}
+        {/* Ingen pille. Strekene er dekor og skal ikke leses opp. */}
+        <a className="kicker" href="#regelverk">
+          <i aria-hidden="true" />
+          {t.hero.kicker}
+          <i aria-hidden="true" />
         </a>
         <h1>{t.hero.tittel}</h1>
         <p className="lead">{t.hero.lead}</p>

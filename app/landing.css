@@ -112,14 +112,25 @@ html{scroll-behavior:smooth}
 .hero{padding:64px 0 0;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;top:-180px;left:50%;transform:translateX(-50%);width:900px;height:540px;
   background:radial-gradient(ellipse at center, rgba(101,75,112,0.11), rgba(101,75,112,0) 66%);pointer-events:none}
-.pill{position:relative;display:inline-flex;align-items:center;gap:9px;padding:6px 7px 6px 14px;
-  border-radius:100px;background:var(--surface);font-size:12.5px;color:var(--text-dim);margin-bottom:28px;
-  box-shadow:0 1px 2px rgba(40,31,42,0.06),0 3px 12px rgba(40,31,42,0.07);
-  transition:box-shadow 200ms var(--ease-out),transform 130ms var(--ease-out)}
-.pill:hover{box-shadow:0 1px 2px rgba(40,31,42,0.07),0 8px 22px rgba(40,31,42,0.11);transform:translateY(-1px)}
-.pill:active{transform:scale(0.98)}
-.pill b{color:var(--text);font-weight:600}
-.pill em{font-style:normal;background:var(--surface-2);color:var(--accent);font-weight:600;font-size:11.5px;padding:3px 9px;border-radius:100px}
+/* Linja over overskriften.
+   Var en pille med skygge. To grunner til at den er borte: den sa «Nytt»
+   og «gjelder fra 1. juli 2026» om et regelverk som trådte i kraft for
+   tre måneder siden, og den var en opphøyd flate ved siden av
+   produktbildet — som er det ene som skal løftes på denne siden. */
+.kicker{display:inline-flex;align-items:center;gap:11px;margin-bottom:28px;
+  font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--accent);text-decoration:none;position:relative;
+  transition:color 200ms var(--ease-out)}
+.kicker:hover{color:var(--text)}
+.kicker i{display:block;width:26px;height:1.5px;border-radius:2px;
+  background:var(--border-strong);flex:0 0 auto;
+  transition:width 260ms var(--ease-out),background 260ms var(--ease-out)}
+.kicker:hover i{width:34px;background:var(--accent)}
+@media(max-width:520px){
+  .kicker{font-size:11px;gap:8px;letter-spacing:0.06em}
+  .kicker i{width:18px}
+}
+
 .hero h1{position:relative;font-size:60px;letter-spacing:-0.045em;line-height:1.04;max-width:15ch;margin:0 auto;font-weight:700}
 .hero .lead{position:relative;font-size:17.5px;color:var(--text-dim);line-height:1.6;max-width:60ch;margin:22px auto 0}
 .hero-cta{position:relative;display:flex;gap:10px;justify-content:center;margin-top:32px;flex-wrap:wrap}
@@ -208,97 +219,36 @@ html{scroll-behavior:smooth}
   .feats>*,.feats-3>*{min-width:0}
 }
 
-/* Kjedefragment — trappen
-   Hvert ledd trappes ned og inn, så dybden er noe man ser og ikke noe man
-   teller. Den er lodrett fra starten: det er den eneste formen som
-   fungerer like godt på en telefon som på en skjerm, og den slipper en
-   egen mobilvariant som skal holdes i takt med den vanlige.
-
-   Grensa ligger i flyten mellom ledd 2 og ledd 3, ikke på en avstand
-   målt i piksler. En hardkodet topp ville flyttet seg av seg selv så
-   snart noen endret skriftstørrelsen eller et selskapsnavn ble to linjer. */
-.chain{display:flex;flex-direction:column;gap:9px;width:100%;padding-top:4px}
-.chain-n{display:flex;align-items:center;gap:12px;padding-left:calc(var(--i, 0) * 26px);
-  transition:padding-left 420ms var(--ease-out)}
-
-/* Prikken markerer leddet uten å ta plass fra navnet. */
-.chain-p{width:7px;height:7px;border-radius:50%;flex:0 0 auto;background:var(--border-strong);
-  transition:background 420ms var(--ease-out)}
-.chain-n.self .chain-p{background:var(--accent)}
-.chain.brutt .chain-n.over .chain-p{background:var(--red)}
-
-.chain-box{flex:1;min-width:0;display:flex;align-items:baseline;gap:10px;
-  background:var(--surface);border:1.5px solid var(--border);border-radius:11px;
-  padding:11px 14px;
-  box-shadow:0 1px 2px rgba(40,31,42,0.05),0 2px 9px rgba(40,31,42,0.05);
-  transition:border-color 420ms var(--ease-out),background 420ms var(--ease-out),
-    box-shadow 420ms var(--ease-out)}
-.chain-n.self .chain-box{border-color:var(--accent)}
-/* Den eneste konturen på hele siden. Bruddet er det som er innrammet. */
-.chain.brutt .chain-n.over .chain-box{border-style:dashed;border-color:var(--red);
-  background:rgba(196,59,59,0.035);box-shadow:none}
-
-.chain-l{font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
-  color:var(--text-faint);flex:0 0 auto;transition:color 420ms var(--ease-out)}
-.chain-n.self .chain-l{color:var(--accent)}
-.chain.brutt .chain-n.over .chain-l{color:var(--red)}
-.chain-c{font-size:13.5px;font-weight:600;line-height:1.3;min-width:0}
-
-/* Taket. Står i flyten der det hører hjemme, og tones inn med bruddet. */
-.chain-tak{display:flex;align-items:center;gap:10px;margin:1px 0;
-  opacity:0;transform:translateY(-3px);
-  transition:opacity 380ms var(--ease-out) 160ms,transform 380ms var(--ease-out) 160ms}
-.chain.brutt .chain-tak{opacity:1;transform:none}
-.chain-tak::before{content:'';flex:1;height:1.5px;border-radius:2px;
-  background:repeating-linear-gradient(to right,var(--red) 0 6px,transparent 6px 12px)}
-.chain-tak span{font-size:10px;font-weight:700;letter-spacing:0.04em;color:var(--red);
-  white-space:nowrap}
-
-@media(max-width:520px){
-  /* Mindre trappesteg: fire ledd à 26 piksler spiser en fjerdedel av en
-     telefonskjerm, og da er det navnet som taper plassen. */
-  .chain-n{padding-left:calc(var(--i, 0) * 13px);gap:9px}
-  .chain-box{padding:10px 11px;gap:8px}
-  .chain-l{font-size:8px}
-  .chain-c{font-size:12.5px}
-}
-
-@media (prefers-reduced-motion:reduce){
-  .chain-tak{opacity:1;transform:none}
-}
-
 /* Tallet
-   Ett tall, sagt med ord.
+   Ett tall, stort nok til å bli lest som en påstand.
 
-   Første forsøk var et kort med skygge og et stort rødt 3 254. To ting
-   var galt med det. Kortet var den eneste innrammede flaten på en side
-   som ellers er ren type på hvit flate, så det lå oppå designet i stedet
-   for i det. Og rødt er siden sitt varselsignal — det er reservert for
-   brudd i en kontroll, og når forsiden bruker det på en statistikk
-   betyr det litt mindre neste gang det står ved et faktisk avvik.
+   Opptellingen stiller to krav til satsen. Sifrene må stå i tabellbredde,
+   ellers danser tallet mens det teller — en 1-er er smalere enn en 8-er i
+   vanlig sats. Og plassen til det ferdige tallet settes av på forhånd med
+   en min-width i ch, ellers skyver «3» → «32» → «325» → «3 254» hele
+   setningen under seg bortover. Begge deler er forskjellen mellom noe som
+   teller og noe som ser ut til å laste.
 
-   «To av fem» er dessuten lettere å ta med seg enn 3 254. De eksakte
-   tallene står igjen under, små, fordi påstanden skal kunne ettergås —
-   men det er setningen som skal leses. */
-.tallet{padding:76px 0 0;text-align:center}
-/* Kolonnen setter bredden, ikke hvert element for seg.
-   Avsnittet hadde «margin:0 auto; max-width:58ch» og la seg likevel 70
-   piksler til venstre for midten — to sentreringsmekanismer på samme
-   sted, text-align på seksjonen og auto-marger på avsnittet, og da er
-   det vanskelig å se hvilken som gjelder. Nå er alle tre elementene
-   like brede og sentreres av den ene. */
+   Blekk, ikke rødt: rødt er varselsignalet og hører til brudd i en
+   kontroll. */
+.tallet{padding:84px 0 0;text-align:center}
 .tallet-in{max-width:700px;margin:0 auto;padding:0 26px}
-.tallet-n{margin:0 0 18px;font-size:40px;letter-spacing:-0.04em;line-height:1.12;
-  font-weight:700;color:var(--text);text-wrap:balance}
-.tallet-n span{color:var(--text-dim);font-weight:500}
-.tallet-d{margin:0;font-size:15.5px;line-height:1.65;color:var(--text-dim);text-wrap:pretty}
-.tallet-k{margin:20px 0 0;font-size:11.5px;color:var(--text-faint);
+.tallet-n{margin:0;line-height:0.95;font-size:88px;font-weight:700;
+  letter-spacing:-0.05em;color:var(--text)}
+.tallet-siffer{display:inline-block;text-align:center;
+  font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.tallet-l{margin:16px 0 0;font-size:20px;font-weight:600;letter-spacing:-0.022em;
+  line-height:1.38;color:var(--text);text-wrap:balance}
+.tallet-d{margin:16px 0 0;font-size:15px;line-height:1.65;color:var(--text-dim);
+  text-wrap:pretty}
+.tallet-k{margin:18px 0 0;font-size:11.5px;color:var(--text-faint);
   font-variant-numeric:tabular-nums}
 
 @media(max-width:700px){
-  .tallet{padding:56px 0 0}
+  .tallet{padding:58px 0 0}
   .tallet-in{padding:0 22px}
-  .tallet-n{font-size:29px}
+  .tallet-n{font-size:62px}
+  .tallet-l{font-size:17.5px}
   .tallet-d{font-size:14.5px}
 }
 

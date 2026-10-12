@@ -309,8 +309,7 @@ export const en: Ordbok = {
   landing: {
     nav: { meny: "Menu", plattform: "Platform", regelverk: "The rules", priser: "Pricing", sporsmal: "Questions", loggInn: "Sign in", komIGang: "Get started" },
     hero: {
-      nytt: "New",
-      pille: "in force from 1 July 2026 →",
+      kicker: "§§ 5e–5k are in force",
       tittel: "The check you have to do. The proof you have to keep.",
       lead: "Relavo pulls company data, tax arrears and payment defaults, maps how deep the supply chain actually runs, and stores the result as evidence that the duty to verify under § 5i has been met.",
       sePriser: "See pricing",
@@ -322,6 +321,7 @@ export const en: Ordbok = {
       tilbud: "Abnormally low tenders",
     },
     tallet: {
+      setning: "cleaning companies in the Norwegian Labour Inspection Authority's register are not approved.",
       tallord: {
         "1": "One",
         "2": "Two",

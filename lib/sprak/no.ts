@@ -318,8 +318,7 @@ export const no = {
   landing: {
     nav: { meny: "Meny", plattform: "Plattform", regelverk: "Regelverk", priser: "Priser", sporsmal: "Spørsmål", loggInn: "Logg inn", komIGang: "Kom i gang" },
     hero: {
-      nytt: "Nytt",
-      pille: "gjelder fra 1. juli 2026 →",
+      kicker: "§§ 5e–5k gjelder",
       tittel: "Kontrollen du må gjøre. Beviset du må ha.",
       lead: "Relavo henter selskapsdata, skatterestanser og betalingsanmerkninger, kartlegger hvor dyp leverandørkjeden faktisk er, og lagrer resultatet som dokumentasjon på kontrollplikten i § 5i.",
       sePriser: "Se priser",
@@ -331,6 +330,7 @@ export const no = {
       tilbud: "Unormalt lave tilbud",
     },
     tallet: {
+      setning: "renholdsselskaper i Arbeidstilsynets register er ikke godkjent.",
       tallord: {
         "1": "Én",
         "2": "To",

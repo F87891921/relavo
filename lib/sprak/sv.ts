@@ -309,8 +309,7 @@ export const sv: Ordbok = {
   landing: {
     nav: { meny: "Meny", plattform: "Plattform", regelverk: "Regelverk", priser: "Priser", sporsmal: "Frågor", loggInn: "Logga in", komIGang: "Kom igång" },
     hero: {
-      nytt: "Nytt",
-      pille: "gäller från 1 juli 2026 →",
+      kicker: "§§ 5e–5k gäller",
       tittel: "Kontrollen du måste göra. Beviset du måste ha.",
       lead: "Relavo hämtar bolagsdata, skatteskulder och betalningsanmärkningar, kartlägger hur djup leverantörskedjan faktiskt är, och sparar resultatet som dokumentation på kontrollplikten i § 5i.",
       sePriser: "Se priser",
@@ -322,6 +321,7 @@ export const sv: Ordbok = {
       tilbud: "Onormalt låga anbud",
     },
     tallet: {
+      setning: "städbolag i Arbeidstilsynets register är inte godkända.",
       tallord: {
         "1": "En",
         "2": "Två",
