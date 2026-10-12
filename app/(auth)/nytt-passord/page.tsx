@@ -14,12 +14,14 @@ export default function NyttPassordSide() {
   const t = o.glemt;
   const router = useRouter();
   const [passord, setPassord] = useState("");
+  const [bekreft, setBekreft] = useState("");
   const [feil, setFeil] = useState("");
   const [ferdig, setFerdig] = useState(false);
   const [venter, start] = useTransition();
 
   const status = KRAV.map((k) => ({ ...k, ok: k.oppfylt(passord, "") }));
-  const klar = passord.length > 0 && status.every((k) => k.ok);
+  const like = passord === bekreft;
+  const klar = passord.length > 0 && status.every((k) => k.ok) && like && bekreft.length > 0;
 
   return (
     <div className="min-h-screen flex items-start justify-center bg-surface pt-[11vh] px-4">
@@ -57,6 +59,10 @@ export default function NyttPassordSide() {
                 </li>
               ))}
             </ul>
+            <label htmlFor="pw2" className="block text-xs font-semibold mb-1.5">{t.bekreftLabel}</label>
+            <input id="pw2" type="password" autoComplete="new-password" required value={bekreft} onChange={(e) => setBekreft(e.target.value)} className={`${FELT_FULL} max-w-none mb-1.5`} />
+            {bekreft.length > 0 && !like && <div className="text-[11.5px] text-bad mb-3">{t.ikkeLike}</div>}
+            <div className="mb-3" />
             {feil && <div className="text-xs text-bad bg-bad-bg rounded-xl px-3.5 py-2.5 mb-3">{feil}</div>}
             <button type="submit" disabled={venter || !klar} className="w-full bg-accent hover:bg-accent-hover active:scale-[0.99] transition text-white text-sm font-semibold py-2.5 rounded-xl disabled:opacity-40">
               {venter ? o.felles.sender : t.nyttKnapp}

@@ -1263,6 +1263,13 @@ export const en: Ordbok = {
   glemt: {
     lenke: "Forgot password?",
     epostEmne: "Choose a new password for Relavo",
+    bekreftLabel: "Confirm password",
+    ikkeLike: "The passwords do not match.",
+    epostHei: "Hello,",
+    epostIngress: "We received a request to choose a new password for Relavo. The link is valid for one hour and can be used once.",
+    epostKnapp: "Choose new password",
+    epostEllerLenke: "Button not working? Paste this link into your browser:",
+    epostIgnorer: "If you did not ask for this, you can ignore this email. Your password has not changed.",
     epostTekst: "Hello,\n\nWe received a request to choose a new password for Relavo. Open the link below to choose one. It is valid for one hour and can be used once.\n\n{lenke}\n\nIf you did not ask for this, you can ignore this email. Your password has not changed.\n\nRelavo",
     tittel: "Forgot password",
     ingress: "Enter your email address and we will send a link to choose a new one.",

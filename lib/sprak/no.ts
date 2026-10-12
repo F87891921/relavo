@@ -1272,6 +1272,13 @@ export const no = {
   glemt: {
     lenke: "Glemt passord?",
     epostEmne: "Velg nytt passord for Relavo",
+    bekreftLabel: "Bekreft passord",
+    ikkeLike: "Passordene er ikke like.",
+    epostHei: "Hei,",
+    epostIngress: "Vi fikk en forespørsel om å velge nytt passord for Relavo. Lenken gjelder i én time og kan brukes én gang.",
+    epostKnapp: "Velg nytt passord",
+    epostEllerLenke: "Fungerer ikke knappen? Lim inn denne lenken i nettleseren:",
+    epostIgnorer: "Har du ikke bedt om dette, kan du se bort fra e-posten. Passordet ditt er ikke endret.",
     epostTekst: "Hei,\n\nVi fikk en forespørsel om å velge nytt passord for Relavo. Åpne lenken under for å velge et nytt. Den gjelder i én time og kan brukes én gang.\n\n{lenke}\n\nHar du ikke bedt om dette, kan du se bort fra e-posten. Passordet ditt er ikke endret.\n\nRelavo",
     tittel: "Glemt passord",
     ingress: "Skriv e-postadressen din, så sender vi en lenke for å velge et nytt.",

@@ -19,6 +19,8 @@ export async function sendEpost(o: {
   til: string;
   emne: string;
   tekst: string;
+  /** HTML-versjon. Ren tekst sendes alltid med, for klienter som ikke viser HTML. */
+  html?: string;
   svarTil?: string | null;
 }): Promise<Epostsvar> {
   const nokkel = process.env.RESEND_API_KEY;
@@ -43,6 +45,7 @@ export async function sendEpost(o: {
         to: [o.til],
         subject: o.emne,
         text: o.tekst,
+        ...(o.html ? { html: o.html } : {}),
         ...(o.svarTil ? { reply_to: o.svarTil } : {}),
       }),
     });
