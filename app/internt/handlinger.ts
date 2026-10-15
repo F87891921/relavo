@@ -608,7 +608,20 @@ export async function synkFortnox(): Promise<Synksvar> {
   let nye = 0;
   let oppdaterte = 0;
 
+  // Fortnox-kontoet har fakturaer fra før Relavo. Bare det som er Relavos
+  // kommer inn: fakturaer til en kunde vi har (samme org.nr) eller som er
+  // merket «Relavo» i referansen. Resten lagres ikke i det hele tatt.
+  const { data: orgs } = await db.from("organisasjoner").select("id, org_nr");
+  const orgPerNr = new Map(
+    (orgs ?? []).filter((o) => o.org_nr).map((o) => [String(o.org_nr).replace(/\D/g, ""), o.id as string]),
+  );
+
   for (const f of svar.data) {
+    const nr = f.OrganisationNumber?.replace(/\D/g, "") || null;
+    const orgId = nr ? (orgPerNr.get(nr) ?? null) : null;
+    const merket = /relavo/i.test(f.YourReference ?? "");
+    if (!orgId && !merket) continue;
+
     const id = String(f.DocumentNumber);
     kjente.has(id) ? oppdaterte++ : nye++;
 
@@ -628,7 +641,8 @@ export async function synkFortnox(): Promise<Synksvar> {
         fortnox_id: id,
         nummer: id,
         kunde_navn: f.CustomerName,
-        org_nr: f.OrganisationNumber?.replace(/\D/g, "") || null,
+        org_nr: nr,
+        organisasjon_id: orgId,
         referanse: f.YourReference || null,
         belopp: Math.round(f.Total),
         forfall: f.DueDate,
