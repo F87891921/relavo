@@ -14,6 +14,14 @@ const BYGG = /bygg|anlegg|oppføring|elektrisk|rørlegg|maler|tømrer|tak|instal
 
 export function lagIndikatorer(e: Enhet, regnskap: Arsregnskap[], na = new Date()): Indikator[] {
   const ut: Indikator[] = [];
+
+  if (e.fraBedrift)
+    ut.push({
+      id: "bedriftsnummer",
+      niva: "info",
+      tittel: "Kontrollert via bedriftsnummer",
+      tekst: `${e.fraBedrift.nr} er bedriften ${e.fraBedrift.navn}${e.fraBedrift.sted ? ` (${e.fraBedrift.sted})` : ""}. Kontrollen er gjort på hovedenheten ${e.navn} (org.nr ${e.orgnr}), som er den som er avtalepart.`,
+    });
   const siste = regnskap.find((r) => r.driftsinntekter !== null);
   const ansatte = e.ansatte ?? 0;
 

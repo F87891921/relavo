@@ -17,6 +17,8 @@ export type Enhet = {
   konkurs: boolean;
   underAvvikling: boolean;
   underTvangsavvikling: boolean;
+  /** Satt når det oppgitte nummeret var et bedriftsnummer (underenhet). */
+  fraBedrift?: { nr: string; navn: string; sted: string | null } | null;
 };
 
 export type Oppslag =
@@ -76,6 +78,48 @@ export async function slaOppEnhet(orgnr: string): Promise<Oppslag> {
       konkurs: j.konkurs === true,
       underAvvikling: j.underAvvikling === true,
       underTvangsavvikling: j.underTvangsavviklingEllerTvangsopplosning === true,
+    },
+  };
+}
+
+/**
+ * Slår opp et nummer som organisasjonsnummer, og hvis det ikke finnes, som
+ * bedriftsnummer (underenhet).
+ *
+ * En bedrift er en avdeling eller et sted en virksomhet driver fra, og den
+ * har sitt eget nummer. Det er ikke den som er avtalepart eller kan gå
+ * konkurs: kontrollen gjøres på hovedenheten (den juridiske enheten), og
+ * bedriften det ble søkt på noteres på resultatet.
+ */
+export async function slaOppOrgEllerBedrift(nr: string): Promise<Oppslag> {
+  const direkte = await slaOppEnhet(nr);
+  if (direkte.status !== "ikke-funnet") return direkte;
+
+  let svar: Response;
+  try {
+    svar = await fetch(`https://data.brreg.no/enhetsregisteret/api/underenheter/${nr}`, {
+      headers: { Accept: "application/json" },
+      next: { revalidate: 300 },
+    });
+  } catch {
+    return { status: "feil", melding: "brregIngenKontakt" };
+  }
+  if (svar.status === 404) return { status: "ikke-funnet" };
+  if (!svar.ok) return { status: "feil", melding: `brregSvarte:${svar.status}` };
+
+  const j = (await svar.json().catch(() => null)) as Record<string, unknown> | null;
+  const overordnet = j && typeof j.overordnetEnhet === "string" ? j.overordnetEnhet : null;
+  if (!j || !overordnet) return { status: "ikke-funnet" };
+
+  const hoved = await slaOppEnhet(overordnet);
+  if (hoved.status !== "funnet") return hoved;
+
+  const adr = j.beliggenhetsadresse && typeof j.beliggenhetsadresse === "object" ? (j.beliggenhetsadresse as Record<string, unknown>) : null;
+  return {
+    status: "funnet",
+    enhet: {
+      ...hoved.enhet,
+      fraBedrift: { nr, navn: String(j.navn ?? ""), sted: adr ? String(adr.poststed ?? "") || null : null },
     },
   };
 }

@@ -2,7 +2,7 @@
 
 import { admin } from "@/lib/supabase/admin";
 import { validerOrgnr } from "@/lib/orgnr";
-import { slaOppEnhet } from "@/lib/brreg";
+import { slaOppOrgEllerBedrift } from "@/lib/brreg";
 import { kontrollerLedd, erOverGrense } from "@/lib/kjede";
 import { sendEpost } from "@/lib/epost";
 import { grunnUrl } from "@/lib/url";
@@ -52,7 +52,7 @@ export async function svarForesporsel(fd: FormData): Promise<Svar> {
     if (!v.ok) return { ok: false, feil: `«${n}» er ikke et gyldig organisasjonsnummer.` };
     if (sett.has(v.orgnr)) continue;
     sett.add(v.orgnr);
-    const r = await slaOppEnhet(v.orgnr);
+    const r = await slaOppOrgEllerBedrift(v.orgnr);
     if (r.status === "ikke-funnet") return { ok: false, feil: `Fant ikke ${n} i Enhetsregisteret.` };
     if (r.status === "feil") return { ok: false, feil: r.melding };
     enheter.push(r.enhet);

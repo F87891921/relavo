@@ -121,6 +121,9 @@ export function Prisfinner() {
             </tbody>
           </table>
           <p className="pf-m">{lopB === 1 ? t.bedrift.manedNote : t.sok.fakturering} {t.sok.tillegg}</p>
+          <p className="pf-m">
+            <b>{t.enkelt.navn}</b>: {kr(ENKELTKONTROLL)} {t.enkelt.enhet}. <Link href="/registrer?plan=engangs" className="pf-lenke">{t.enkelt.knapp}</Link>
+          </p>
           {bn === "stor" ? (
             <Link href="/kontakt?om=priser" className="btn btn-primary">
               {t.bedrift.knapp}
@@ -217,8 +220,8 @@ export function Prisfinner() {
                 {NIVAER.map((x) => (
                   <tr key={x.id}>
                     <td><b>{t.nivaer[x.id].navn}</b><small>{t.nivaer[x.id].spenn}</small></td>
-                    <td>{t.samlet.ubegrenset}</td>
-                    {LOPETIDER.map((l) => { const m = mndFor(x, l); return <td key={l}>{m === null ? t.samlet.offert : kr(m)}</td>; })}
+                    <td data-l={t.samlet.leverandorer}>{t.samlet.ubegrenset}</td>
+                    {LOPETIDER.map((l) => { const m = mndFor(x, l); return <td key={l} data-l={`${l} ${t.sok.mnd}`}>{m === null ? t.samlet.offert : kr(m)}</td>; })}
                   </tr>
                 ))}
               </tbody>
@@ -232,13 +235,13 @@ export function Prisfinner() {
                 {BEDRIFT.map((b) => (
                   <tr key={b.id}>
                     <td><b>{t.bedrift.nivaer[b.id].navn}</b></td>
-                    <td>{b.maks === null ? "400+" : b.maks}</td>
+                    <td data-l={t.samlet.leverandorer}>{b.maks === null ? "400+" : b.maks}</td>
                     {BEDRIFT_LOPETIDER.map((l) => {
                       const m = mndBedrift(b, l);
                       // Besparelsen er mot å kjøpe en enkeltkontroll for hver leverandør i en full plan.
                       const sparer = m !== null && b.maks !== null ? Math.round((1 - (m * 12) / (b.maks * ENKELTKONTROLL)) * 100) : null;
                       return (
-                        <td key={l}>
+                        <td key={l} data-l={l === 1 ? t.samlet.manedlig : `${l} ${t.sok.mnd}`}>
                           {m === null ? t.samlet.offert : kr(m)}
                           {sparer !== null && <small className="pf-sp">−{sparer} %</small>}
                         </td>

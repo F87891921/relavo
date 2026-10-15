@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { krevProfil } from "@/lib/tilgang";
 import { validerOrgnr } from "@/lib/orgnr";
-import { slaOppEnhet } from "@/lib/brreg";
+import { slaOppOrgEllerBedrift } from "@/lib/brreg";
 import { orgnrFeil } from "@/lib/orgnrtekst";
 import { ord } from "@/lib/sprak";
 import { kontrollerLedd, erOverGrense } from "@/lib/kjede";
@@ -51,12 +51,14 @@ export async function leggTilLedd(kontrollId: string, forelderId: string | null,
     : rot;
   if (!forelder) return { ok: false, feil: o.kjede.fantIkkeKontroll };
 
-  const { data: søsken } = await supabase.from("kjede_ledd").select("org_nr").eq("forelder_id", forelder.id);
-  if ((søsken ?? []).some((s) => s.org_nr === v.orgnr)) return { ok: false, feil: o.kjede.alleredeMed };
-
-  const oppslag = await slaOppEnhet(v.orgnr);
+  const oppslag = await slaOppOrgEllerBedrift(v.orgnr);
   if (oppslag.status === "ikke-funnet") return { ok: false, feil: o.kjede.ukjentOrg };
   if (oppslag.status === "feil") return { ok: false, feil: oppslag.melding };
+
+  // Et bedriftsnummer gir hovedenheten, og det er den som lagres.
+  const nr = oppslag.enhet.orgnr;
+  const { data: søsken } = await supabase.from("kjede_ledd").select("org_nr").eq("forelder_id", forelder.id);
+  if ((søsken ?? []).some((s) => s.org_nr === nr)) return { ok: false, feil: o.kjede.alleredeMed };
 
   const niva = forelder.niva + 1;
   const { error } = await supabase.from("kjede_ledd").insert({
@@ -64,7 +66,7 @@ export async function leggTilLedd(kontrollId: string, forelderId: string | null,
     forelder_id: forelder.id,
     niva,
     navn: oppslag.enhet.navn,
-    org_nr: v.orgnr,
+    org_nr: nr,
     over_grense: await erOverGrense(supabase, profil.organisasjon_id, niva),
     merknader: await kontrollerLedd(supabase, oppslag.enhet),
   });

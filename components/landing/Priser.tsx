@@ -1,6 +1,5 @@
 import { ord } from "@/lib/sprak";
 import Link from "next/link";
-import { kr, ENKELTKONTROLL } from "@/lib/priser";
 import { Prisfinner } from "./Prisfinner";
 
 export function Priser() {
@@ -24,10 +23,6 @@ export function Priser() {
         </div>
 
         <div className="pf-under" data-avsloj>
-          <div>
-            <b>{t.enkelt.navn}</b> — {kr(ENKELTKONTROLL)} {t.enkelt.enhet}.{" "}
-            <Link href="/registrer?plan=engangs">{t.enkelt.knapp}</Link>
-          </div>
           <div>
             {t.andre.tekst} <Link href="/kontakt?om=priser">{t.andre.knapp}</Link>
           </div>

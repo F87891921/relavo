@@ -75,6 +75,7 @@ export const en: Ordbok = {
     navnTomt: "The name cannot be empty.",
     rolleKreves: "The role must be filled in.",
     ugyldigEpost: "Enter a valid email address.",
+    engangsIkkeKommune: "Municipalities buy a subscription, not single controls. Go back and choose Municipality.",
     kommuneDomene: "Municipal users must have the municipality's email address (@{domene}). If you need to add a consultant or a user with another address, get in touch.",
     tofaktorIkkePa: "Two-factor is not turned on.",
     bareAdministrator: "Only an administrator can do this.",
@@ -321,9 +322,9 @@ export const en: Ordbok = {
     hero: {
       kicker: "§§ 5e–5k are in force",
       tittel: "The check you have to do. The proof you have to keep.",
-      lead: "Relavo pulls company data, tax arrears and payment defaults, maps how deep the supply chain actually runs, and stores the result as evidence that the duty to verify under § 5i has been met.",
+      lead: "Relavo pulls company data, roles, sanctions and cleaning approval, receives the tax certificate and the supply chain from the supplier, and stores the result as evidence that the duty to verify under § 5i has been met.",
       sePriser: "See pricing",
-      note: "From 3,900 NOK per month by municipality size, excl. VAT. Single control 890 NOK.",
+      note: "From 3,900 NOK per month by municipality size, excl. VAT.",
     },
     spill: {
       leverandorer: "The suppliers",
@@ -479,7 +480,7 @@ export const en: Ordbok = {
     },
     close: {
       tittel: "How deep is the chain in your largest contract?",
-      tekst: "Run one check for 890 NOK and see. You do not need a subscription.",
+      tekst: "Ask for a demo and we will run a check on one of your own suppliers.",
       snakkMedOss: "Talk to us",
     },
     foot: {

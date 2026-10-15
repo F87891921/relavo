@@ -588,3 +588,24 @@ html{scroll-behavior:smooth}
 .landing .pf-tw td small { display: block; color: var(--text-faint, #8a8289); font-size: 11.5px; }
 @media (max-width: 860px) { .landing .pf-gr { grid-template-columns: 1fr; } }
 .landing .pf-tw td small.pf-sp { color: #3d7a4f; font-weight: 600; font-size: 11px; }
+
+/* Prisene på mobil: hvert nivå blir et kort, ikke en tabell som må skrolles sideveis. */
+.landing .pf-gr > div { min-width: 0 }
+@media (max-width: 640px) {
+  .landing .pf-tw { border: 0; background: transparent; overflow: visible }
+  .landing .pf-tw table, .landing .pf-tw tbody { display: block }
+  .landing .pf-tw thead { display: none }
+  .landing .pf-tw tr { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; background: #fff; border: 1px solid var(--border, #e5e0e8); border-radius: 14px; padding: 12px 14px 10px; margin-bottom: 10px }
+  .landing .pf-tw td { border: 0; padding: 6px 0; text-align: left; white-space: normal }
+  .landing .pf-tw td:first-child { grid-column: 1 / -1; padding: 0 0 8px; font-size: 14.5px; border-bottom: 1px solid var(--border, #e5e0e8); margin-bottom: 4px }
+  .landing .pf-tw td[data-l]::before { content: attr(data-l); display: block; font-size: 11px; font-weight: 600; color: var(--text-faint, #8a8289); letter-spacing: .02em }
+  .landing .pf-tw td[data-l] { font-size: 15px; font-weight: 600 }
+  .landing .pf-tw td small { display: inline; margin-left: 6px }
+  .landing .pf-tw td small.pf-sp { display: block; margin-left: 0 }
+  .landing .pf-lop { max-width: 100%; overflow-x: auto; flex-wrap: nowrap }
+  .landing .pf-lop button { padding: 6px 8px; font-size: 12.5px; white-space: nowrap }
+  .landing .pf-i { font-size: 16px }
+  .landing .pf-res { padding: 18px 16px }
+  .landing .pf-pris { font-size: 30px }
+  .landing .pf-ingar-l { columns: 1 }
+}

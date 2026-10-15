@@ -56,7 +56,7 @@ relavo.no
 
 **Kontrollerer dere enkeltpersoner?** Nei. Vi kontrollerer selskaper. Opplysninger om straffedommer behandles ikke.
 
-**Hva koster det?** Prisen følger kommunens innbyggertall, fra 3 900 kr per måned eks. mva., uten tillegg per bruker eller per kontroll. Enkeltkontroll koster 890 kr.
+**Hva koster det?** Prisen følger kommunens innbyggertall, fra 3 900 kr per måned eks. mva., uten tillegg per bruker eller per kontroll.
 
 **Må vi bruke det på alle anskaffelser?** Nei. Dere kontrollerer de leverandørene dere vil, og kan kjøre mange på en gang.
 

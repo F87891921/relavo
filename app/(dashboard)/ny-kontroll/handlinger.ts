@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { krevProfil } from "@/lib/tilgang";
 import { validerOrgnr } from "@/lib/orgnr";
-import { slaOppEnhet, type Enhet } from "@/lib/brreg";
+import { slaOppOrgEllerBedrift, type Enhet } from "@/lib/brreg";
 import { HMS_PUNKTER, type Svar, type Resultat } from "@/lib/kontroll";
 import { finnJav } from "@/lib/jav";
 import { erRenholdsbransje, tolkStatus } from "@/lib/renhold";
@@ -26,7 +26,7 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
   const validering = validerOrgnr(svar.orgnr);
   if (!validering.ok) return { ok: false, feil: orgnrFeil(ord(), validering.feil) };
 
-  const oppslag = await slaOppEnhet(validering.orgnr);
+  const oppslag = await slaOppOrgEllerBedrift(validering.orgnr);
   if (oppslag.status !== "funnet") {
     return {
       ok: false,

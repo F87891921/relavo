@@ -121,9 +121,9 @@ k_slides = [
   <tr><td><b>Stor</b><small>over 50 000</small></td><td colspan="3">Tilbud etter størrelse</td></tr></tbody></table>
  <div class="side"><p><b>Kr per måned, eks. mva.</b></p>
   <ul><li>Ubegrenset antall kontroller, brukere og leverandører</li><li>Fast pris i hele avtaleperioden</li><li>Tofaktor og drift innenfor EØS</li><li>Eksport og sletting av dataene når som helst</li></ul>
-  <p class="liten">Enkeltkontroll uten abonnement: 890 kr.</p></div>
+  </div>
 </div>''', ""),
- (cover("Neste steg", "Skal vi vise det på", "en av dine leverandører?", "Tjue minutter, så ser du hvordan rapporten faktisk ser ut. Du kan også kjøre én kontroll selv for 890 kr.", "post@relavo.no · relavo.no"), "mork"),
+ (cover("Neste steg", "Skal vi vise det på", "en av dine leverandører?", "Tjue minutter, så ser du hvordan rapporten faktisk ser ut.", "post@relavo.no · relavo.no"), "mork"),
 ]
 (ROOT / "kommune" / "presentasjon.html").write_text(deck("Relavo for kommuner", k_slides))
 
@@ -223,7 +223,7 @@ def onepager(tittel, for_tekst, kicker, h1a, h1b, lead, kort, tall, prislinje, p
   ("02","Hele leverandørkjeden","§ 5k tillater høyst to ledd underleverandører i bygg, anlegg og renhold. Leverandøren oppgir kjeden via en lenke, og Relavo kontrollerer hvert ledd og flagger det som går over."),
   ("03","Dokumentasjon som holder","Hver kjøring lagres uendret og kan hentes fram igjen. Det som ikke er kontrollert, står oppført som ikke kontrollert.")],
  [("2","ledd underleverandører er taket i bygg, anlegg og renhold"),("Daglig","overvåking av konkurs, tvangsavvikling og tapt renholdsgodkjenning"),("Ubegrenset","antall kontroller og brukere, uten tillegg")],
- ("Pris etter kommunens innbyggertall","Fra 3 900 kr","per måned, eks. mva."), "Fast pris i avtaleperioden, fakturert årlig. Enkeltkontroll 890 kr uten abonnement."))
+ ("Pris etter kommunens innbyggertall","Fra 3 900 kr","per måned, eks. mva."), "Fast pris i avtaleperioden, fakturert årlig i forskudd."))
 
 (ROOT / "bolag" / "brosjyre.html").write_text(onepager("Relavo for bolag", "For bygg, anlegg og renhold", "Leverandørkontroll for entreprenører og bestillere",
  "Sjekk leverandørene før de starter.", "Ha beviset når noen spør.",

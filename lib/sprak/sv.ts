@@ -75,6 +75,7 @@ export const sv: Ordbok = {
     navnTomt: "Namnet får inte vara tomt.",
     rolleKreves: "Rollen måste fyllas i.",
     ugyldigEpost: "Skriv en giltig e-postadress.",
+    engangsIkkeKommune: "Kommuner köper abonnemang, inte enkelkontroll. Gå tillbaka och välj Kommune.",
     kommuneDomene: "Kommunala användare måste ha kommunens e-postadress (@{domene}). Behöver du lägga till en konsult eller en användare med en annan adress, hör av dig.",
     tofaktorIkkePa: "Tvåfaktor är inte påslaget.",
     bareAdministrator: "Bara administratör kan göra detta.",
@@ -321,9 +322,9 @@ export const sv: Ordbok = {
     hero: {
       kicker: "§§ 5e–5k gäller",
       tittel: "Kontrollen du måste göra. Beviset du måste ha.",
-      lead: "Relavo hämtar bolagsdata, skatteskulder och betalningsanmärkningar, kartlägger hur djup leverantörskedjan faktiskt är, och sparar resultatet som dokumentation på kontrollplikten i § 5i.",
+      lead: "Relavo hämtar bolagsdata, roller, sanktioner och renhållsgodkännande, tar emot skatteintyg och kedja från leverantören, och sparar resultatet som dokumentation på kontrollplikten i § 5i.",
       sePriser: "Se priser",
-      note: "Från 3 900 NOK per månad efter kommunstorlek, exkl. moms. Enkelkontroll 890 NOK.",
+      note: "Från 3 900 NOK per månad efter kommunstorlek, exkl. moms.",
     },
     spill: {
       leverandorer: "Leverantörerna",
@@ -479,7 +480,7 @@ export const sv: Ordbok = {
     },
     close: {
       tittel: "Hur djup är kedjan i ditt största kontrakt?",
-      tekst: "Kör en kontroll för 890 NOK och se svaret. Du behöver inget abonnemang.",
+      tekst: "Be om en demo, så visar vi en kontroll på en av dina egna leverantörer.",
       snakkMedOss: "Prata med oss",
     },
     foot: {

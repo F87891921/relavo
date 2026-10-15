@@ -142,6 +142,17 @@ export async function opprettKonto(fd: FormData): Promise<OpprettSvar> {
   } else if (type === "engangs") {
     plan = "engangs";
     if (!orgnavn) return { ok: false, feil: ord().feil.manglerNavn };
+    // Kommuner kjøper abonnement, ikke enkeltkontroll. Sjekkes på navn og, hvis oppgitt, organisasjonsform.
+    let kommunal = /kommune|fylkeskommune|herad/i.test(orgnavn);
+    const nr = orgnr.replace(/\D/g, "");
+    if (nr.length === 9) {
+      try {
+        const r = await fetch(`https://data.brreg.no/enhetsregisteret/api/enheter/${nr}`, { headers: { Accept: "application/json" } });
+        const e = (await r.json()) as { organisasjonsform?: { kode?: string } };
+        if (["KOMM", "FYLK"].includes(e.organisasjonsform?.kode ?? "")) kommunal = true;
+      } catch {}
+    }
+    if (kommunal) return { ok: false, feil: ord().feil.engangsIkkeKommune };
   } else {
     return { ok: false, feil: ord().feil.ugyldigPlan };
   }

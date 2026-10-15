@@ -84,6 +84,7 @@ export const no = {
     navnTomt: "Navnet kan ikke være tomt.",
     rolleKreves: "Rollen må fylles ut.",
     ugyldigEpost: "Skriv en gyldig e-postadresse.",
+    engangsIkkeKommune: "Kommuner kjøper abonnement, ikke enkeltkontroll. Gå tilbake og velg Kommune.",
     kommuneDomene: "Kommunale brukere må ha kommunens e-postadresse (@{domene}). Trenger du å legge til en konsulent eller en bruker med en annen adresse, ta kontakt med oss.",
     tofaktorIkkePa: "Tofaktor er ikke slått på.",
     bareAdministrator: "Bare administrator kan gjøre dette.",
@@ -330,9 +331,9 @@ export const no = {
     hero: {
       kicker: "§§ 5e–5k gjelder",
       tittel: "Kontrollen du må gjøre. Beviset du må ha.",
-      lead: "Relavo henter selskapsdata, skatterestanser og betalingsanmerkninger, kartlegger hvor dyp leverandørkjeden faktisk er, og lagrer resultatet som dokumentasjon på kontrollplikten i § 5i.",
+      lead: "Relavo henter selskapsdata, roller, sanksjoner og renholdsgodkjenning, tar imot skatteattest og kjede fra leverandøren, og lagrer resultatet som dokumentasjon på kontrollplikten i § 5i.",
       sePriser: "Se priser",
-      note: "Fra 3 900 NOK per måned etter kommunestørrelse, eks. mva. Enkeltkontroll 890 NOK.",
+      note: "Fra 3 900 NOK per måned etter kommunestørrelse, eks. mva.",
     },
     spill: {
       leverandorer: "Leverandørene",
@@ -488,7 +489,7 @@ export const no = {
     },
     close: {
       tittel: "Hvor dyp er kjeden i din største kontrakt?",
-      tekst: "Kjør én kontroll for 890 kr og se svaret. Du trenger ikke abonnement.",
+      tekst: "Be om en demo, så viser vi en kontroll på en av dine egne leverandører.",
       snakkMedOss: "Snakk med oss",
     },
     foot: {
