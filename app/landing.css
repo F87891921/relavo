@@ -609,3 +609,13 @@ html{scroll-behavior:smooth}
   .landing .pf-pris { font-size: 30px }
   .landing .pf-ingar-l { columns: 1 }
 }
+
+/* Trykkflater på mobil: minst ~40px høye, uten å endre utseendet på desktop. */
+@media (max-width: 820px) {
+  .foot-l{gap:2px 6px}
+  .foot-l a{display:inline-flex;align-items:center;min-height:40px;padding:0 8px;margin:0 -8px}
+  .nav .logo{display:inline-flex;align-items:center;min-height:40px}
+  .spill-prikk{min-height:38px;display:inline-flex;align-items:center}
+  .pf-modus button, .pf-lop button{min-height:40px}
+  .landing summary, .landing details > summary{min-height:40px;display:flex;align-items:center}
+}
