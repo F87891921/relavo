@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
+import { grunnUrl } from "@/lib/url";
 
 /**
  * Starter koblingen til Fortnox. Bare ansatte; selve innloggingen skjer hos
@@ -16,7 +17,7 @@ export async function GET() {
   const state = randomBytes(24).toString("hex");
   const url = new URL("https://apps.fortnox.se/oauth-v1/auth");
   url.searchParams.set("client_id", id);
-  url.searchParams.set("redirect_uri", process.env.FORTNOX_REDIRECT_URI ?? "https://www.relavo.no/api/fortnox/callback");
+  url.searchParams.set("redirect_uri", `${grunnUrl()}/api/fortnox/callback`);
   url.searchParams.set("scope", "invoice customer article");
   url.searchParams.set("state", state);
   url.searchParams.set("access_type", "offline");

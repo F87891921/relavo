@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     body: new URLSearchParams({
       grant_type: "authorization_code",
       code: kode,
-      redirect_uri: process.env.FORTNOX_REDIRECT_URI ?? "https://www.relavo.no/api/fortnox/callback",
+      redirect_uri: `${req.nextUrl.origin}/api/fortnox/callback`,
     }),
   });
   const d = await svar.json().catch(() => ({}));
