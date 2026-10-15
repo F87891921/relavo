@@ -88,7 +88,7 @@ export default async function KontoSide({
           </Kort>
         </div>
 
-        <Kort tittel={t.konto.sprakTittel} className="mb-4">
+        <Kort tittel={t.konto.sprakTittel} className="mb-4" meny>
           <div className="px-5 py-5 flex items-start justify-between gap-5">
             <p className="text-[12.5px] text-dim leading-relaxed max-w-[62ch]">
               {t.konto.sprakTekst}

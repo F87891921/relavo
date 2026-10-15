@@ -41,14 +41,17 @@ export function Kort({
   note,
   children,
   className = "",
+  meny = false,
 }: {
   tittel?: string;
   note?: string;
   children: ReactNode;
   className?: string;
+  /** Kortet rommer en nedtrekksmeny som må få stikke utenfor kanten. */
+  meny?: boolean;
 }) {
   return (
-    <div className={`bg-surface rounded-card border border-border shadow-card overflow-hidden ${className}`}>
+    <div className={`bg-surface rounded-card border border-border shadow-card ${meny ? "" : "overflow-hidden"} ${className}`}>
       {tittel && (
         <div className="flex items-baseline justify-between gap-3 px-4 sm:px-5 py-3.5 border-b border-border">
           <span className="text-[13.5px] font-semibold">{tittel}</span>

@@ -89,7 +89,7 @@ export function Fortnox({
             onClick={() => setApen(!apen)}
             className="text-[12.5px] text-dim hover:text-ink px-2 transition"
           >
-            {koblet ? o.internt.byttTokens : o.internt.koblTil}
+            Klistra in tokens manuellt
           </button>
         </div>
       </div>

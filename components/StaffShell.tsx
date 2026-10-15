@@ -3,6 +3,7 @@ import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { RelavoLogo } from "./RelavoLogo";
 import { MobilMeny } from "./MobilMeny";
 import type { Ordbok } from "@/lib/sprak";
+import { Sprakvelger } from "./Sprakvelger";
 
 /**
  * Sidemenyen for kontopanelet. Punktene følger relavo-staff.html, som er
@@ -63,13 +64,10 @@ export async function StaffShell({
       </div>
       {/* Kontopanelet har ingen egen kontoside. Uten denne fant ingen veien
           til språkvalget herfra. */}
-      <Link
-        href="/konto"
-        className="flex items-center justify-between gap-2 text-[13px] px-3 py-2 rounded-lg text-white/60 hover:bg-white/10 hover:text-white transition"
-      >
-        {t.konto.sprakTittel}
-        <span className="text-[11.5px] font-semibold uppercase">{sprak}</span>
-      </Link>
+      <div className="flex items-center justify-between gap-2 px-3 py-0.5">
+        <span className="text-[13px] text-white/60">{t.konto.sprakTittel}</span>
+        <Sprakvelger na={sprak} variant="mork" retning="opp" medSvensk={true} />
+      </div>
 
       <Link
         href="/oversikt"
