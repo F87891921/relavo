@@ -81,6 +81,9 @@ export function Fortnox({
               {venter ? o.felles.henter : o.internt.hentFakturaer}
             </button>
           )}
+          <a href="/api/fortnox/start" className={KNAPP + " inline-block"}>
+            {koblet ? "Koppla om via Fortnox" : "Koppla via Fortnox"}
+          </a>
           <button
             type="button"
             onClick={() => setApen(!apen)}
