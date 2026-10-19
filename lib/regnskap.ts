@@ -40,7 +40,18 @@ export async function hentRegnskap(orgnr: string): Promise<Arsregnskap[]> {
   }
   if (!Array.isArray(j)) return [];
 
-  return j
+  // Brreg leverer både selskapsregnskap og konsernregnskap for samme år. Vi
+  // kontrollerer selskapet som er leverandør, så selskapsregnskapet går foran.
+  const velg = new Map<number, Record<string, any>>();
+  for (const r of j as Record<string, any>[]) {
+    const aar = Number(String(r?.regnskapsperiode?.fraDato ?? "").slice(0, 4)) || 0;
+    if (!aar) continue;
+    const har = velg.get(aar);
+    const erSelskap = String(r?.regnskapstype ?? "").toUpperCase() !== "KONSERN";
+    if (!har || (erSelskap && String(har?.regnskapstype ?? "").toUpperCase() === "KONSERN")) velg.set(aar, r);
+  }
+
+  return [...velg.values()]
     .map((r: Record<string, any>) => ({
       aar: Number(String(r?.regnskapsperiode?.fraDato ?? "").slice(0, 4)) || 0,
       valuta: String(r?.valuta ?? "NOK"),
