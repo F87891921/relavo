@@ -257,6 +257,10 @@ export const JURIDISK: Seksjon[] = [
         "v": "Brønnøysundregistrene, Skatteetaten og Lovdata er ikke underleverandører. Vi henter opplysninger fra dem, men de behandler ingenting på våre vegne."
       },
       {
+        "t": "p",
+        "v": "Kredittrating og betalingsanmerkninger hentes fra Proff AS (Oslo), en kredittopplysningsleverandør. Proff er en datakilde og ikke en underleverandør som behandler kundens opplysninger. Vi sender bare organisasjonsnummeret til selskapet som kontrolleres, og lagrer svaret i kontrollen innenfor EØS."
+      },
+      {
         "t": "h3",
         "v": "3.4 Sikkerhet og avvik"
       },
