@@ -33,6 +33,15 @@ const RISIKOTONE: Record<string, Tone> = {
 
 const REKKEFOLGE: Record<string, number> = { no: 0, na: 1, ok: 2 };
 
+/** Beløp i kroner: mill. kr fra en million, ellers hele kroner. Prosent med én desimal. */
+function visTall(v: number | null, type: "kr" | "pst"): string {
+  if (v == null) return "–";
+  if (type === "pst") return `${v.toLocaleString("nb-NO", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %`;
+  return Math.abs(v) >= 1_000_000
+    ? `${(v / 1_000_000).toLocaleString("nb-NO", { maximumFractionDigits: 1 })} mill. kr`
+    : `${v.toLocaleString("nb-NO")} kr`;
+}
+
 export default async function KontrollSide({
   params,
 }: {
@@ -147,6 +156,66 @@ export default async function KontrollSide({
             ))}
           </ul>
         </Kort>
+
+        {r.nokkeltall && (
+          <Kort tittel={t.kontroll.nokkeltall.tittel} note={t.kontroll.nokkeltall.note} className="mb-4">
+            {r.nokkeltall.ar.length === 0 ? (
+              <p className="px-5 py-4 text-[12.5px] text-dim leading-relaxed">{t.kontroll.nokkeltall.ingen}</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-[12.5px]">
+                  <thead>
+                    <tr className="text-left text-faint">
+                      <th className="px-5 py-2.5 font-semibold">{t.kontroll.nokkeltall.ar}</th>
+                      {r.nokkeltall.ar.map((a) => (
+                        <th key={a.aar} className="px-4 py-2.5 font-semibold text-right tabular-nums">{a.aar}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {(
+                      [
+                        ["omsetning", "kr"],
+                        ["vekst", "pst"],
+                        ["driftsresultat", "kr"],
+                        ["driftsmargin", "pst"],
+                        ["aarsresultat", "kr"],
+                        ["egenkapital", "kr"],
+                        ["egenkapitalandel", "pst"],
+                        ["gjeld", "kr"],
+                        ["eiendeler", "kr"],
+                      ] as const
+                    ).map(([felt, type]) => (
+                      <tr key={felt}>
+                        <td className="px-5 py-2.5 text-dim">{t.kontroll.nokkeltall[felt]}</td>
+                        {r.nokkeltall!.ar.map((a) => (
+                          <td key={a.aar} className="px-4 py-2.5 text-right tabular-nums">
+                            {visTall(a[felt], type)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                    {r.nokkeltall.ansatte != null && (
+                      <tr>
+                        <td className="px-5 py-2.5 text-dim">{t.kontroll.nokkeltall.ansatte}</td>
+                        <td colSpan={r.nokkeltall.ar.length} className="px-4 py-2.5 text-right tabular-nums">{r.nokkeltall.ansatte}</td>
+                      </tr>
+                    )}
+                    {r.nokkeltall.omsetningPerAnsatt != null && (
+                      <tr>
+                        <td className="px-5 py-2.5 text-dim">{t.kontroll.nokkeltall.perAnsatt}</td>
+                        <td colSpan={r.nokkeltall.ar.length} className="px-4 py-2.5 text-right tabular-nums">{visTall(r.nokkeltall.omsetningPerAnsatt, "kr")}</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            <p className="px-5 py-3 text-[11.5px] text-faint border-t border-border">
+              {t.kontroll.nokkeltall.kilde}: {r.nokkeltall.kilde} · {new Date(r.nokkeltall.hentet).toLocaleDateString("nb-NO")}
+            </p>
+          </Kort>
+        )}
 
         {r.indikatorer.length > 0 && (
           <Kort tittel={t.kontroll.indikasjoner} note={t.kontroll.indikasjonerNote} className="mb-4">

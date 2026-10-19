@@ -116,6 +116,28 @@ export function kontrollrapportPdf(r: Kontrollrapport): ArrayBuffer {
     pdf.punkt(m.ord, k.ref, [k.tekst, k.notat].filter(Boolean).join(" "), m.farge);
   }
 
+  /* ---------------------------------------------------------- Nøkkeltall */
+  if (r.nokkeltall) {
+    pdf.overskrift("Nøkkeltall");
+    if (!r.nokkeltall.ar.length) {
+      pdf.tekst("Ingen årsregnskap er levert. Det er vanlig for nye selskaper og mindre foretak, og er ikke i seg selv noe galt.", { storrelse: 9.5, farge: DIM, etter: 4 });
+    } else {
+      const kr = (v: number | null) =>
+        v == null ? "–" : Math.abs(v) >= 1_000_000 ? `${(v / 1_000_000).toLocaleString("nb-NO", { maximumFractionDigits: 1 })} mill. kr` : `${v.toLocaleString("nb-NO")} kr`;
+      const pst = (v: number | null) => (v == null ? "–" : `${v.toLocaleString("nb-NO", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %`);
+      for (const a of r.nokkeltall.ar)
+        pdf.punkt(
+          String(a.aar),
+          `Omsetning ${kr(a.omsetning)}`,
+          `Vekst ${pst(a.vekst)} · Driftsresultat ${kr(a.driftsresultat)} (margin ${pst(a.driftsmargin)}) · Årsresultat ${kr(a.aarsresultat)} · Egenkapital ${kr(a.egenkapital)} (${pst(a.egenkapitalandel)} av eiendeler) · Gjeld ${kr(a.gjeld)} · Eiendeler ${kr(a.eiendeler)}`,
+          GRAFITT,
+        );
+      if (r.nokkeltall.ansatte != null)
+        pdf.tekst(`Ansatte nå: ${r.nokkeltall.ansatte}${r.nokkeltall.omsetningPerAnsatt != null ? ` · Omsetning per ansatt: ${kr(r.nokkeltall.omsetningPerAnsatt)}` : ""}`, { storrelse: 9.5, farge: DIM, etter: 2 });
+    }
+    pdf.tekst(`Kilde: ${r.nokkeltall.kilde}, hentet ${new Date(r.nokkeltall.hentet).toLocaleDateString("nb-NO")}. Tallene er ikke en vurdering.`, { storrelse: 9, farge: DIM, etter: 6 });
+  }
+
   /* ------------------------------------------------------- Indikasjoner */
   if (r.indikatorer.length) {
     pdf.overskrift("Indikasjoner");

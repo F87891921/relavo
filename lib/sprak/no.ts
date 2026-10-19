@@ -546,6 +546,7 @@ export const no = {
   kontroll: {
     indikasjoner: "Indikasjoner",
     indikasjonerNote: "Ikke krav og ikke brudd, men forhold som kan være verdt et spørsmål.",
+    nokkeltall: {"tittel": "Nøkkeltall", "note": "Fra innleverte årsregnskap. Tallene er ikke en vurdering.", "ar": "År", "omsetning": "Omsetning", "driftsresultat": "Driftsresultat", "aarsresultat": "Årsresultat", "egenkapital": "Egenkapital", "gjeld": "Gjeld", "eiendeler": "Eiendeler", "vekst": "Omsetningsvekst", "driftsmargin": "Driftsmargin", "egenkapitalandel": "Egenkapitalandel", "ansatte": "Ansatte nå", "perAnsatt": "Omsetning per ansatt", "ingen": "Ingen årsregnskap er levert. Det er vanlig for nye selskaper, enkeltpersonforetak og mindre foretak, og er ikke i seg selv noe galt.", "kilde": "Kilde", "mnok": "mill. kr", "tkr": "kr"},
     varsel: "Varsel",
     info: "Info",
     lastNedPdf: "Last ned PDF",

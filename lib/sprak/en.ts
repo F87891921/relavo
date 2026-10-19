@@ -537,6 +537,7 @@ export const en: Ordbok = {
   kontroll: {
     indikasjoner: "Indicators",
     indikasjonerNote: "Not requirements and not breaches, but things that may be worth a question.",
+    nokkeltall: {"tittel": "Key figures", "note": "From filed annual accounts. The figures are not an assessment.", "ar": "Year", "omsetning": "Revenue", "driftsresultat": "Operating result", "aarsresultat": "Net result", "egenkapital": "Equity", "gjeld": "Debt", "eiendeler": "Assets", "vekst": "Revenue growth", "driftsmargin": "Operating margin", "egenkapitalandel": "Equity ratio", "ansatte": "Employees now", "perAnsatt": "Revenue per employee", "ingen": "No annual accounts have been filed. That is common for new companies, sole proprietorships and small businesses, and is not wrong in itself.", "kilde": "Source", "mnok": "NOK m", "tkr": "NOK"},
     varsel: "Warning",
     info: "Info",
     lastNedPdf: "Download PDF",

@@ -11,6 +11,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * forskjellige svar på hva kontrollen fant.
  */
 
+import type { Nokkeltall } from "@/lib/nokkeltall";
+
 export type Krav = {
   ref: string;
   status: "ok" | "no" | "na";
@@ -54,6 +56,7 @@ export type Kontrollrapport = {
   kilder: Kilde[];
   kjede: Ledd[];
   indikatorer: IndikatorRad[];
+  nokkeltall: Nokkeltall | null;
   jav: Javrad[];
 };
 
@@ -75,7 +78,7 @@ export async function hentKontrollrapport(
     .from("kontroller")
     // Én sammenhengende streng: deles den i to, klarer ikke typene i
     // supabase-js å lese den, og raden blir til `unknown`.
-    .select("id, utfort, risiko, krav, kilder, indikatorer, utfort_av, organisasjon_id, leverandor_id, leverandorer(navn, org_nr, bransje, sted)")
+    .select("id, utfort, risiko, krav, kilder, indikatorer, nokkeltall, utfort_av, organisasjon_id, leverandor_id, leverandorer(navn, org_nr, bransje, sted)")
     .eq("id", id)
     .maybeSingle();
 
@@ -122,6 +125,7 @@ export async function hentKontrollrapport(
     kilder: (k.kilder ?? []) as Kilde[],
     kjede: (kjede ?? []) as Ledd[],
     indikatorer: (k.indikatorer ?? []) as IndikatorRad[],
+    nokkeltall: (k.nokkeltall ?? null) as Nokkeltall | null,
     jav: (jav ?? []).map((r) => {
       const d = (r.detaljer ?? {}) as Record<string, unknown>;
       return {
