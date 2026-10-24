@@ -61,7 +61,7 @@ export async function proffIndikatorer(orgnr: string): Promise<Indikator[]> {
         niva: "info",
         tittel: "Ingen kredittrating registrert",
         tekst:
-          "Kredittopplysningsleverandøren har ingen kredittrating eller betalingsanmerkninger registrert på dette selskapet. Det er vanlig for nye selskaper og de som er små. Det betyr at vi ikke kan si noe om kreditt fra denne kilden, ikke at selskapet har god eller dårlig kreditt.",
+          "Proff har ingen kredittrating eller betalingsanmerkninger registrert på dette selskapet. Det er vanlig for nye selskaper og de som er små. Det betyr at vi ikke kan si noe om kreditt fra denne kilden, ikke at selskapet har god eller dårlig kreditt.",
       },
     ];
 
@@ -72,7 +72,7 @@ export async function proffIndikatorer(orgnr: string): Promise<Indikator[]> {
         niva: "info",
         tittel: "Kredittdata kunne ikke hentes",
         tekst:
-          "Vi fikk ikke svar fra kredittopplysningsleverandøren da kontrollen ble kjørt. Resten av rapporten er ikke berørt. Kjør kontrollen på nytt senere for å få med kredittdata.",
+          "Vi fikk ikke svar fra Proff da kontrollen ble kjørt. Resten av rapporten er ikke berørt. Kjør kontrollen på nytt senere for å få med kredittdata.",
       },
     ];
 
@@ -86,12 +86,12 @@ export async function proffIndikatorer(orgnr: string): Promise<Indikator[]> {
       niva: "info",
       tittel: `Kredittrating: ${r.rating}`,
       tekst:
-        `Kredittopplysningsleverandøren vurderer selskapet til ${r.rating}` +
+        `Proff vurderer selskapet til ${r.rating}` +
         (r.ratingScore != null ? ` (score ${r.ratingScore})` : "") +
         (r.probabilityOfBankruptcy != null
           ? `, konkurssannsynlighet ${(r.probabilityOfBankruptcy * 100).toFixed(1)} %`
           : "") +
-        `. Kilde: kredittopplysningsleverandør${dato ? `, oppdatert ${dato}` : ""}. Dette er en vurdering fra et kredittbyrå, ikke en offentlig kilde.`,
+        `. Kilde: Proff${dato ? `, oppdatert ${dato}` : ""}. Dette er en vurdering fra et kredittbyrå, ikke en offentlig kilde.`,
     });
 
   const p = r.paymentRemarks;
@@ -100,21 +100,21 @@ export async function proffIndikatorer(orgnr: string): Promise<Indikator[]> {
       id: "proff-betalingsanmerkninger",
       niva: "varsel",
       tittel: "Betalingsanmerkninger registrert",
-      tekst: `Det er registrert betalingsanmerkninger på selskapet. Kilde: kredittopplysningsleverandør${dato ? `, ${dato}` : ""}.`,
+      tekst: `Det er registrert betalingsanmerkninger på selskapet. Kilde: Proff${dato ? `, ${dato}` : ""}.`,
     });
   if (p && !p.hasRemarks && !p.hasCompulsoryMortgages)
     ut.push({
       id: "proff-ingen-anmerkninger",
       niva: "info",
       tittel: "Ingen betalingsanmerkninger registrert",
-      tekst: `Det er ikke registrert betalingsanmerkninger eller tvangspant på selskapet. Kilde: kredittopplysningsleverandør${dato ? `, ${dato}` : ""}.`,
+      tekst: `Det er ikke registrert betalingsanmerkninger eller tvangspant på selskapet. Kilde: Proff${dato ? `, ${dato}` : ""}.`,
     });
   if (p?.hasCompulsoryMortgages)
     ut.push({
       id: "proff-tvangspant",
       niva: "varsel",
       tittel: "Tvangspant registrert",
-      tekst: `Det er registrert pant ved tvang (for eksempel utlegg). Kilde: kredittopplysningsleverandør${dato ? `, ${dato}` : ""}.`,
+      tekst: `Det er registrert pant ved tvang (for eksempel utlegg). Kilde: Proff${dato ? `, ${dato}` : ""}.`,
     });
 
   return ut;
