@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { RelavoLogo } from "./RelavoLogo";
@@ -12,21 +13,26 @@ import { Sprakvelger } from "./Sprakvelger";
  */
 /** bara=true betyder att punkten kräver superadmin. */
 export const ANSATTMENY = [
-  { id: "konton", href: "/internt" },
-  { id: "attgora", href: "/internt/attgora" },
-  { id: "aktivitet", href: "/internt/aktivitet" },
-  { id: "support", href: "/internt/support" },
-  { id: "kontakt", href: "/internt/kontakt" },
-  { id: "leads", href: "/internt/leads" },
-  { id: "offerter", href: "/internt/offerter" },
-  { id: "fakturering", href: "/internt/fakturering" },
-  { id: "onboarding", href: "/internt/onboarding" },
-  { id: "kreditt", href: "/internt/kreditt" },
-  { id: "kallor", href: "/internt/kallor" },
-  { id: "marginal", href: "/internt/marginal", bara: "superadmin" },
-  { id: "rabatt", href: "/internt/rabatt", bara: "superadmin" },
-  { id: "logg", href: "/internt/logg", bara: "superadmin" },
-  { id: "team", href: "/internt/team", bara: "superadmin" },
+  // Dagen
+  { id: "konton", href: "/internt", gruppe: "dag" },
+  { id: "attgora", href: "/internt/attgora", gruppe: "dag" },
+  { id: "aktivitet", href: "/internt/aktivitet", gruppe: "dag" },
+  // Salg
+  { id: "leads", href: "/internt/leads", gruppe: "salg" },
+  { id: "kontakt", href: "/internt/kontakt", gruppe: "salg" },
+  { id: "offerter", href: "/internt/offerter", gruppe: "salg" },
+  // Kunder
+  { id: "onboarding", href: "/internt/onboarding", gruppe: "kunder" },
+  { id: "kreditt", href: "/internt/kreditt", gruppe: "kunder" },
+  { id: "support", href: "/internt/support", gruppe: "kunder" },
+  // Penger
+  { id: "fakturering", href: "/internt/fakturering", gruppe: "penger" },
+  { id: "rabatt", href: "/internt/rabatt", gruppe: "penger", bara: "superadmin" },
+  { id: "marginal", href: "/internt/marginal", gruppe: "penger", bara: "superadmin" },
+  // System
+  { id: "kallor", href: "/internt/kallor", gruppe: "system" },
+  { id: "logg", href: "/internt/logg", gruppe: "system", bara: "superadmin" },
+  { id: "team", href: "/internt/team", gruppe: "system", bara: "superadmin" },
 ] as const;
 
 export async function StaffShell({
@@ -47,6 +53,7 @@ export async function StaffShell({
 
   const meny = ANSATTMENY.filter((s) => !("bara" in s) || superadmin).map((s) => ({
     id: s.id as string,
+    gruppe: s.gruppe as string,
     href: s.href,
     navn: t.ansattmeny[s.id as keyof Ordbok["ansattmeny"]],
     ...(s.id === "attgora" && olasta ? { merke: olasta } : {}),
@@ -90,9 +97,15 @@ export async function StaffShell({
         </div>
 
         <nav className="flex flex-col gap-0.5 overflow-y-auto min-h-0 flex-1">
-          {meny.map((s) => (
+          {meny.map((s, i) => (
+            <Fragment key={s.href}>
+              {/* Gruppenavn der gruppen skifter, så menyen følger arbeidsgangen. */}
+              {s.gruppe !== meny[i - 1]?.gruppe && (
+                <div className={`px-3 text-[10px] font-bold tracking-[0.09em] uppercase text-white/35 ${i === 0 ? "pt-0" : "pt-4"} pb-1`}>
+                  {t.ansattgrupper[s.gruppe as keyof Ordbok["ansattgrupper"]]}
+                </div>
+              )}
             <Link
-              key={s.href}
               href={s.href}
               aria-current={aktivtSteg === s.id ? "page" : undefined}
               className={`text-[13px] px-3 py-2 rounded-lg transition flex items-center gap-2 ${
@@ -108,6 +121,7 @@ export async function StaffShell({
                 </span>
               )}
             </Link>
+            </Fragment>
           ))}
         </nav>
 

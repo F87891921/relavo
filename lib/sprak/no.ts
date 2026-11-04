@@ -53,6 +53,7 @@ export const no = {
     team: "Team og tilgang",
     aktivitet: "Aktivitet",
   },
+  ansattgrupper: {dag: "Dagen", salg: "Salg", kunder: "Kunder", penger: "Penger", system: "System"},
 
   skall: {
     kontoenDin: "Kontoen din",

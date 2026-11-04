@@ -44,6 +44,7 @@ export const en: Ordbok = {
     team: "Team and access",
     aktivitet: "Activity",
   },
+  ansattgrupper: {dag: "Today", salg: "Sales", kunder: "Customers", penger: "Money", system: "System"},
 
   skall: {
     kontoenDin: "Your account",
