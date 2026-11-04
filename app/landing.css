@@ -562,8 +562,12 @@ html{scroll-behavior:smooth}
 .landing .pf-regn td { padding: 10px 0; border-top: 1px solid var(--border, #e5e0e8); }
 .landing .pf-regn td:last-child { text-align: right; }
 .landing .pf-mva { font-size: 13px; color: var(--text-faint, #8a8289); margin: 14px 0 0; }
-.landing .pf-ingar-l { margin: 14px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.7; columns: 2; column-gap: 24px; }
-@media (max-width: 600px) { .landing .pf-ingar-l { columns: 1; } }
+.landing .pf-ingar-l { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 32px; font-size: 14px; line-height: 1.4; }
+.landing .pf-ingar-l li { position: relative; padding-left: 26px; color: var(--text, #1d1d1f); overflow-wrap: anywhere; }
+/* Bockmarkering i stället för punkt: det är en lista över vad som ingår, inte en brödtext. */
+.landing .pf-ingar-l li::before { content: ""; position: absolute; left: 0; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent-light, rgba(101,75,112,0.1)); }
+.landing .pf-ingar-l li::after { content: ""; position: absolute; left: 5px; top: 6px; width: 6px; height: 3.5px; border-left: 1.6px solid var(--accent, #654b70); border-bottom: 1.6px solid var(--accent, #654b70); transform: rotate(-45deg); }
+@media (max-width: 600px) { .landing .pf-ingar-l { grid-template-columns: 1fr; gap: 10px; } }
 .landing .pf-under { font-size: 13.5px; }
 .landing .pf-modus { display: flex; width: fit-content; margin: 0 auto 22px; }
 .landing .pf-bt { width: 100%; border-collapse: separate; border-spacing: 0 8px; margin-top: 8px; font-size: 14.5px; }
@@ -611,7 +615,7 @@ html{scroll-behavior:smooth}
   .landing .pf-i { font-size: 16px }
   .landing .pf-res { padding: 18px 16px }
   .landing .pf-pris { font-size: 30px }
-  .landing .pf-ingar-l { columns: 1 }
+  .landing .pf-ingar-l { grid-template-columns: 1fr }
 }
 
 /* Trykkflater på mobil: minst ~40px høye, uten å endre utseendet på desktop. */
