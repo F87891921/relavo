@@ -537,7 +537,7 @@ export const sv: Ordbok = {
   kontroll: {
     indikasjoner: "Indikationer",
     indikasjonerNote: "Inte krav och inte brott, men förhållanden som kan vara värda en fråga.",
-    fakta: {rating: "Kreditrating", omsetning: "Omsättning", anmerkninger: "Betalningsanmärkningar", sanksjoner: "Sanktioner och PEP", skatteattest: "Skatteattest", ingen: "Inga", ja: "Ja", ingenTreff: "Inga träffar", mulig: "Möjlig träff", mottatt: "Mottagen", venter: "Väntar", ikkeSjekket: "Ej kontrollerat", tvangspant: "Tvångspant", kredittTittel: "Kredit", kredittNote: "Från kreditupplysningsleverantör (Proff)"},
+    fakta: {rating: "Kreditrating", omsetning: "Omsättning", anmerkninger: "Anmärkningar", sanksjoner: "Sanktion/PEP", skatteattest: "Skatteattest", ingen: "Inga", ja: "Ja", ingenTreff: "Inga träffar", mulig: "Möjlig träff", mottatt: "Mottagen", venter: "Väntar", ikkeSjekket: "Ej kontrollerat", tvangspant: "Tvångspant", kredittTittel: "Kredit", kredittNote: "Från kreditupplysningsleverantör (Proff)"},
     egenerklaring: "Egenförsäkran ej ifylld",
     egenerklaringNote: "De här punkterna bygger på leverantörens egen försäkran och är inte ifyllda. De säger inget om leverantören och räknas inte i risken.",
     egenerklaringAntall: "Väntar på egenförsäkran:",

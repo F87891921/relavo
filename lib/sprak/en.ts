@@ -537,7 +537,7 @@ export const en: Ordbok = {
   kontroll: {
     indikasjoner: "Indicators",
     indikasjonerNote: "Not requirements and not breaches, but things that may be worth a question.",
-    fakta: {rating: "Credit rating", omsetning: "Revenue", anmerkninger: "Payment remarks", sanksjoner: "Sanctions and PEP", skatteattest: "Tax certificate", ingen: "None", ja: "Yes", ingenTreff: "No hits", mulig: "Possible hit", mottatt: "Received", venter: "Waiting", ikkeSjekket: "Not checked", tvangspant: "Compulsory lien", kredittTittel: "Credit", kredittNote: "From a credit information provider (Proff)"},
+    fakta: {rating: "Credit rating", omsetning: "Revenue", anmerkninger: "Remarks", sanksjoner: "Sanctions/PEP", skatteattest: "Tax certificate", ingen: "None", ja: "Yes", ingenTreff: "No hits", mulig: "Possible hit", mottatt: "Received", venter: "Waiting", ikkeSjekket: "Not checked", tvangspant: "Compulsory lien", kredittTittel: "Credit", kredittNote: "From a credit information provider (Proff)"},
     egenerklaring: "Self-declaration not completed",
     egenerklaringNote: "These points rely on the supplier’s own declaration and have not been filled in. They say nothing about the supplier and do not count towards the risk.",
     egenerklaringAntall: "Awaiting self-declaration:",
