@@ -78,6 +78,10 @@ export function opprettKasseokt(o: {
   p.set("customer_email", o.epost);
   p.set("client_reference_id", o.referanse);
   if (o.organisasjonId) p.set("metadata[organisasjon_id]", o.organisasjonId);
+  // Rabattkoder skrives inn av kunden på Stripes betalingsside. Kodene lages i
+  // Stripe (Produkter → Kuponger → Kampanjekoder); hva de gir og hvor lenge
+  // bestemmes der. Webhooken ser bare at økten er betalt, ikke hva beløpet ble.
+  p.set("allow_promotion_codes", "true");
   p.set("line_items[0][quantity]", "1");
   p.set("line_items[0][price_data][currency]", "nok");
   p.set("line_items[0][price_data][product_data][name]", o.beskrivelse);
