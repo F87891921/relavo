@@ -1115,6 +1115,7 @@ export const no = {
     henter22: "Henter 22 MB …",
     hentRegisteret: "Hent registeret nå",
     autoHenting: "Hentes også automatisk hver natt når kopien er eldre enn 36 timer. Knappen henter med en gang.",
+    kildeAdvarsel: "Disse kildene er ikke oppdatert som de skal. Resultatene i rapportene bygger på gammel data til de er hentet på nytt:",
     inntektPerManed: "inntekt per måned",
     inntekt: "Inntekt",
     gjaldt: "Gjaldt",

@@ -1106,6 +1106,7 @@ export const en: Ordbok = {
     henter22: "Fetching 22 MB …",
     hentRegisteret: "Fetch the register now",
     autoHenting: "Also fetched automatically every night when the copy is older than 36 hours. The button fetches immediately.",
+    kildeAdvarsel: "These sources are not updated as they should be. Report results rely on old data until they are fetched again:",
     inntektPerManed: "revenue per month",
     inntekt: "Revenue",
     gjaldt: "Concerned",

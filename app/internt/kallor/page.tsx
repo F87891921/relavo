@@ -51,6 +51,22 @@ export default async function InterntKallorSide() {
           tekst={t.ansattsider.kallor.tekst}
         />
 
+        {gamle.length > 0 && (
+          <div className="mb-5 rounded-xl bg-bad-bg text-bad px-4 py-3.5" role="alert">
+            <div className="text-[13px] font-semibold">{t.internt.kildeAdvarsel}</div>
+            <ul className="mt-1.5 text-[12.5px] leading-relaxed">
+              {gamle.map((k) => {
+                const d = dager(sist.get(k.synknavn!)?.nar ?? null);
+                return (
+                  <li key={k.navn}>
+                    <b>{k.navn}</b>: {d === null ? t.internt.aldriHentet : `${d} ${t.internt.dagerSiden}`}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+
         <SynkRenhold
           sistHentet={renhold?.sist_hentet ?? null}
           antall={renhold?.antall ?? 0}

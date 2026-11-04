@@ -1,3 +1,4 @@
+import { KILDER } from "@/lib/kilder";
 import { NextResponse, type NextRequest } from "next/server";
 import { admin } from "@/lib/supabase/admin";
 import { vurder, type Aktivitetsrad } from "@/lib/aktivitet";
@@ -148,6 +149,36 @@ export async function GET(req: NextRequest) {
       slettet += 1;
     } catch (e) {
       await meldFeil({ kilde: "jobb", melding: `Sletting av ${o.navn} feilet`, detaljer: e instanceof Error ? e.message : String(e) });
+    }
+  }
+
+  // Kilder som skal hentes daglig, men ikke er det. Sanksjonslista sto på 9.
+  // oktober i 26 dager uten at noen så det, fordi sidene bare viser alderen
+  // til den som åpner dem. Et varsel per kilde og uke, så det ikke blir støy.
+  {
+    const [{ data: rs }, { data: ig }] = await Promise.all([
+      db.from("registersynk").select("register, sist_hentet"),
+      db.from("integrasjoner").select("navn, sist_synk"),
+    ]);
+    const sist = new Map<string, string | null>();
+    for (const r of rs ?? []) sist.set(r.register, r.sist_hentet);
+    for (const i of ig ?? []) sist.set(i.navn, i.sist_synk);
+    const uke = `${new Date().getUTCFullYear()}-${Math.ceil((Date.now() - Date.UTC(new Date().getUTCFullYear(), 0, 1)) / 604_800_000)}`;
+    for (const k of KILDER) {
+      if (!k.synknavn || k.vei === "mangler") continue;
+      const nar = sist.get(k.synknavn) ?? null;
+      const dager = nar ? Math.floor((Date.now() - new Date(nar).getTime()) / 86_400_000) : null;
+      if (dager !== null && dager <= 2) continue;
+      await db.from("interne_varsler").upsert(
+        {
+          slag: "kilde",
+          tittel: `${k.navn} er ikke oppdatert${dager === null ? "" : ` på ${dager} dager`}`,
+          tekst: "Den skal hentes hver natt. Kontrollene bygger på gammel data til den er hentet på nytt. Sjekk Kildehelse.",
+          lenke: "/internt/kallor",
+          noekkel: `kilde:${k.synknavn}:${uke}`,
+        },
+        { onConflict: "noekkel", ignoreDuplicates: true },
+      );
     }
   }
 

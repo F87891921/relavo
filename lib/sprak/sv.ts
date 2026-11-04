@@ -1106,6 +1106,7 @@ export const sv: Ordbok = {
     henter22: "Hämtar 22 MB …",
     hentRegisteret: "Hämta registret nu",
     autoHenting: "Hämtas även automatiskt varje natt när kopian är äldre än 36 timmar. Knappen hämtar direkt.",
+    kildeAdvarsel: "De här källorna är inte uppdaterade som de ska. Rapporternas resultat bygger på gammal data tills de hämtats på nytt:",
     inntektPerManed: "intäkt per månad",
     inntekt: "Intäkt",
     gjaldt: "Gällde",
