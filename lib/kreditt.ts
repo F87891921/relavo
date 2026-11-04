@@ -130,7 +130,7 @@ export async function kredittvurder(orgnr: string): Promise<Kredittsvar> {
     punkt: "Betalningsanmärkningar",
     status: "ukjent",
     tekst:
-      "Kräver avtal med Creditsafe. Ej hämtad — står som ej kontrollerad, inte som frånvaro av anmärkningar.",
+      "Hämtas inte i den här interna kontrollen. Proff finns som källa i kundrapporterna, men används inte här än — står som ej kontrollerad, inte som frånvaro av anmärkningar.",
   });
   b.push({
     punkt: "Skatteskulder",

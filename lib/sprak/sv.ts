@@ -851,7 +851,7 @@ export const sv: Ordbok = {
     ingenBruk: "Inga kontroller på 30 dagar",
     ingenBetalende: "Inga aktiva konton.",
     marginForklaring: "Den rörliga kostnaden är noll i dag. Alla källor vi använder är gratis, och skatteattesten kommer från leverantören. Marginalen är därför intäkt minus drift, och driften är inte per kund. Det som är värt att se här är vem som betalar fast och använder mycket — det är den som blir dyr den dag en källa börjar kosta.",
-    marginFotnot: "Här stod tidigare en kostnad per uppslag uträknad ur ett snitt över påhittade källpriser. En marginal byggd på ett påhittat tal är sämre än ingen marginal: den ser ut som ett bokslut. Kommer Creditsafe eller någon annan betald källa in räknas kostnaden in här — inte förrän då.",
+    marginFotnot: "Här stod tidigare en kostnad per uppslag uträknad ur ett snitt över påhittade källpriser. En marginal byggd på ett påhittat tal är sämre än ingen marginal: den ser ut som ett bokslut. När Proffs priser är kända räknas kostnaden per kontroll in här — inte förrän då.",
     ingenAktiveKonton: "Inga aktiva konton att följa upp.",
     hvem: "Vem",
     tid: "Tid",

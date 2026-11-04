@@ -60,7 +60,7 @@ export const KILDER: Kilde[] = [
     vei: "synk",
     kostnad: 0,
     synknavn: "sanksjoner",
-    merknad: "Konsolidert liste, 25,8 MB XML. Synkes ukentlig.",
+    merknad: "Konsolidert liste, 25,8 MB XML. Hentes hver natt.",
   },
   {
     navn: "Skatteattest",
@@ -79,11 +79,28 @@ export const KILDER: Kilde[] = [
       "Skatteetaten utleverer det som årlig fil etter søknad, med nedlastingslenke som varer i én uke. Brønnøysunds register over reelle rettighetshavere krever Maskinporten-scope som tildeles offentlige myndigheter, media, sivilsamfunn og høyere utdanning.",
   },
   {
-    navn: "Creditsafe",
-    gir: "Kredittvurdering, PEP",
-    vei: "mangler",
+    navn: "Proff — kreditt",
+    gir: "Kredittrating, betalingsanmerkninger og pant",
+    vei: "oppslag",
     kostnad: null,
-    merknad: "Tilbud ikke mottatt. Står som ikke hentet på hver rapport.",
+    merknad:
+      "Proff Premium Credit API. Avtale signert; pris per søk er ikke mottatt. Ett søk per kontroll (CreditRating). Kilden oppgis i rapporten.",
+  },
+  {
+    navn: "Proff — sanksjoner og PEP",
+    gir: "Sanksjons- og PEP-søk på selskap og personer i roller",
+    vei: "oppslag",
+    kostnad: null,
+    merknad:
+      "Proff Premium Compliance API. Opptil to søk per person (maks 10 personer) pluss selskapet. Navn og fødselsdato sendes til Proff, bare treff lagres. Pris per søk er ikke mottatt.",
+  },
+  {
+    navn: "Proff — roller",
+    gir: "Styre, ledelse, signatur og prokura med fødselsdato",
+    vei: "oppslag",
+    kostnad: null,
+    merknad:
+      "Proff Premium API. Ett søk per kontroll. Gir personene som sanksjons- og PEP-søket kjøres på.",
   },
   {
     navn: "StartBANK",

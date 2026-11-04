@@ -116,7 +116,7 @@ export default async function InterntKallorSide() {
                   {t.internt.vei[k.vei as keyof typeof t.internt.vei]}
                 </Merke>,
                 <span key="k" className="tabular-nums text-dim whitespace-nowrap">
-                  {k.kostnad === 0 ? t.internt.gratis : `${k.kostnad} kr`}
+                  {k.kostnad === 0 ? t.internt.gratis : k.kostnad === null ? "Pris ikke mottatt" : `${k.kostnad} kr`}
                 </span>,
                 !k.synknavn ? (
                   // En kilde uten synk har ingen «sist hentet» — den hentes

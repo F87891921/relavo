@@ -40,6 +40,10 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
+        "v": "Kredittrating, betalingsanmerkninger og pant, søk mot sanksjonslister og lister over politisk eksponerte personer (PEP), og opplysninger om roller i virksomheten hentes fra Proff AS. Kilden oppgis i rapporten. Opplysningene fra Proff er kommersielle vurderinger og søk på navn, og kan inneholde feil eller treff som gjelder en annen person eller et annet selskap. Kunden bruker dem i sin egen anskaffelse og kan ikke videreselge eller dele dem med andre."
+      },
+      {
+        "t": "p",
         "v": "Relavo treffer ingen beslutninger. Vurderingen av om en leverandør skal avvises, kvalifiseres eller tildeles kontrakt tas av kunden. Risikonivåer, flagg og anbefalinger i tjenesten er beslutningsstøtte, ikke konklusjoner. Relavo er et beslutningsstøtteverktøy: den endelige vurderingen, og ansvaret for den, ligger hos kunden. Kunden må selv se over rapportens innhold og kilder, og vurdere dem opp mot anskaffelsen, før den legges til grunn for en beslutning eller føres inn i anskaffelsesprotokollen."
       },
       {
@@ -49,7 +53,7 @@ export const JURIDISK: Seksjon[] = [
       {
         "t": "liste",
         "v": [
-          "Relavo kontrollerer virksomheter, ikke enkeltpersoner. Vi behandler ikke opplysninger om straffedommer eller lovovertredelser. Se punkt 2.4.",
+          "Relavo kontrollerer virksomheter. For å søke mot sanksjons- og PEP-lister søker vi i tillegg på navn og fødselsdato til personene i styre, ledelse og med signaturrett eller prokura i virksomheten (se punkt 2.3). Vi behandler ikke opplysninger om straffedommer eller lovovertredelser. Se punkt 2.4.",
           "Relavo er ikke juridisk rådgivning. Paragrafhenvisninger i tjenesten er veiledende og fritar ikke kunden fra å vurdere regelverket selv.",
           "Relavo garanterer ikke at opplysninger i offentlige registre er korrekte eller oppdaterte. Vi videreformidler det kildene oppgir, med kilde og tidspunkt."
         ]
@@ -63,6 +67,7 @@ export const JURIDISK: Seksjon[] = [
         "v": [
           "Å ha et selvstendig behandlingsgrunnlag for kontrollene som gjennomføres.",
           "Å foreta den endelige vurderingen av hver leverandør selv. Rapporter og flagg fra Relavo er beslutningsstøtte og erstatter ikke kundens egen vurdering, og kunden svarer for beslutningene som tas.",
+          "Å kontrollere et mulig treff på en sanksjons- eller PEP-liste selv før det legges til grunn. Et treff på navn er ikke en bekreftelse, mange har samme navn, og en PEP-status er i seg selv ikke noe galt.",
           "Å sørge for at brukere hos kunden har den tilgangen de skal ha, og ikke mer.",
           "Å ikke bruke tjenesten til å kontrollere virksomheter uten saklig grunn knyttet til en anskaffelse, et kontraktsforhold eller en forestående inngåelse av et slikt forhold."
         ]
@@ -159,18 +164,19 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
-        "v": "I to tilfeller behandler vi navn på personer knyttet til virksomhetene som kontrolleres:"
+        "v": "I tre tilfeller behandler vi navn på personer knyttet til virksomhetene som kontrolleres:"
       },
       {
         "t": "liste",
         "v": [
           "Signaturrett. Ved forespørsel om egenerklæring henter vi navn og rolle på dem som står med signaturrett eller prokura i Foretaksregisteret. Formålet er å vite hvem som kan binde selskapet. Vi lagrer ikke fødselsnummer.",
-          "Signatur. Når en egenerklæring signeres med BankID lagrer vi navn, rolle, tidspunkt og delvis maskert fødselsdato. Fullt fødselsnummer lagres ikke."
+          "Signatur. Når en egenerklæring signeres med BankID lagrer vi navn, rolle, tidspunkt og delvis maskert fødselsdato. Fullt fødselsnummer lagres ikke.",
+          "Sanksjons- og PEP-søk. Ved en kontroll søker vi hos Proff AS på navn og fødselsdato til personene i styre, ledelse, signatur og prokura i virksomheten, mot sanksjonslister (EU, FN, USA og Storbritannia) og lister over politisk eksponerte personer i Norden. Vi sender navn og fødselsdato til Proff for å få svaret, og lagrer dem ikke selv. Gir søket et mulig treff, lagrer vi personens navn, hvilken liste det gjelder og tidspunktet som et flagg i rapporten. Gir søket ikke treff, lagrer vi ingen navn. Behandlingsgrunnlaget er berettiget interesse (personvernforordningen art. 6 nr. 1 bokstav f) i å kunne dokumentere at leverandørkontrollen er gjort."
         ]
       },
       {
         "t": "p",
-        "v": "Vi gjør ingen vurdering av personene som sådan. Formålet er avgrenset til å fastslå fullmakt og signaturens gyldighet."
+        "v": "Vi gjør ingen vurdering av personene som sådan. For signatur er formålet avgrenset til å fastslå fullmakt og signaturens gyldighet. Ved sanksjons- og PEP-søk er et mulig treff navnelikhet og ikke en konklusjon om personen, og må kontrolleres av kunden."
       },
       {
         "t": "h3",
@@ -178,7 +184,7 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
-        "v": "Opplysninger om straffedommer og lovovertredelser. Behandling av slike opplysninger er etter personopplysningsloven § 11 i praksis forbeholdt offentlige myndigheter under offentlig myndighets kontroll. Relavo henter dem ikke, verken maskinelt eller manuelt. Den delen av kvalifikasjonsvurderingen dekkes av leverandørens egen ESPD-erklæring, som leverandøren avgir under ansvar og som vi bare oppbevarer."
+        "v": "Opplysninger om straffedommer og lovovertredelser. Behandling av slike opplysninger er etter personopplysningsloven § 11 i praksis forbeholdt offentlige myndigheter under offentlig myndighets kontroll. Relavo henter dem ikke, verken maskinelt eller manuelt. Den delen av kvalifikasjonsvurderingen dekkes av leverandørens egen ESPD-erklæring, som leverandøren avgir under ansvar og som vi bare oppbevarer. Sanksjonslistene vi søker mot er forvaltningsrettslige restriksjoner og ikke straffedommer. Vi lagrer ikke detaljer om hvorfor en person står på en liste, bare at navnet ga et mulig treff."
       },
       {
         "t": "h3",
@@ -186,7 +192,7 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
-        "v": "Vi selger ikke personopplysninger og bruker dem ikke til markedsføring mot tredjepart. Vi bruker underleverandører for drift, se punkt 3.3. Alle underleverandører er bundet av databehandleravtale."
+        "v": "Vi selger ikke personopplysninger og bruker dem ikke til markedsføring mot tredjepart. Vi bruker underleverandører for drift, se punkt 3.3. Alle underleverandører er bundet av databehandleravtale. Vi sender organisasjonsnummer og, for sanksjons- og PEP-søk, navn og fødselsdato til personer i roller til Proff AS (se punkt 2.3)."
       },
       {
         "t": "h3",
@@ -245,6 +251,15 @@ export const JURIDISK: Seksjon[] = [
         "v": "3.2 Behandlingens omfang"
       },
       {
+        "t": "liste",
+        "v": [
+          "Formål: å utføre leverandørkontroller for kunden og lagre dem som dokumentasjon.",
+          "Registrerte: brukere hos kunden, og personer i styre, ledelse, signatur og prokura i de virksomhetene kunden kontrollerer.",
+          "Opplysninger: for brukere navn, e-postadresse, rolle og innloggingsdata. For personer i roller: navn, rolle og fødselsdato i søket mot sanksjons- og PEP-lister, og navn som flagg når søket gir et mulig treff.",
+          "Varighet: så lenge avtalen løper. Data slettes innen 90 dager etter avtaleslutt, med mindre kunden ber om sletting tidligere."
+        ]
+      },
+      {
         "t": "h3",
         "v": "3.3 Underleverandører"
       },
@@ -258,7 +273,7 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
-        "v": "Kredittrating og betalingsanmerkninger hentes fra Proff AS (Oslo), en kredittopplysningsleverandør. Proff er en datakilde og ikke en underleverandør som behandler kundens opplysninger. Vi sender bare organisasjonsnummeret til selskapet som kontrolleres, og lagrer svaret i kontrollen innenfor EØS."
+        "v": "Kredittrating, betalingsanmerkninger, sanksjons- og PEP-søk og roller hentes fra Proff AS (Oslo), en kredittopplysningsleverandør. Proff er en datakilde og ikke en underleverandør som behandler kundens opplysninger på våre vegne. Vi sender organisasjonsnummeret til selskapet som kontrolleres og, for sanksjons- og PEP-søk, navn og fødselsdato til personer i roller. Proffs egen behandling styres av Proffs vilkår. Vi lagrer svaret i kontrollen innenfor EØS, og lagrer personnavn bare når søket gir et mulig treff."
       },
       {
         "t": "h3",

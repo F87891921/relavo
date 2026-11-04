@@ -860,7 +860,7 @@ export const no = {
     ingenBruk: "Ingen kontroller på 30 dager",
     ingenBetalende: "Ingen aktive kontoer.",
     marginForklaring: "Den variable kostnaden er null i dag. Alle kildene vi bruker er gratis, og skatteattesten kommer fra leverandøren. Marginen er derfor inntekt minus drift, og driften er ikke per kunde. Det som er verdt å se her er hvem som betaler fast og bruker mye — det er den som blir dyr den dagen en kilde begynner å koste.",
-    marginFotnot: "Her sto det tidligere en kostnad per oppslag regnet ut av et snitt over oppdiktede kildepriser. En margin bygget på et oppdiktet tall er verre enn ingen margin: den ser ut som et regnskap. Kommer Creditsafe eller en annen betalt kilde inn, regnes kostnaden inn her — ikke før.",
+    marginFotnot: "Her sto det tidligere en kostnad per oppslag regnet ut av et snitt over oppdiktede kildepriser. En margin bygget på et oppdiktet tall er verre enn ingen margin: den ser ut som et regnskap. Er prisene fra Proff kjent, regnes kostnaden per kontroll inn her — ikke før.",
     ingenAktiveKonton: "Ingen aktive kontoer å følge opp.",
     hvem: "Hvem",
     tid: "Tid",

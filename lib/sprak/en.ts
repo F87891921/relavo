@@ -851,7 +851,7 @@ export const en: Ordbok = {
     ingenBruk: "No controls in 30 days",
     ingenBetalende: "No active accounts.",
     marginForklaring: "The variable cost is zero today. Every source we use is free, and the tax certificate comes from the supplier. The margin is therefore revenue minus operations, and operations are not per customer. What is worth watching here is who pays a flat fee and uses a lot — they are the ones who become expensive the day a source starts to cost something.",
-    marginFotnot: "This page used to show a cost per lookup derived from an average of invented source prices. A margin built on an invented number is worse than no margin: it looks like accounting. When Creditsafe or another paid source arrives, the cost is counted here — not before.",
+    marginFotnot: "This page used to show a cost per lookup derived from an average of invented source prices. A margin built on an invented number is worse than no margin: it looks like accounting. When Proff's prices are known, the cost per check is counted here — not before.",
     ingenAktiveKonton: "No active accounts to follow up.",
     hvem: "Who",
     tid: "Time",
