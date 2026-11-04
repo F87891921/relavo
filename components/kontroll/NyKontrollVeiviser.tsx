@@ -2,13 +2,15 @@
 
 import { useOrd } from "@/components/Sprakgiver";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { validerOrgnr, formaterOrgnr } from "@/lib/orgnr";
 import type { Enhet } from "@/lib/brreg";
 import { kjorKontroll } from "@/app/(dashboard)/ny-kontroll/handlinger";
 import { HMS_PUNKTER, type Svar } from "@/lib/kontroll";
 import { Steg, Foten, Kort, Felt, INPUT } from "./Steg";
+import { NokkeltallTabell } from "./NokkeltallTabell";
+import type { Nokkeltall } from "@/lib/nokkeltall";
 import { orgnrFeil } from "@/lib/orgnrtekst";
 
 type Anskfelt = { k: string; l: string; t: string; ph?: string; opt?: string[] };
@@ -59,6 +61,7 @@ export function NyKontrollVeiviser() {
   const [enhet, setEnhet] = useState<Enhet | null>(null);
   const [slaarOpp, setSlaarOpp] = useState(false);
   const [oppslagFeil, setOppslagFeil] = useState("");
+  const [nokkeltall, setNokkeltall] = useState<Nokkeltall | null>(null);
 
   const [offentlig, setOffentlig] = useState(true);
   const [sak, setSak] = useState<Record<string, string>>({});
@@ -95,6 +98,22 @@ export function NyKontrollVeiviser() {
       setSlaarOpp(false);
     }
   }
+
+  // Nøkkeltallene vises med en gang selskapet er slått opp, før man har svart på noe.
+  useEffect(() => {
+    setNokkeltall(null);
+    if (!enhet) return;
+    let avbrutt = false;
+    fetch(`/api/nokkeltall?orgnr=${enhet.orgnr}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!avbrutt && d?.nokkeltall) setNokkeltall(d.nokkeltall);
+      })
+      .catch(() => {});
+    return () => {
+      avbrutt = true;
+    };
+  }, [enhet]);
 
   async function kjor() {
     setKjorFeil("");
@@ -195,7 +214,23 @@ export function NyKontrollVeiviser() {
 
             {enhet && <Treff enhet={enhet} />}
           </Kort>
-          <Foten neste={() => setSteg(1)} nesteAv={!enhet} />
+          {enhet && nokkeltall && (
+            <Kort>
+              <h2 className="text-[15px] font-semibold mb-3">{o.kontroll.nokkeltall.tittel}</h2>
+              <div className="-mx-5 sm:-mx-6 -mb-5">
+                <NokkeltallTabell n={nokkeltall} t={o.kontroll.nokkeltall} />
+              </div>
+            </Kort>
+          )}
+          {kjorFeil && (
+            <div className="text-xs text-bad bg-bad-bg rounded-xl px-3.5 py-2.5 mt-4">{kjorFeil}</div>
+          )}
+          <Foten
+            neste={() => setSteg(1)}
+            nesteAv={!enhet || kjorer}
+            hoppOver={enhet ? kjor : undefined}
+            hoppOverTekst={kjorer ? v.kjorer : v.kjorKontrollen}
+          />
         </>
       )}
 
@@ -262,7 +297,7 @@ export function NyKontrollVeiviser() {
                     <input
                       id={`sak-${f.k}`}
                       type={f.t}
-                      placeholder={f.ph}
+                      placeholder={f.ph ? `Ex: ${f.ph}` : undefined}
                       className={INPUT}
                       value={sak[f.k] ?? ""}
                       onChange={(e) =>

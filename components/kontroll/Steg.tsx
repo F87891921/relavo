@@ -50,12 +50,15 @@ export function Steg({ na }: { na: number }) {
 export function Foten({
   tilbake,
   hoppOver,
+  hoppOverTekst,
   neste,
   nesteTekst,
   nesteAv = false,
 }: {
   tilbake?: () => void;
   hoppOver?: () => void;
+  /** Egen tekst på hopp-over-knappen, for «Kjør kontrollen nå». */
+  hoppOverTekst?: string;
   neste?: () => void;
   nesteTekst?: string;
   nesteAv?: boolean;
@@ -81,7 +84,7 @@ export function Foten({
             onClick={hoppOver}
             className="text-sm text-dim hover:text-ink px-2.5 sm:px-3 py-2.5 transition whitespace-nowrap"
           >
-            {ord.felles.hoppOver}
+            {hoppOverTekst ?? ord.felles.hoppOver}
           </button>
         )}
         {neste && (
