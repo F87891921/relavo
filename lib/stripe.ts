@@ -10,6 +10,8 @@
  * Er nøkkelen ikke satt, sier vi det. Grensesnittet skal aldri vise et
  * kortskjema som ikke tar imot noe.
  */
+import { aktivtSprak } from "@/lib/sprak";
+
 export const stripeOppsatt = () => Boolean(process.env.STRIPE_SECRET_KEY);
 
 /** Hvilken Stripe-modus nøkkelen peker mot. Vises internt så ingen tror de tar imot ekte betalinger i testmodus. */
@@ -90,6 +92,9 @@ export function opprettKasseokt(o: {
   // Stripe (Produkter → Kuponger → Kampanjekoder); hva de gir og hvor lenge
   // bestemmes der. Webhooken ser bare at økten er betalt, ikke hva beløpet ble.
   p.set("allow_promotion_codes", "true");
+  // Betalingssiden på samme språk som kunden har på Relavo, ikke det nettleseren
+  // tilfeldigvis står på. Norsk bokmål er «nb» hos Stripe.
+  p.set("locale", ({ no: "nb", sv: "sv", en: "en" } as const)[aktivtSprak()]);
   p.set("line_items[0][quantity]", "1");
   p.set("line_items[0][price_data][currency]", "nok");
   p.set("line_items[0][price_data][product_data][name]", o.beskrivelse);
