@@ -39,6 +39,7 @@ export const en: Ordbok = {
     kreditt: "Credit checks",
     kallor: "Source health",
     marginal: "Margin",
+    rabatt: "Discount codes",
     logg: "Access log",
     team: "Team and access",
     aktivitet: "Activity",

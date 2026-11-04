@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { krevAnsatt } from "@/lib/tilgang-ansatt";
+import { krevAnsatt, krevSuperadmin } from "@/lib/tilgang-ansatt";
 import { validerOrgnr } from "@/lib/orgnr";
 import { orgnrFeil } from "@/lib/orgnrtekst";
 import { ord } from "@/lib/sprak";
@@ -716,5 +716,50 @@ export async function loggKontakt(organisasjonId: string, notat: string): Promis
     .insert({ organisasjon_id: organisasjonId, notat: notat.trim(), opprettet_av: user.id });
   if (error) return { ok: false, feil: error.message };
   revalidatePath("/internt/aktivitet");
+  return { ok: true };
+}
+
+
+/* -------------------------------------------------------------- Rabattkoder */
+
+/** Bare superadmin: en rabatt er en margin, og margin ser ikke alle. */
+export async function lagRabattkode(fd: FormData): Promise<Svar> {
+  await krevSuperadmin();
+  const { lagKampanjekode } = await import("@/lib/stripe");
+
+  const kode = tekst(fd, "kode").toUpperCase().replace(/[^A-Z0-9_-]/g, "");
+  if (kode.length < 3) return { ok: false, feil: "Koden må ha minst tre tegn (bokstaver, tall, - og _)." };
+
+  const type = tekst(fd, "type");
+  const verdi = Number(tekst(fd, "verdi").replace(",", "."));
+  if (!Number.isFinite(verdi) || verdi <= 0) return { ok: false, feil: "Skriv en rabatt større enn null." };
+  if (type === "prosent" && verdi > 100) return { ok: false, feil: "Prosent kan ikke være over 100." };
+
+  const varighet = (tekst(fd, "varighet") || "once") as "once" | "repeating" | "forever";
+  const maneder = Number(tekst(fd, "maneder")) || undefined;
+  if (varighet === "repeating" && !maneder) return { ok: false, feil: "Skriv hvor mange måneder rabatten gjelder." };
+
+  const maks = Number(tekst(fd, "maks")) || undefined;
+  const utloper = tekst(fd, "utloper") || undefined;
+
+  const r = await lagKampanjekode({
+    kode,
+    ...(type === "prosent" ? { prosent: verdi } : { belopNok: verdi }),
+    varighet,
+    maneder,
+    maksBruk: maks,
+    utloper,
+  });
+  if (!r.ok) return r;
+  revalidatePath("/internt/rabatt");
+  return { ok: true };
+}
+
+export async function slaAvRabattkode(id: string): Promise<Svar> {
+  await krevSuperadmin();
+  const { slaAvKampanjekode } = await import("@/lib/stripe");
+  const r = await slaAvKampanjekode(id);
+  if (!r.ok) return r;
+  revalidatePath("/internt/rabatt");
   return { ok: true };
 }

@@ -124,3 +124,119 @@ export async function avsluttAbonnementer(kunde: string): Promise<{ ok: boolean;
     return { ok: false, feil: e instanceof Error ? e.message : "Ukjent feil" };
   }
 }
+
+/* ------------------------------------------------------------ Rabattkoder */
+
+export type Kampanjekode = {
+  id: string;
+  code: string;
+  active: boolean;
+  times_redeemed: number;
+  max_redemptions: number | null;
+  expires_at: number | null;
+  rabatt: string;
+  varighet: string;
+};
+
+type Kupong = {
+  id: string;
+  percent_off?: number | null;
+  amount_off?: number | null;
+  duration?: string;
+  duration_in_months?: number | null;
+};
+
+const rabattTekst = (k?: Kupong | null) =>
+  !k
+    ? "—"
+    : k.percent_off != null
+      ? `${k.percent_off} %`
+      : k.amount_off != null
+        ? `${(k.amount_off / 100).toLocaleString("nb-NO")} kr`
+        : "—";
+
+const varighetTekst = (k?: Kupong | null) =>
+  !k?.duration
+    ? "—"
+    : k.duration === "once"
+      ? "Første betaling"
+      : k.duration === "forever"
+        ? "Hele avtalen"
+        : `${k.duration_in_months ?? "?"} måneder`;
+
+/**
+ * Lager en kupong og en kampanjekode som peker på den. Stripes API har endret
+ * hvordan koden knyttes til kupongen, så vi prøver den gamle måten først og
+ * den nye hvis Stripe ber om det.
+ */
+export async function lagKampanjekode(o: {
+  kode: string;
+  prosent?: number;
+  belopNok?: number;
+  varighet: "once" | "repeating" | "forever";
+  maneder?: number;
+  maksBruk?: number;
+  utloper?: string;
+}): Promise<{ ok: true } | { ok: false; feil: string }> {
+  const k = new URLSearchParams();
+  k.set("name", o.kode);
+  if (o.prosent) k.set("percent_off", String(o.prosent));
+  else if (o.belopNok) {
+    k.set("amount_off", String(Math.round(o.belopNok * 100)));
+    k.set("currency", "nok");
+  }
+  k.set("duration", o.varighet);
+  if (o.varighet === "repeating" && o.maneder) k.set("duration_in_months", String(o.maneder));
+  const kupong = await kall<{ id: string }>("coupons", k);
+  if (!kupong.ok) return kupong;
+
+  const lag = (ny: boolean) => {
+    const p = new URLSearchParams();
+    p.set("code", o.kode);
+    if (ny) {
+      p.set("promotion[type]", "coupon");
+      p.set("promotion[coupon]", kupong.data.id);
+    } else p.set("coupon", kupong.data.id);
+    if (o.maksBruk) p.set("max_redemptions", String(o.maksBruk));
+    if (o.utloper) p.set("expires_at", String(Math.floor(new Date(`${o.utloper}T23:59:59Z`).getTime() / 1000)));
+    return kall("promotion_codes", p);
+  };
+
+  let svar = await lag(false);
+  if (!svar.ok && /promotion/i.test(svar.feil)) svar = await lag(true);
+  return svar.ok ? { ok: true } : svar;
+}
+
+export async function listKampanjekoder(): Promise<{ ok: true; koder: Kampanjekode[] } | { ok: false; feil: string }> {
+  type Rad = {
+    id: string; code: string; active: boolean; times_redeemed: number;
+    max_redemptions: number | null; expires_at: number | null;
+    coupon?: Kupong | null; promotion?: { coupon?: Kupong | string | null } | null;
+  };
+  let svar = await kall<{ data: Rad[] }>("promotion_codes?limit=50&expand[]=data.coupon");
+  if (!svar.ok) svar = await kall<{ data: Rad[] }>("promotion_codes?limit=50&expand[]=data.promotion.coupon");
+  if (!svar.ok) svar = await kall<{ data: Rad[] }>("promotion_codes?limit=50");
+  if (!svar.ok) return svar;
+  return {
+    ok: true,
+    koder: svar.data.data.map((r) => {
+      const c = r.coupon ?? (typeof r.promotion?.coupon === "object" ? r.promotion?.coupon : null);
+      return {
+        id: r.id,
+        code: r.code,
+        active: r.active,
+        times_redeemed: r.times_redeemed,
+        max_redemptions: r.max_redemptions,
+        expires_at: r.expires_at,
+        rabatt: rabattTekst(c as Kupong | null),
+        varighet: varighetTekst(c as Kupong | null),
+      };
+    }),
+  };
+}
+
+export async function slaAvKampanjekode(id: string) {
+  const p = new URLSearchParams();
+  p.set("active", "false");
+  return kall(`promotion_codes/${encodeURIComponent(id)}`, p);
+}

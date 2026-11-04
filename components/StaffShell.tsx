@@ -24,6 +24,7 @@ export const ANSATTMENY = [
   { id: "kreditt", href: "/internt/kreditt" },
   { id: "kallor", href: "/internt/kallor" },
   { id: "marginal", href: "/internt/marginal", bara: "superadmin" },
+  { id: "rabatt", href: "/internt/rabatt", bara: "superadmin" },
   { id: "logg", href: "/internt/logg", bara: "superadmin" },
   { id: "team", href: "/internt/team", bara: "superadmin" },
 ] as const;

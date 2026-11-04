@@ -48,6 +48,7 @@ export const no = {
     kreditt: "Kredittkontroll",
     kallor: "Kildehelse",
     marginal: "Margin",
+    rabatt: "Rabattkoder",
     logg: "Tilgangslogg",
     team: "Team og tilgang",
     aktivitet: "Aktivitet",
