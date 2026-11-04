@@ -6,9 +6,9 @@ const FLATE: Record<string, string> = {
   brudd: "bg-bad text-white",
   advarsel: "bg-warn text-white",
   aksent: "bg-accent text-white",
-  // «Alt er i orden» bruker merkefargen, ikke grønt: det store kortet skal høre
-  // til resten av siden. Rødt og gult står igjen for det som faktisk haster.
-  god: "bg-accent text-white",
+  // «Alt er i orden» er dempet: en lys lilla flate. Er det lydeløst her, er det
+  // gult og rødt som stikker ut når noe faktisk haster.
+  god: "bg-[#f4f1f6] text-[#3a2c42]",
 };
 
 /**
@@ -24,6 +24,7 @@ const FLATE: Record<string, string> = {
 export async function NesteSteg() {
   const s = await nesteSteg();
   const o = ord();
+  const rolig = s.tone === "god";
 
   return (
     <div className={`rounded-card px-5 sm:px-6 py-5 mb-5 ${FLATE[s.tone]}`}>
@@ -49,14 +50,17 @@ export async function NesteSteg() {
 
         <Link
           href={s.href}
-          className="shrink-0 bg-white/95 hover:bg-white text-ink text-sm font-semibold
-            px-4 py-2.5 rounded-xl transition active:scale-[0.97]"
+          className={`shrink-0 text-sm font-semibold px-4 py-2.5 rounded-xl transition active:scale-[0.97] ${
+            rolig
+              ? "bg-accent hover:bg-accent-hover text-white"
+              : "bg-white/95 hover:bg-white text-ink"
+          }`}
         >
           {s.knapp} →
         </Link>
       </div>
 
-      <p className="text-[12px] leading-relaxed opacity-75 mt-4 pt-3.5 border-t border-white/20 max-w-[76ch]">
+      <p className={`text-[12px] leading-relaxed opacity-75 mt-4 pt-3.5 border-t max-w-[76ch] ${rolig ? "border-accent/20" : "border-white/20"}`}>
         {s.kriterium}
       </p>
     </div>
