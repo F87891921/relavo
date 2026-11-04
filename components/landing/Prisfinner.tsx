@@ -114,12 +114,20 @@ export function Prisfinner() {
                       <b>{t.bedrift.nivaer[b.id].navn}</b>
                       <small>{t.bedrift.nivaer[b.id].spenn}</small>
                     </td>
-                    <td>{m === null ? t.tabell.offert : `${kr(m)} NOK`}</td>
+                    <td>
+                      {m === null ? t.tabell.offert : `${kr(m)} NOK`}
+                      {m !== null && b.maks !== null && (
+                        <small className="pf-sp">
+                          −{Math.round((1 - (m * 12) / (b.maks * ENKELTKONTROLL)) * 100)} %
+                        </small>
+                      )}
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+          <p className="pf-m">{t.samlet.sparerForklaring}</p>
           <p className="pf-m">{lopB === 1 ? t.bedrift.manedNote : t.sok.fakturering} {t.sok.tillegg}</p>
           <p className="pf-m">
             <b>{t.enkelt.navn}</b>: {kr(ENKELTKONTROLL)} {t.enkelt.enhet}. <Link href="/registrer?plan=engangs" className="pf-lenke">{t.enkelt.knapp}</Link>
@@ -208,12 +216,9 @@ export function Prisfinner() {
         </div>
       )}
 
-      <div className="pf-samlet">
-        <h3>{t.samlet.tittel}</h3>
-        <p className="pf-m">{t.samlet.per}</p>
-        <div className="pf-gr">
-          <div>
-            <div className="pf-gt"><b>{t.samlet.kommuneTittel}</b> <span>{t.samlet.kommuneUnder}</span></div>
+      <details className="pf-regn">
+        <summary>{t.samlet.tittel}</summary>
+        <div className="pf-gt"><b>{t.samlet.kommuneTittel}</b> <span>{t.samlet.kommuneUnder}</span></div>
             <div className="pf-tw"><table>
               <thead><tr><th>{t.samlet.nivaa}</th><th>{t.samlet.leverandorer}</th>{LOPETIDER.map((l) => <th key={l}>{l} {t.sok.mnd}</th>)}</tr></thead>
               <tbody>
@@ -226,36 +231,8 @@ export function Prisfinner() {
                 ))}
               </tbody>
             </table></div>
-          </div>
-          <div>
-            <div className="pf-gt"><b>{t.samlet.selskapTittel}</b> <span>{t.samlet.selskapUnder}</span></div>
-            <div className="pf-tw"><table>
-              <thead><tr><th>{t.samlet.nivaa}</th><th>{t.samlet.leverandorer}</th>{BEDRIFT_LOPETIDER.map((l) => <th key={l}>{l === 1 ? t.samlet.manedlig : `${l} ${t.sok.mnd}`}</th>)}</tr></thead>
-              <tbody>
-                {BEDRIFT.map((b) => (
-                  <tr key={b.id}>
-                    <td><b>{t.bedrift.nivaer[b.id].navn}</b></td>
-                    <td data-l={t.samlet.leverandorer}>{b.maks === null ? "400+" : b.maks}</td>
-                    {BEDRIFT_LOPETIDER.map((l) => {
-                      const m = mndBedrift(b, l);
-                      // Besparelsen er mot å kjøpe en enkeltkontroll for hver leverandør i en full plan.
-                      const sparer = m !== null && b.maks !== null ? Math.round((1 - (m * 12) / (b.maks * ENKELTKONTROLL)) * 100) : null;
-                      return (
-                        <td key={l} data-l={l === 1 ? t.samlet.manedlig : `${l} ${t.sok.mnd}`}>
-                          {m === null ? t.samlet.offert : kr(m)}
-                          {sparer !== null && <small className="pf-sp">−{sparer} %</small>}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table></div>
-          </div>
-        </div>
-        <p className="pf-m">{t.samlet.sparerForklaring}</p>
-        <p className="pf-m">{t.samlet.inkludert}</p>
-      </div>
+      </details>
+      <p className="pf-m">{t.samlet.inkludert}</p>
 
       <details className="pf-regn">
         <summary>{t.tabell.tittel}</summary>

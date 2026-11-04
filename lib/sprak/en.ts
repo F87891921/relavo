@@ -377,8 +377,8 @@ export const en: Ordbok = {
     },
     priser: {
       eyebrow: "Pricing",
-      tittel: "The price follows the population.",
-      undertittel: "Type your municipality's name to see what it costs.",
+      tittel: "Simple pricing.",
+      undertittel: "Choose who you are and see what it costs.",
       eksMva: "All prices are excl. VAT.",
       maltype: { kommune: "Municipality", selskap: "Company" },
       bedrift: {

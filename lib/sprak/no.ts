@@ -386,8 +386,8 @@ export const no = {
     },
     priser: {
       eyebrow: "Priser",
-      tittel: "Prisen følger innbyggertallet.",
-      undertittel: "Skriv kommunens navn, så ser du hva det koster.",
+      tittel: "Enkle priser.",
+      undertittel: "Velg hvem dere er, så ser du hva det koster.",
       eksMva: "Alle priser er eks. mva.",
       maltype: { kommune: "Kommune", selskap: "Selskap" },
       bedrift: {

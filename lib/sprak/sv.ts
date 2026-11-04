@@ -377,8 +377,8 @@ export const sv: Ordbok = {
     },
     priser: {
       eyebrow: "Priser",
-      tittel: "Priset följer invånarantalet.",
-      undertittel: "Skriv kommunens namn, så ser du vad det kostar.",
+      tittel: "Enkla priser.",
+      undertittel: "Välj vilka ni är, så ser ni vad det kostar.",
       eksMva: "Alla priser är exkl. moms.",
       maltype: { kommune: "Kommun", selskap: "Bolag" },
       bedrift: {
