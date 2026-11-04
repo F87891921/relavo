@@ -115,15 +115,23 @@ export async function proffComplianceIndikatorer(orgnr: string, selskapsnavn: st
   else {
     const sanksjonsTreff: string[] = [];
     const pepTreff: string[] = [];
-    for (const p of personer) {
+    // Fem personer om gangen: raskt nok til at kontrollen ikke henger, og
+    // skånsomt nok til at Proff ikke ser det som et angrep.
+    const sok = async (p: Person) => {
       const q = `lastName=${encodeURIComponent(p.etternavn)}${p.fornavn ? `&firstName=${encodeURIComponent(p.fornavn)}` : ""}${p.fodt ? `&dob=${p.fodt}` : ""}`;
       const [s, pep] = await Promise.all([
         json(`${base}/sanctions?${q}&${lister(["SANCTIONS_AT"])}`, cNokkel),
         json(`${base}/pep/nordic?${q}&${lister(["NORDIC_PEP"])}`, cNokkel),
       ]);
-      if (!s.ok || !pep.ok) feil = true;
-      if (s.ok && antallTreff(s.data) > 0) sanksjonsTreff.push(p.navn);
-      if (pep.ok && antallTreff(pep.data) > 0) pepTreff.push(p.navn);
+      return { p, s, pep };
+    };
+    for (let i = 0; i < personer.length; i += 5) {
+      const gruppe = await Promise.all(personer.slice(i, i + 5).map(sok));
+      for (const { p, s, pep } of gruppe) {
+        if (!s.ok || !pep.ok) feil = true;
+        if (s.ok && antallTreff(s.data) > 0) sanksjonsTreff.push(p.navn);
+        if (pep.ok && antallTreff(pep.data) > 0) pepTreff.push(p.navn);
+      }
     }
 
     if (sanksjonsTreff.length)

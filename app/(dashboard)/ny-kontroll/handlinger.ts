@@ -78,9 +78,12 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
     .maybeSingle();
 
   // Indikasjoner fra årsregnskapet. Feiler oppslaget, er det bare ingen indikasjoner.
-  const regnskap = await hentRegnskap(enhet.orgnr).catch(() => []);
-  const kreditInd = await proffIndikatorer(enhet.orgnr);
-  const complianceInd = await proffComplianceIndikatorer(enhet.orgnr, enhet.navn);
+  // Registre og Proff hentes samtidig. Etter hverandre tok det over 20 sekunder.
+  const [regnskap, kreditInd, complianceInd] = await Promise.all([
+    hentRegnskap(enhet.orgnr).catch(() => []),
+    proffIndikatorer(enhet.orgnr),
+    proffComplianceIndikatorer(enhet.orgnr, enhet.navn),
+  ]);
   const indikatorer = [...lagIndikatorer(enhet, regnskap), ...kreditInd, ...complianceInd];
   const proff = { kredit: kreditStatus(kreditInd), compliance: complianceStatus(complianceInd) };
   const nokkeltall = lagNokkeltall(regnskap, enhet.ansatte);

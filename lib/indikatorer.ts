@@ -31,15 +31,15 @@ export function lagIndikatorer(e: Enhet, regnskap: Arsregnskap[], na = new Date(
     if (ansatte > 0) {
       const per = ins / ansatte;
       const terskel = erRenholdsbransje(e.bransje) ? 1_500_000 : BYGG.test(e.bransje ?? "") ? 6_000_000 : 8_000_000;
-      ut.push({
-        id: "omsetning_per_ansatt",
-        niva: per > terskel ? "varsel" : "info",
-        tittel: `Omsetning per ansatt: ${MNOK(per)}`,
-        tekst:
-          per > terskel
-            ? `Det ligger høyt for bransjen (${siste.aar}). Det kan bety at en stor del av arbeidet utføres av andre enn de ansatte. Be om en oversikt over underleverandører.`
-            : `Regnskapet for ${siste.aar} viser ${MNOK(ins)} i driftsinntekter med ${ansatte} ansatte.`,
-      });
+      // Bare når tallet er uvanlig høyt. Ellers står det allerede i nøkkeltallene,
+      // og en rad som gjentar tabellen er støy.
+      if (per > terskel)
+        ut.push({
+          id: "omsetning_per_ansatt",
+          niva: "varsel",
+          tittel: `Omsetning per ansatt: ${MNOK(per)}`,
+          tekst: `Det ligger høyt for bransjen (${siste.aar}). Det kan bety at en stor del av arbeidet utføres av andre enn de ansatte. Be om en oversikt over underleverandører.`,
+        });
     } else if (ins >= 5_000_000) {
       ut.push({
         id: "ingen_ansatte",
