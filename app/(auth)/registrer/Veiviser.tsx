@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useOrd } from "@/components/Sprakgiver";
 import { RelavoMark } from "@/components/RelavoMark";
 import { FELT_FULL } from "@/components/ui/felt";
-import { KRAV } from "@/lib/passord";
+import { KRAV, kravTekst } from "@/lib/passord";
 import { BEDRIFT, NIVAER, kr, mndBedrift, mndFor, type Lopetid } from "@/lib/priser";
 import { opprettKonto } from "./handlinger";
 
@@ -98,6 +98,7 @@ export function Veiviser({ forvalgt, avtalt, mnd }: { forvalgt?: string; avtalt?
                 .replace("{niva}", t.bedrift.nivaer[plan].navn)
                 .replace("{pris}", kr(selskapPris))
                 .replace("{mnd}", String(binding))
+                .replace("{aar}", kr(selskapPris * 12))
             : "";
 
   function send(e: React.FormEvent<HTMLFormElement>) {
@@ -282,7 +283,7 @@ export function Veiviser({ forvalgt, avtalt, mnd }: { forvalgt?: string; avtalt?
                 {status.map((k) => (
                   <li key={k.id} className={`text-[11.5px] flex items-center gap-1.5 transition ${k.ok ? "text-good" : "text-faint"}`}>
                     <span className="w-3 shrink-0 text-center">{k.ok ? "✓" : "·"}</span>
-                    {k.tekst}
+                    {kravTekst(k, v.passordliste)}
                   </li>
                 ))}
               </ul>

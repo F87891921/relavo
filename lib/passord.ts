@@ -59,3 +59,8 @@ export function manglendeKrav(passord: string, epost: string): string[] {
 export function erGyldig(passord: string, epost: string): boolean {
   return manglendeKrav(passord, epost).length === 0;
 }
+
+/** Teksten til et krav på brukerens språk. Faller tilbake på den norske i KRAV. */
+export function kravTekst(k: Krav, liste: Record<string, string>): string {
+  return (liste[k.id] ?? k.tekst).replace("{n}", String(MIN_LENGDE));
+}

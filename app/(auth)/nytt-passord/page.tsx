@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useOrd } from "@/components/Sprakgiver";
 import { RelavoMark } from "@/components/RelavoMark";
 import { FELT_FULL } from "@/components/ui/felt";
-import { KRAV } from "@/lib/passord";
+import { KRAV, kravTekst } from "@/lib/passord";
 import { byttPassord } from "./handlinger";
 
 /** Landingssiden fra lenken i e-posten. Brukeren har en økt via /auth/callback. */
@@ -55,7 +55,7 @@ export default function NyttPassordSide() {
               {status.map((k) => (
                 <li key={k.id} className={`text-[11.5px] flex items-center gap-1.5 ${k.ok ? "text-good" : "text-faint"}`}>
                   <span className="w-3 shrink-0 text-center">{k.ok ? "✓" : "·"}</span>
-                  {k.tekst}
+                  {kravTekst(k, o.registreringsveiviser.passordliste)}
                 </li>
               ))}
             </ul>
