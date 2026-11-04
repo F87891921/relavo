@@ -6,7 +6,9 @@ const FLATE: Record<string, string> = {
   brudd: "bg-bad text-white",
   advarsel: "bg-warn text-white",
   aksent: "bg-accent text-white",
-  god: "bg-good text-white",
+  // «Alt er i orden» bruker merkefargen, ikke grønt: det store kortet skal høre
+  // til resten av siden. Rødt og gult står igjen for det som faktisk haster.
+  god: "bg-accent text-white",
 };
 
 /**
