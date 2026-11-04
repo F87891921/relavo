@@ -74,11 +74,14 @@ function antallTreff(data: any): number {
 
 const lister = (navn: string[]) => navn.map((n) => `listName=${n}`).join("&");
 
-export const complianceOppsatt = () => Boolean(process.env.PROFF_COMPLIANCE_TOKEN && process.env.PROFF_CREDIT_TOKEN);
+export const complianceOppsatt = () =>
+  Boolean(process.env.PROFF_COMPLIANCE_TOKEN && (process.env.PROFF_PREMIUM_TOKEN ?? process.env.PROFF_CREDIT_TOKEN));
 
 export async function proffComplianceIndikatorer(orgnr: string, selskapsnavn: string): Promise<Indikator[]> {
   const cNokkel = process.env.PROFF_COMPLIANCE_TOKEN;
-  const pNokkel = process.env.PROFF_CREDIT_TOKEN;
+  // Roller hentes fra Premium API, som har egen nøkkel. Faller tilbake på den
+  // gamle variabelen så ingenting slutter å virke før den nye er satt.
+  const pNokkel = process.env.PROFF_PREMIUM_TOKEN ?? process.env.PROFF_CREDIT_TOKEN;
   if (!cNokkel || !pNokkel) return [];
 
   const dato = new Date().toLocaleDateString("nb-NO");
