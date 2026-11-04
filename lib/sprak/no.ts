@@ -1280,6 +1280,8 @@ export const no = {
     meldingFelt: "Melding",
   },
   betaling: {
+    rabattkode: "Rabattkode (valgfritt)",
+    ugyldigKode: "Koden er ikke gyldig.",
     faktura: "Faktura",
     fakturaTekst: "Vi gjør en kredittkontroll og åpner kontoen samme virkedag. Faktura sendes elektronisk med 30 dagers forfall.",
     kort: "Kort",

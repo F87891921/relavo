@@ -19,7 +19,7 @@ export default async function RabattSide() {
       <Side>
         <Sidehode
           tittel="Rabattkoder"
-          tekst="Lag koder som kunden skriver inn på betalingssiden. Virker på kortbetaling; kommuner får rabatten som lavere pris på tilbudet."
+          tekst="Lag koder som kunden skriver inn i betalingssteget. Virker på kortbetaling; kommuner får rabatten som lavere pris på tilbudet."
         />
 
         <div className="mb-4 flex items-center gap-2 text-[12.5px] text-dim">
@@ -27,7 +27,7 @@ export default async function RabattSide() {
           {stripeModus() === "live" ? (
             <Merke tone="god">Live – ekte betalinger</Merke>
           ) : stripeModus() === "test" ? (
-            <Merke tone="advarsel">Testmodus – ingen ekte betalinger. Kodene her virker bare i testmodus.</Merke>
+            <Merke tone="advarsel">Testmodus – ingen ekte betalinger. Kodene her virker bare i testmodus. Kontoen deles med ISO-kollen; her vises bare Relavos koder.</Merke>
           ) : (
             <Merke tone="noytral">Ikke koblet</Merke>
           )}

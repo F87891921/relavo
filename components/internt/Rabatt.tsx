@@ -27,7 +27,7 @@ export function RabattSkjema() {
         start(async () => {
           const r = await lagRabattkode(fd);
           if (r.ok) {
-            setOk("Koden er laget. Kunden skriver den inn på Stripes betalingsside.");
+            setOk("Koden er laget. Kunden skriver den inn i betalingssteget, før de går til Stripe.");
             skjema.reset();
             setType("prosent");
             setVarighet("once");

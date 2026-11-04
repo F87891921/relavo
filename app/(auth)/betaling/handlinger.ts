@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { krevProfil } from "@/lib/tilgang";
 import { grunnUrl } from "@/lib/url";
 import { PLANER, type PlanId } from "@/lib/plan";
-import { opprettKasseokt, opprettPortal, stripeOppsatt } from "@/lib/stripe";
+import { opprettKasseokt, opprettPortal, stripeOppsatt, finnRabattkode } from "@/lib/stripe";
 import { ord } from "@/lib/sprak";
 import { BEDRIFT, ENKELTKONTROLL, mndBedrift } from "@/lib/priser";
 
@@ -54,6 +54,7 @@ export async function bestill(
   plan: string,
   betalingsmate: "kort" | "faktura",
   intervall: "month" | "year" = "year",
+  rabattkode = "",
 ): Promise<Svar> {
   const { supabase, user, profil } = await krevProfil();
 
@@ -77,6 +78,13 @@ export async function bestill(
   const p = PLANER[(plan as PlanId) ?? "kommune"] ?? PLANER.kommune;
   const base = grunnUrl();
 
+  let rabattkodeId: string | undefined;
+  if (rabattkode.trim()) {
+    const kode = await finnRabattkode(rabattkode);
+    if (!kode.ok) return { ok: false, feil: ord().betaling.ugyldigKode };
+    rabattkodeId = kode.id;
+  }
+
   const okt = await opprettKasseokt({
     // Selskap betaler ett år i forskudd og fornyes hvert år; engangskontrollen er én betaling.
     belopNok: kortBelop(plan, intervall),
@@ -88,6 +96,7 @@ export async function bestill(
     avbruttUrl: `${base}/betaling?avbrutt=1`,
     referanse: user.id,
     organisasjonId: profil.organisasjon_id,
+    rabattkodeId,
   });
 
   if (!okt.ok) return { ok: false, feil: okt.feil };

@@ -36,6 +36,7 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
   const kortTillatt = ["engangs", "start", "vekst", "bygg"].includes(plan) && binding < 24;
   const [intervall, setIntervall] = useState<"month" | "year">("month");
   const [feil, setFeil] = useState("");
+  const [kode, setKode] = useState("");
   const [venter, start] = useTransition();
 
   const t = o.landing.priser;
@@ -167,6 +168,21 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
         </div>
       )}
 
+      {mate === "kort" && (
+        <div className="mb-5">
+          <label htmlFor="rabattkode" className="block text-xs font-semibold mb-1.5">
+            {o.betaling.rabattkode}
+          </label>
+          <input
+            id="rabattkode"
+            value={kode}
+            onChange={(e) => setKode(e.target.value)}
+            autoComplete="off"
+            className="w-full max-w-[260px] rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm uppercase tracking-wide"
+          />
+        </div>
+      )}
+
       {feil && (
         <div className="text-xs text-bad bg-bad-bg rounded-xl px-3.5 py-2.5 mb-4">
           {feil}
@@ -179,7 +195,7 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
         onClick={() => {
           setFeil("");
           start(async () => {
-            const r = await bestill(plan, mate, intervall);
+            const r = await bestill(plan, mate, intervall, kode);
             if (!r.ok) setFeil(r.feil);
             else window.location.href = "/venter";
           });

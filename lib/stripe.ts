@@ -80,6 +80,8 @@ export function opprettKasseokt(o: {
   avbruttUrl: string;
   referanse: string;
   organisasjonId?: string;
+  /** Id-en til en Relavo-kampanjekode, funnet med finnRabattkode. */
+  rabattkodeId?: string;
 }) {
   const p = new URLSearchParams();
   p.set("mode", o.gjentakende ? "subscription" : "payment");
@@ -88,10 +90,10 @@ export function opprettKasseokt(o: {
   p.set("customer_email", o.epost);
   p.set("client_reference_id", o.referanse);
   if (o.organisasjonId) p.set("metadata[organisasjon_id]", o.organisasjonId);
-  // Rabattkoder skrives inn av kunden på Stripes betalingsside. Kodene lages i
-  // Stripe (Produkter → Kuponger → Kampanjekoder); hva de gir og hvor lenge
-  // bestemmes der. Webhooken ser bare at økten er betalt, ikke hva beløpet ble.
-  p.set("allow_promotion_codes", "true");
+  // Rabattkoden skrives inn hos oss, ikke på Stripes side: kontoen deles med
+  // ISO-kollen, og Stripes eget felt tar imot alle kodene i kontoen. Bare koder
+  // merket app=relavo slipper gjennom (se finnRabattkode).
+  if (o.rabattkodeId) p.set("discounts[0][promotion_code]", o.rabattkodeId);
   // Betalingssiden på samme språk som kunden har på Relavo, ikke det nettleseren
   // tilfeldigvis står på. Norsk bokmål er «nb» hos Stripe.
   p.set("locale", ({ no: "nb", sv: "sv", en: "en" } as const)[aktivtSprak()]);
@@ -198,6 +200,7 @@ export async function lagKampanjekode(o: {
 }): Promise<{ ok: true } | { ok: false; feil: string }> {
   const k = new URLSearchParams();
   k.set("name", o.kode);
+  k.set("metadata[app]", "relavo");
   if (o.prosent) k.set("percent_off", String(o.prosent));
   else if (o.belopNok) {
     k.set("amount_off", String(Math.round(o.belopNok * 100)));
@@ -211,6 +214,7 @@ export async function lagKampanjekode(o: {
   const lag = (ny: boolean) => {
     const p = new URLSearchParams();
     p.set("code", o.kode);
+    p.set("metadata[app]", "relavo");
     if (ny) {
       p.set("promotion[type]", "coupon");
       p.set("promotion[coupon]", kupong.data.id);
@@ -229,15 +233,17 @@ export async function listKampanjekoder(): Promise<{ ok: true; koder: Kampanjeko
   type Rad = {
     id: string; code: string; active: boolean; times_redeemed: number;
     max_redemptions: number | null; expires_at: number | null;
+    metadata?: Record<string, string> | null;
     coupon?: Kupong | null; promotion?: { coupon?: Kupong | string | null } | null;
   };
-  let svar = await kall<{ data: Rad[] }>("promotion_codes?limit=50&expand[]=data.coupon");
-  if (!svar.ok) svar = await kall<{ data: Rad[] }>("promotion_codes?limit=50&expand[]=data.promotion.coupon");
-  if (!svar.ok) svar = await kall<{ data: Rad[] }>("promotion_codes?limit=50");
+  let svar = await kall<{ data: Rad[] }>("promotion_codes?limit=100&expand[]=data.coupon");
+  if (!svar.ok) svar = await kall<{ data: Rad[] }>("promotion_codes?limit=100&expand[]=data.promotion.coupon");
+  if (!svar.ok) svar = await kall<{ data: Rad[] }>("promotion_codes?limit=100");
   if (!svar.ok) return svar;
   return {
     ok: true,
-    koder: svar.data.data.map((r) => {
+    // Bare Relavos egne koder. Kontoen deles med ISO-kollen, og de skal ikke se hverandres.
+    koder: svar.data.data.filter((r) => r.metadata?.app === "relavo").map((r) => {
       const c = r.coupon ?? (typeof r.promotion?.coupon === "object" ? r.promotion?.coupon : null);
       return {
         id: r.id,
@@ -257,4 +263,21 @@ export async function slaAvKampanjekode(id: string) {
   const p = new URLSearchParams();
   p.set("active", "false");
   return kall(`promotion_codes/${encodeURIComponent(id)}`, p);
+}
+
+
+/**
+ * Slår opp en rabattkode kunden har skrevet. Bare aktive koder merket
+ * app=relavo gjelder: kontoen deles med ISO-kollen, og en kode derfra skal
+ * ikke virke her.
+ */
+export async function finnRabattkode(kode: string): Promise<{ ok: true; id: string } | { ok: false }> {
+  const ren = kode.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
+  if (ren.length < 3) return { ok: false };
+  const svar = await kall<{ data: { id: string; active: boolean; metadata?: Record<string, string> | null }[] }>(
+    `promotion_codes?code=${encodeURIComponent(ren)}&active=true&limit=1`,
+  );
+  const r = svar.ok ? svar.data.data[0] : null;
+  if (!r || r.metadata?.app !== "relavo") return { ok: false };
+  return { ok: true, id: r.id };
 }

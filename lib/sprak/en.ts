@@ -1271,6 +1271,8 @@ export const en: Ordbok = {
     meldingFelt: "Message",
   },
   betaling: {
+    rabattkode: "Discount code (optional)",
+    ugyldigKode: "The code is not valid.",
     faktura: "Invoice",
     fakturaTekst: "We run a credit check and open the account the same working day. The invoice is sent electronically with 30 days to pay.",
     kort: "Card",

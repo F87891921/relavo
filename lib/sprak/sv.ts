@@ -1271,6 +1271,8 @@ export const sv: Ordbok = {
     meldingFelt: "Meddelande",
   },
   betaling: {
+    rabattkode: "Rabattkod (valfritt)",
+    ugyldigKode: "Koden är inte giltig.",
     faktura: "Faktura",
     fakturaTekst: "Vi gör en kreditkontroll och öppnar kontot samma arbetsdag. Faktura skickas elektroniskt med 30 dagars förfall.",
     kort: "Kort",
