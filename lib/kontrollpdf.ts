@@ -1,5 +1,6 @@
 import { Pdf, GRAFITT, DIM, AKSENT, ROD, GRONN, GUL } from "@/lib/pdf";
 import { RELAVO, relavoOrgNr } from "@/lib/relavo";
+import { HMS_PUNKTER } from "@/lib/kontroll";
 import {
   antallBrudd,
   antallUkontrollert,
@@ -66,8 +67,14 @@ export function kontrollrapportPdf(r: Kontrollrapport): ArrayBuffer {
   pdf.tekst(r.leverandor.navn, { storrelse: 15, farge: DIM, etter: 14 });
 
   /* -------------------------------------------------------- Konklusjon */
+  // Punkter som venter på leverandørens egenerklæring samles for seg. Ikke
+  // utfylt sier ingenting om leverandøren, så de teller ikke som «ikke kontrollert».
+  const EGEN = new Set<string>(HMS_PUNKTER.map((p) => p.ref));
+  const erEgen = (k: { ref: string; status: string }) => EGEN.has(k.ref) && k.status === "na";
+  const egen = r.krav.filter(erEgen);
+  const hovedkrav = r.krav.filter((k) => !erEgen(k));
   const brudd = antallBrudd(r.krav);
-  const ukontrollert = antallUkontrollert(r.krav);
+  const ukontrollert = antallUkontrollert(hovedkrav);
 
   // Høyden må romme begge linjene i boksen (13 + 12) med luft over og
   // under. For lav boks, og den andre linja henger utenfor flaten.
@@ -107,13 +114,21 @@ export function kontrollrapportPdf(r: Kontrollrapport): ArrayBuffer {
   // Brudd først. En rapport som lister kravene i den rekkefølgen koden
   // tilfeldigvis la dem inn, lar det viktigste drukne.
   const rekkefolge = { no: 0, na: 1, ok: 2 };
-  const sortert = [...r.krav].sort(
+  const sortert = [...hovedkrav].sort(
     (a, b) => rekkefolge[a.status] - rekkefolge[b.status],
   );
 
   for (const k of sortert) {
     const m = KRAVMERKE[k.status];
     pdf.punkt(m.ord, k.ref, [k.tekst, k.notat].filter(Boolean).join(" "), m.farge);
+  }
+
+  if (egen.length) {
+    pdf.tekst(
+      `Egenerklæring ikke utfylt (${egen.length}): ${egen.map((k) => k.ref).join(", ")}. ` +
+        "Disse punktene bygger på leverandørens egen erklæring og er ikke fylt ut. De sier ikke noe om leverandøren og teller ikke i risikovurderingen.",
+      { storrelse: 9, farge: DIM, linjehoyde: 13, etter: 6 },
+    );
   }
 
   /* ---------------------------------------------------------- Nøkkeltall */
@@ -129,7 +144,7 @@ export function kontrollrapportPdf(r: Kontrollrapport): ArrayBuffer {
         pdf.punkt(
           String(a.aar),
           `Omsetning ${kr(a.omsetning)}`,
-          `Vekst ${pst(a.vekst)} · Driftsresultat ${kr(a.driftsresultat)} (margin ${pst(a.driftsmargin)}) · Årsresultat ${kr(a.aarsresultat)} · Egenkapital ${kr(a.egenkapital)} (${pst(a.egenkapitalandel)} av eiendeler) · Gjeld ${kr(a.gjeld)} · Eiendeler ${kr(a.eiendeler)}`,
+          `${a.vekst != null ? `Vekst ${pst(a.vekst)} · ` : ""}Driftsresultat ${kr(a.driftsresultat)} (margin ${pst(a.driftsmargin)}) · Årsresultat ${kr(a.aarsresultat)} · Egenkapital ${kr(a.egenkapital)} (${pst(a.egenkapitalandel)} av eiendeler) · Gjeld ${kr(a.gjeld)} · Eiendeler ${kr(a.eiendeler)}`,
           GRAFITT,
         );
       if (r.nokkeltall.ansatte != null)
