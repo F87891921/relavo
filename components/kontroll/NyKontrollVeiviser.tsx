@@ -215,12 +215,10 @@ export function NyKontrollVeiviser() {
             {enhet && <Treff enhet={enhet} />}
           </Kort>
           {enhet && nokkeltall && (
-            <Kort>
+            <div className="mt-4"><Kort>
               <h2 className="text-[15px] font-semibold mb-3">{o.kontroll.nokkeltall.tittel}</h2>
-              <div className="-mx-5 sm:-mx-6 -mb-5">
-                <NokkeltallTabell n={nokkeltall} t={o.kontroll.nokkeltall} />
-              </div>
-            </Kort>
+              <NokkeltallTabell n={nokkeltall} t={o.kontroll.nokkeltall} kompakt visAlleAr={o.kontroll.nokkeltall.visAlle} />
+            </Kort></div>
           )}
           {kjorFeil && (
             <div className="text-xs text-bad bg-bad-bg rounded-xl px-3.5 py-2.5 mt-4">{kjorFeil}</div>
@@ -473,32 +471,32 @@ function Treff({ enhet }: { enhet: Enhet }) {
 
   return (
     <div className="mt-5 border-t border-border pt-5">
-      <div className="text-[17px] font-semibold tracking-tight">{enhet.navn}</div>
-      <div className="font-mono text-[12px] text-faint mt-0.5">
-        {formaterOrgnr(enhet.orgnr)}
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <div className="text-[17px] font-semibold tracking-tight">{enhet.navn}</div>
+        <div className="font-mono text-[12px] text-faint">{formaterOrgnr(enhet.orgnr)}</div>
       </div>
 
-      <dl className="grid sm:grid-cols-2 gap-x-5 gap-y-2.5 mt-4 text-[13px]">
+      <dl className="grid grid-cols-2 sm:grid-cols-3 gap-x-5 gap-y-2.5 mt-3.5 text-[13px]">
         {[
           [v.organisasjonsform, enhet.form],
           [o.ui.bransje, enhet.bransje],
           ["Sted", enhet.sted],
           [v.ansatte, enhet.ansatte === null ? null : String(enhet.ansatte)],
           [v.registrert, enhet.registrert],
-        ].map(([m, v]) => (
-          <div key={m as string}>
+        ].map(([m, val]) => (
+          <div key={m as string} className="min-w-0">
             <dt className="text-[11px] uppercase tracking-wide text-faint">{m}</dt>
-            <dd className="mt-0.5">{v ?? "—"}</dd>
+            <dd className="mt-0.5 truncate">{val ?? "—"}</dd>
           </div>
         ))}
       </dl>
 
       {flagg.length > 0 ? (
-        <div className="mt-4 bg-bad-bg text-bad rounded-xl px-3.5 py-3 text-[12.5px]">
+        <div className="mt-3.5 bg-bad-bg text-bad rounded-xl px-3.5 py-3 text-[12.5px]">
           <b>{v.avvisningsgrunn}</b> {flagg.join(", ")}.
         </div>
       ) : (
-        <div className="mt-4 inline-flex items-center gap-1.5 bg-good-bg text-good rounded-full px-2.5 py-1 text-[11px] font-semibold">
+        <div className="mt-3.5 inline-flex items-center gap-1.5 bg-good-bg text-good rounded-full px-2.5 py-1 text-[11px] font-semibold">
           {v.ingenKonkurs}
         </div>
       )}
