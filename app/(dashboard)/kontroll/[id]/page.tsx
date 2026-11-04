@@ -1,4 +1,5 @@
 import { HMS_PUNKTER } from "@/lib/kontroll";
+import { ordbokFor } from "@/lib/sprak";
 import { NokkeltallTabell, visTall } from "@/components/kontroll/NokkeltallTabell";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -40,7 +41,10 @@ export default async function KontrollSide({
 }: {
   params: { id: string };
 }) {
-  const { supabase, t } = await krevProfil();
+  const { supabase } = await krevProfil();
+  // Rapporten er et dokument som legges ved en sak, og skal alltid være på norsk
+  // — som tilbud, brev og vilkår. Menyen rundt følger brukerens språk.
+  const t = ordbokFor("no");
   const r = await hentKontrollrapport(supabase, params.id);
   if (!r) notFound();
 
