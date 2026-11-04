@@ -20,6 +20,14 @@ export default async function OversiktSide() {
     .from("kontroller")
     .select("id", { count: "exact", head: true });
 
+  // Hvor mange leverandører som har minst én kontroll. Antall kontroller kan
+  // være høyere enn antall leverandører (samme selskap kontrollert flere
+  // ganger), og da ble «14 av 11 dokumentert» stående.
+  const { count: antallKontrollerte } = await supabase
+    .from("leverandorer")
+    .select("id", { count: "exact", head: true })
+    .not("sist_kontrollert", "is", null);
+
   const { data: hoyRisiko } = await supabase
     .from("leverandorer")
     .select("id")
@@ -48,13 +56,21 @@ export default async function OversiktSide() {
   // De siste kjøringene, med lenke til hver rapport.
   const { data: sisteKjoringer } = await supabase
     .from("kontroller")
-    .select("id, utfort, risiko, leverandorer(navn)")
+    .select("id, utfort, risiko, leverandor_id, leverandorer(navn)")
     .order("utfort", { ascending: false })
-    .limit(8);
+    .limit(60);
+
+  // Siste kjøring per leverandør. Samme selskap fem ganger på rad forteller
+  // ingenting nytt, og dytter de andre ut av lista.
+  const sett = new Set<string>();
+  const unikeKjoringer = (sisteKjoringer ?? [])
+    .filter((k) => (sett.has(k.leverandor_id) ? false : (sett.add(k.leverandor_id), true)))
+    .slice(0, 8);
 
   const totalt = antallLeverandorer ?? 0;
   const kontrollert = antallKontroller ?? 0;
-  const andel = totalt ? Math.round((kontrollert / totalt) * 100) : 0;
+  const dokumentert = Math.min(antallKontrollerte ?? 0, totalt);
+  const andel = totalt ? Math.round((dokumentert / totalt) * 100) : 0;
 
   return (
     <DashboardShell aktivtSteg="oversikt">
@@ -107,7 +123,7 @@ export default async function OversiktSide() {
 
         <Kort
           tittel={t.oversikt.kontrollplikt}
-          note={`${kontrollert} / ${totalt} ${t.oversikt.avDokumentert}`}
+          note={`${dokumentert} / ${totalt} ${t.oversikt.avDokumentert}`}
           className="mb-6"
         >
           <div className="px-5 py-5">
@@ -144,7 +160,7 @@ export default async function OversiktSide() {
             <Tabell
               kolonner={[t.ui.leverandor, t.ui.tidspunkt, t.ui.resultat]}
               tom={t.oversikt.ingenKjoringer}
-              rader={(sisteKjoringer ?? []).map((k) => {
+              rader={unikeKjoringer.map((k) => {
                 const lev = k.leverandorer as unknown as { navn: string } | null;
                 return [
                   <Link

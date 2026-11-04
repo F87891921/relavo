@@ -70,6 +70,7 @@ export function NyKontrollVeiviser() {
   const [espdFrist, setEspdFrist] = useState("");
 
   const [kjorer, setKjorer] = useState(false);
+  const [fremdrift, setFremdrift] = useState(0);
   const [kjorFeil, setKjorFeil] = useState("");
 
   // Bare sifrene teller. Alle norske organisasjonsnumre er ni siffer —
@@ -98,6 +99,16 @@ export function NyKontrollVeiviser() {
       setSlaarOpp(false);
     }
   }
+
+  // Kontrollen tar noen sekunder. Knappen sier hva som skjer, så den ikke ser fastlåst ut.
+  useEffect(() => {
+    if (!kjorer) {
+      setFremdrift(0);
+      return;
+    }
+    const id = setInterval(() => setFremdrift((n) => Math.min(n + 1, v.framdrift.length - 1)), 3500);
+    return () => clearInterval(id);
+  }, [kjorer, v.framdrift.length]);
 
   // Slår opp av seg selv så snart nummeret er fullt og gyldig — det er ikke
   // noe man skal måtte be om.
@@ -234,7 +245,7 @@ export function NyKontrollVeiviser() {
           )}
           <Foten
             neste={kjor}
-            nesteTekst={kjorer ? v.kjorer : v.kjorKontrollen}
+            nesteTekst={kjorer ? v.framdrift[fremdrift] : v.kjorKontrollen}
             nesteAv={!enhet || kjorer}
             hoppOver={enhet ? () => setSteg(1) : undefined}
             hoppOverTekst={v.leggTilOpplysninger}

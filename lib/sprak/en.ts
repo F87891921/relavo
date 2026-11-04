@@ -10,7 +10,7 @@ export const en: Ordbok = {
   sprak: { velg: "Language", norsk: "Norwegian", svensk: "Swedish", engelsk: "English" },
 
   meny: {
-    funn: "Findings",
+    funn: "Chain and conflicts",
     arkiv: "Archive",
     enKontroll: "One supplier",
     flereKontroller: "Several at once",
@@ -537,6 +537,7 @@ export const en: Ordbok = {
   kontroll: {
     indikasjoner: "Indicators",
     indikasjonerNote: "Not requirements and not breaches, but things that may be worth a question.",
+    fakta: {rating: "Credit rating", omsetning: "Revenue", anmerkninger: "Payment remarks", sanksjoner: "Sanctions and PEP", skatteattest: "Tax certificate", ingen: "None", ja: "Yes", ingenTreff: "No hits", mulig: "Possible hit", mottatt: "Received", venter: "Waiting", ikkeSjekket: "Not checked", tvangspant: "Compulsory lien", kredittTittel: "Credit", kredittNote: "From a credit information provider (Proff)"},
     egenerklaring: "Self-declaration not completed",
     egenerklaringNote: "These points rely on the supplier’s own declaration and have not been filled in. They say nothing about the supplier and do not count towards the risk.",
     egenerklaringAntall: "Awaiting self-declaration:",
@@ -819,6 +820,7 @@ export const en: Ordbok = {
     tiVirkedager: "Ten working days is usual.",
     kjorKontrollen: "Run the check",
     leggTilOpplysninger: "Add details",
+    framdrift: ["Fetching registers …", "Fetching finances and credit …", "Searching sanctions and PEP …", "Compiling the report …"],
     kjorer: "Running …",
     organisasjonsform: "Legal form", ansatte: "Employees", registrert: "Registered",
     konkurs: "Bankruptcy", underTvangsavvikling: "In compulsory dissolution", underAvvikling: "In dissolution",

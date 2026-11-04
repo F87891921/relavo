@@ -19,7 +19,7 @@ export const no = {
   sprak: { velg: "Språk", norsk: "Norsk", svensk: "Svensk", engelsk: "Engelsk" },
 
   meny: {
-    funn: "Funn",
+    funn: "Kjede og habilitet",
     arkiv: "Arkiv",
     enKontroll: "Én leverandør",
     flereKontroller: "Flere på én gang",
@@ -546,6 +546,7 @@ export const no = {
   kontroll: {
     indikasjoner: "Indikasjoner",
     indikasjonerNote: "Ikke krav og ikke brudd, men forhold som kan være verdt et spørsmål.",
+    fakta: {rating: "Kredittrating", omsetning: "Omsetning", anmerkninger: "Betalingsanmerkninger", sanksjoner: "Sanksjoner og PEP", skatteattest: "Skatteattest", ingen: "Ingen", ja: "Ja", ingenTreff: "Ingen treff", mulig: "Mulig treff", mottatt: "Mottatt", venter: "Venter", ikkeSjekket: "Ikke sjekket", tvangspant: "Tvangspant", kredittTittel: "Kreditt", kredittNote: "Fra kredittopplysningsleverandør (Proff)"},
     egenerklaring: "Egenerklæring ikke utfylt",
     egenerklaringNote: "Disse punktene bygger på leverandørens egen erklæring og er ikke fylt ut. De sier ikke noe om leverandøren, og teller ikke i risikoen.",
     egenerklaringAntall: "Venter på egenerklæring:",
@@ -828,6 +829,7 @@ export const no = {
     tiVirkedager: "Ti virkedager er vanlig.",
     kjorKontrollen: "Kjør kontrollen",
     leggTilOpplysninger: "Legg til opplysninger",
+    framdrift: ["Henter registre …", "Henter økonomi og kreditt …", "Søker sanksjoner og PEP …", "Setter sammen rapporten …"],
     kjorer: "Kjører …",
     organisasjonsform: "Organisasjonsform", ansatte: "Ansatte", registrert: "Registrert",
     konkurs: "Konkurs", underTvangsavvikling: "Under tvangsavvikling", underAvvikling: "Under avvikling",

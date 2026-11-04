@@ -1,5 +1,5 @@
 import { HMS_PUNKTER } from "@/lib/kontroll";
-import { NokkeltallTabell } from "@/components/kontroll/NokkeltallTabell";
+import { NokkeltallTabell, visTall } from "@/components/kontroll/NokkeltallTabell";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { krevProfil } from "@/lib/tilgang";
@@ -54,6 +54,35 @@ export default async function KontrollSide({
   const krav = r.krav
     .filter((k) => !erEgen(k))
     .sort((a, b) => (REKKEFOLGE[a.status] ?? 9) - (REKKEFOLGE[b.status] ?? 9));
+
+  // Kreditt og økonomi hører sammen, og er ikke «indikasjoner» som må vurderes.
+  const kreditt = r.indikatorer.filter((i) => i.id.startsWith("proff-"));
+  const ovrige = r.indikatorer.filter((i) => !i.id.startsWith("proff-"));
+  const f = t.kontroll.fakta;
+  const ind = (id: string) => r.indikatorer.find((i) => i.id === id);
+  const kravRef = (ref: string) => r.krav.find((k) => k.ref === ref);
+
+  type Fakta = { merke: string; verdi: string; tone: "god" | "advarsel" | "brudd" | "noytral" };
+  const fakta: Fakta[] = [];
+  const rating = ind("proff-rating");
+  if (rating) fakta.push({ merke: f.rating, verdi: rating.tittel.split(": ")[1] ?? "–", tone: "noytral" });
+  else if (ind("proff-ingen-data")) fakta.push({ merke: f.rating, verdi: f.ingen, tone: "noytral" });
+  const sist = r.nokkeltall?.ar[0];
+  if (sist && sist.omsetning != null)
+    fakta.push({ merke: `${f.omsetning} ${sist.aar}`, verdi: visTall(sist.omsetning, "kr"), tone: "noytral" });
+  if (ind("proff-betalingsanmerkninger")) fakta.push({ merke: f.anmerkninger, verdi: f.ja, tone: "brudd" });
+  else if (ind("proff-tvangspant")) fakta.push({ merke: f.anmerkninger, verdi: f.tvangspant, tone: "brudd" });
+  else if (ind("proff-ingen-anmerkninger")) fakta.push({ merke: f.anmerkninger, verdi: f.ingen, tone: "god" });
+  const sank = kravRef("Sanksjoner");
+  if (sank)
+    fakta.push({
+      merke: f.sanksjoner,
+      verdi: sank.status === "ok" ? f.ingenTreff : sank.tekst.startsWith("Mulig") ? f.mulig : f.ikkeSjekket,
+      tone: sank.status === "ok" ? "god" : sank.tekst.startsWith("Mulig") ? "advarsel" : "noytral",
+    });
+  const attest = kravRef("§ 5i");
+  if (attest)
+    fakta.push({ merke: f.skatteattest, verdi: attest.status === "ok" ? f.mottatt : f.venter, tone: attest.status === "ok" ? "god" : "advarsel" });
 
   const dato = new Date(r.utfort).toLocaleDateString("nb-NO", {
     day: "numeric", month: "long", year: "numeric",
@@ -136,10 +165,32 @@ export default async function KontrollSide({
           </div>
         </Kort>
 
+        {fakta.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
+            {fakta.map((x) => (
+              <div key={x.merke} className="bg-surface rounded-card shadow-card px-4 py-3.5 min-w-0">
+                <div className="text-[11px] uppercase tracking-wide text-faint truncate">{x.merke}</div>
+                <div
+                  className={`text-[17px] font-semibold tracking-tight mt-1 truncate ${
+                    x.tone === "god" ? "text-good" : x.tone === "brudd" ? "text-bad" : x.tone === "advarsel" ? "text-warn" : ""
+                  }`}
+                >
+                  {x.verdi}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         <Kort tittel={t.kontroll.vurdering} className="mb-4">
           <ul className="divide-y divide-border">
             {krav.map((k, i) => (
-              <li key={i} className="px-5 py-3.5 flex gap-4 items-start">
+              <li
+                key={i}
+                className={`px-5 py-3.5 flex gap-4 items-start border-l-[3px] ${
+                  k.status === "no" ? "border-bad" : k.status === "na" ? "border-warn" : "border-transparent"
+                }`}
+              >
                 <span className="shrink-0 w-[92px]">
                   <Merke tone={KRAVTONE[k.status] ?? "noytral"}>
                     {t.kontroll.kravstatus[k.status as "ok" | "no" | "na"]}
@@ -173,16 +224,29 @@ export default async function KontrollSide({
           )}
         </Kort>
 
+        {kreditt.length > 0 && (
+          <Kort tittel={t.kontroll.fakta.kredittTittel} note={t.kontroll.fakta.kredittNote} className="mb-4">
+            <ul className="divide-y divide-border">
+              {kreditt.map((i) => (
+                <li key={i.id} className="px-5 py-3.5">
+                  <div className="text-[13px] font-semibold mb-0.5">{i.tittel}</div>
+                  <p className="text-[12.5px] text-dim leading-relaxed">{i.tekst}</p>
+                </li>
+              ))}
+            </ul>
+          </Kort>
+        )}
+
         {r.nokkeltall && (
           <Kort tittel={t.kontroll.nokkeltall.tittel} note={t.kontroll.nokkeltall.note} className="mb-4">
             <NokkeltallTabell n={r.nokkeltall} t={t.kontroll.nokkeltall} />
           </Kort>
         )}
 
-        {r.indikatorer.length > 0 && (
+        {ovrige.length > 0 && (
           <Kort tittel={t.kontroll.indikasjoner} note={t.kontroll.indikasjonerNote} className="mb-4">
             <ul className="divide-y divide-border">
-              {r.indikatorer.map((i) => (
+              {ovrige.map((i) => (
                 <li key={i.id} className="px-5 py-3.5">
                   <div className="flex items-center gap-2.5 mb-0.5">
                     <span className="text-[13px] font-semibold">{i.tittel}</span>
