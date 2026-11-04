@@ -1,3 +1,4 @@
+import { HMS_PUNKTER } from "@/lib/kontroll";
 import { NokkeltallTabell } from "@/components/kontroll/NokkeltallTabell";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -44,10 +45,15 @@ export default async function KontrollSide({
   if (!r) notFound();
 
   const brudd = antallBrudd(r.krav);
-  const ukontrollert = antallUkontrollert(r.krav);
-  const krav = [...r.krav].sort(
-    (a, b) => (REKKEFOLGE[a.status] ?? 9) - (REKKEFOLGE[b.status] ?? 9),
-  );
+  // Punkter som venter på leverandørens egenerklæring samles for seg. De sier
+  // ikke noe om leverandøren når de ikke er utfylt, og fyller bare rapporten.
+  const EGEN = new Set<string>(HMS_PUNKTER.map((p) => p.ref));
+  const erEgen = (k: { ref: string; status: string }) => EGEN.has(k.ref) && k.status === "na";
+  const egen = r.krav.filter(erEgen);
+  const ukontrollert = antallUkontrollert(r.krav.filter((k) => !erEgen(k)));
+  const krav = r.krav
+    .filter((k) => !erEgen(k))
+    .sort((a, b) => (REKKEFOLGE[a.status] ?? 9) - (REKKEFOLGE[b.status] ?? 9));
 
   const dato = new Date(r.utfort).toLocaleDateString("nb-NO", {
     day: "numeric", month: "long", year: "numeric",
@@ -106,6 +112,7 @@ export default async function KontrollSide({
               <p className="text-[13px] mt-2.5 leading-relaxed max-w-[52ch]">
                 {brudd === 0 ? t.kontroll.ingenBrudd : `${brudd} ${t.kontroll.kravIkkeOppfylt}`}
                 {ukontrollert > 0 && ` ${ukontrollert} ${t.kontroll.ikkeKontrollert}`}
+                {egen.length > 0 && ` ${egen.length} ${t.kontroll.egenerklaringAntall}.`}
               </p>
             </div>
             <dl className="text-[12.5px] space-y-1.5 min-w-[200px]">
@@ -147,6 +154,23 @@ export default async function KontrollSide({
               </li>
             ))}
           </ul>
+          {egen.length > 0 && (
+            <details className="border-t border-border group">
+              <summary className="px-5 py-3.5 cursor-pointer select-none list-none flex items-center justify-between gap-3 text-[13px] font-semibold">
+                <span>{t.kontroll.egenerklaring} ({egen.length})</span>
+                <span className="text-faint group-open:rotate-180 transition">⌄</span>
+              </summary>
+              <p className="px-5 pb-2 text-[12px] text-dim leading-relaxed">{t.kontroll.egenerklaringNote}</p>
+              <ul className="divide-y divide-border">
+                {egen.map((k, i) => (
+                  <li key={i} className="px-5 py-3 flex gap-4 items-start">
+                    <span className="shrink-0 w-[92px] text-[12px] font-semibold text-faint">{k.ref}</span>
+                    <p className="text-[12.5px] text-dim leading-relaxed">{k.tekst}</p>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
         </Kort>
 
         {r.nokkeltall && (

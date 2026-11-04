@@ -162,3 +162,12 @@ export async function proffComplianceIndikatorer(orgnr: string, selskapsnavn: st
 
   return ut;
 }
+
+/** Utfallet av sanksjons- og PEP-søket. null = ikke slått på. */
+export function complianceStatus(ind: Indikator[]): "ok" | "treff" | "feil" | null {
+  const ids = ind.map((i) => i.id).filter((id) => id.startsWith("compliance-"));
+  if (!ids.length) return null;
+  if (ids.includes("compliance-feil")) return "feil";
+  if (ids.some((id) => id.endsWith("-sanksjon"))) return "treff";
+  return "ok";
+}

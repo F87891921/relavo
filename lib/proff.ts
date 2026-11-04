@@ -117,3 +117,10 @@ export async function proffIndikatorer(orgnr: string): Promise<Indikator[]> {
 
   return ut;
 }
+
+/** Utfallet av kredittoppslaget, lest av indikatorene. null = ikke slått på. */
+export function kreditStatus(ind: Indikator[]): "ok" | "feil" | null {
+  const ids = ind.map((i) => i.id).filter((id) => id.startsWith("proff-"));
+  if (!ids.length) return null;
+  return ids.includes("proff-feil") ? "feil" : "ok";
+}

@@ -13,8 +13,8 @@ import { ord } from "@/lib/sprak";
 import { grenseFeil } from "@/lib/grenser";
 import { hentRegnskap } from "@/lib/regnskap";
 import { lagIndikatorer } from "@/lib/indikatorer";
-import { proffIndikatorer } from "@/lib/proff";
-import { proffComplianceIndikatorer } from "@/lib/proff-compliance";
+import { proffIndikatorer, kreditStatus } from "@/lib/proff";
+import { proffComplianceIndikatorer, complianceStatus } from "@/lib/proff-compliance";
 import { lagNokkeltall } from "@/lib/nokkeltall";
 import { orgnrFeil, brregFeil } from "@/lib/orgnrtekst";
 
@@ -79,16 +79,16 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
 
   // Indikasjoner fra årsregnskapet. Feiler oppslaget, er det bare ingen indikasjoner.
   const regnskap = await hentRegnskap(enhet.orgnr).catch(() => []);
-  const indikatorer = [
-    ...lagIndikatorer(enhet, regnskap),
-    ...(await proffIndikatorer(enhet.orgnr)),
-    ...(await proffComplianceIndikatorer(enhet.orgnr, enhet.navn)),
-  ];
+  const kreditInd = await proffIndikatorer(enhet.orgnr);
+  const complianceInd = await proffComplianceIndikatorer(enhet.orgnr, enhet.navn);
+  const indikatorer = [...lagIndikatorer(enhet, regnskap), ...kreditInd, ...complianceInd];
+  const proff = { kredit: kreditStatus(kreditInd), compliance: complianceStatus(complianceInd) };
   const nokkeltall = lagNokkeltall(regnskap, enhet.ansatte);
 
   const { krav, kilder, risiko } = vurder(
     enhet, svar, renhold, dibk, sanksjoner,
     attest ? { utstedt: attest.utstedt as string } : null,
+    { proff, harRegnskap: regnskap.length > 0 },
   );
 
   // Leverandøren må finnes før kontrollen kan peke på den. Er selskapet
@@ -200,16 +200,37 @@ function vurder(
     rollerScreenet: boolean;
   },
   attest: { utstedt: string } | null,
+  ekstra: {
+    proff: { kredit: "ok" | "feil" | null; compliance: "ok" | "treff" | "feil" | null };
+    harRegnskap: boolean;
+  },
 ) {
   const krav: { ref: string; status: "ok" | "no" | "na"; tekst: string }[] = [];
 
   // Sanksjoner står først. Er det treff, er det det som avgjør om man i
   // det hele tatt kan handle med selskapet — før alt annet i lista.
-  if (!sanksjoner.kjort) {
+  //
+  // Proffs søk (selskap og personer i styre og ledelse) teller når det er
+  // gjort. Navnetreff er aldri «brudd» her: de står som uavklart og må
+  // kontrolleres manuelt, fordi mange heter det samme.
+  const proffSanksjon = ekstra.proff.compliance;
+  if (proffSanksjon === "ok") {
+    krav.push({
+      ref: "Sanksjoner",
+      status: "ok",
+      tekst: "Ingen treff på sanksjons- eller PEP-lister for selskapet og personene i styre og ledelse (Proff).",
+    });
+  } else if (proffSanksjon === "treff") {
     krav.push({
       ref: "Sanksjoner",
       status: "na",
-      tekst: "Sanksjonslista er ikke hentet. Screening ikke utført.",
+      tekst: "Mulig treff på sanksjonsliste. Se indikasjonene under og kontroller manuelt før avtale inngås.",
+    });
+  } else if (!sanksjoner.kjort) {
+    krav.push({
+      ref: "Sanksjoner",
+      status: "na",
+      tekst: "Sanksjonssøk er ikke utført.",
     });
   } else if (sanksjoner.treff.length === 0) {
     // «eller rollene» bare når rollene faktisk ble screenet. Sto den
@@ -378,43 +399,30 @@ function vurder(
     });
   }
 
-  const kilder = [
-    {
-      navn: "Enhetsregisteret",
-      status: "svar" as const,
-      tidspunkt: new Date().toISOString(),
-    },
-    // Skatteattesten kommer fra leverandøren, ikke fra oss mot Skatteetaten.
-    // Kilden er derfor «vedlegg» når den finnes — ikke «svar», som ville
-    // antydet at vi spurte et register og fikk svar.
-    {
-      navn: "Skatteattest fra leverandøren",
-      status: attest ? ("vedlegg" as const) : ("ikke" as const),
-      tidspunkt: attest ? `${attest.utstedt}T00:00:00Z` : null,
-    },
-    // Vi har ikke avtale med denne ennå. En rapport som tier om hullene
-    // sine er verre enn ingen rapport, så den står oppført som ikke hentet.
-    { navn: "Creditsafe", status: "ikke" as const, tidspunkt: null },
-    {
-      navn: "Arbeidstilsynet",
-      status: renhold ? ("svar" as const) : ("ikke" as const),
-      tidspunkt: renhold ? new Date().toISOString() : null,
-    },
-    {
-      navn: "DiBK sentral godkjenning",
-      status: dibk.status === "feil" ? ("ikke" as const) : ("svar" as const),
-      tidspunkt: dibk.status === "feil" ? null : new Date().toISOString(),
-    },
-    {
-      navn: "EUs sanksjonsliste",
-      status: sanksjoner.kjort ? ("svar" as const) : ("ikke" as const),
-      tidspunkt: sanksjoner.listeDato,
-    },
-    { navn: "StartBANK", status: "ikke" as const, tidspunkt: null },
-  ];
+  // Bare kilder som faktisk er brukt. Står en kilde der med «inget svar» uten
+  // at vi har spurt den, ser rapporten ufullstendig ut uten å være det.
+  type Kilde = { navn: string; status: "svar" | "vedlegg" | "ikke"; tidspunkt: string | null };
+  const na = new Date().toISOString();
+  const kilder: Kilde[] = [{ navn: "Enhetsregisteret", status: "svar", tidspunkt: na }];
+  if (ekstra.harRegnskap) kilder.push({ navn: "Regnskapsregisteret", status: "svar", tidspunkt: na });
+  // Skatteattesten kommer fra leverandøren, ikke fra oss mot Skatteetaten.
+  // Kilden er derfor «vedlegg» når den finnes — ikke «svar».
+  if (attest) kilder.push({ navn: "Skatteattest fra leverandøren", status: "vedlegg", tidspunkt: `${attest.utstedt}T00:00:00Z` });
+  if (renhold) kilder.push({ navn: "Arbeidstilsynets renholdsregister", status: "svar", tidspunkt: na });
+  kilder.push({
+    navn: "DiBK sentral godkjenning",
+    status: dibk.status === "feil" ? "ikke" : "svar",
+    tidspunkt: dibk.status === "feil" ? null : na,
+  });
+  if (sanksjoner.kjort) kilder.push({ navn: "EUs sanksjonsliste", status: "svar", tidspunkt: sanksjoner.listeDato });
+  if (ekstra.proff.kredit) kilder.push({ navn: "Proff (kreditt)", status: ekstra.proff.kredit === "ok" ? "svar" : "ikke", tidspunkt: ekstra.proff.kredit === "ok" ? na : null });
+  if (ekstra.proff.compliance) kilder.push({ navn: "Proff (sanksjoner og PEP)", status: ekstra.proff.compliance === "feil" ? "ikke" : "svar", tidspunkt: ekstra.proff.compliance === "feil" ? null : na });
 
   const brudd = krav.some((k) => k.status === "no");
-  const uavklart = krav.filter((k) => k.status === "na").length;
+  // Punkter som venter på leverandørens egenerklæring sier ikke noe om
+  // leverandøren når de ikke er fylt ut, så de teller ikke i risikoen.
+  const EGEN = new Set<string>(HMS_PUNKTER.map((p) => p.ref));
+  const uavklart = krav.filter((k) => k.status === "na" && !EGEN.has(k.ref)).length;
   const risiko = brudd ? "hoy" : uavklart >= 3 ? "middels" : "lav";
 
   return { krav, kilder, risiko };

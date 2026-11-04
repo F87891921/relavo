@@ -537,6 +537,9 @@ export const en: Ordbok = {
   kontroll: {
     indikasjoner: "Indicators",
     indikasjonerNote: "Not requirements and not breaches, but things that may be worth a question.",
+    egenerklaring: "Self-declaration not completed",
+    egenerklaringNote: "These points rely on the supplier’s own declaration and have not been filled in. They say nothing about the supplier and do not count towards the risk.",
+    egenerklaringAntall: "points awaiting self-declaration",
     nokkeltall: {"visAlle": "Show all years", "tittel": "Key figures", "note": "From filed annual accounts. The figures are not an assessment.", "ar": "Year", "omsetning": "Revenue", "driftsresultat": "Operating result", "aarsresultat": "Net result", "egenkapital": "Equity", "gjeld": "Debt", "eiendeler": "Assets", "vekst": "Revenue growth", "driftsmargin": "Operating margin", "egenkapitalandel": "Equity ratio", "ansatte": "Employees now", "perAnsatt": "Revenue per employee", "ingen": "No annual accounts have been filed. That is common for new companies, sole proprietorships and small businesses, and is not wrong in itself.", "kilde": "Source", "mnok": "NOK m", "tkr": "NOK"},
     varsel: "Warning",
     info: "Info",
@@ -815,6 +818,7 @@ export const en: Ordbok = {
     fristEttersending: "Deadline for submission",
     tiVirkedager: "Ten working days is usual.",
     kjorKontrollen: "Run the check",
+    leggTilOpplysninger: "Add details",
     kjorer: "Running …",
     organisasjonsform: "Legal form", ansatte: "Employees", registrert: "Registered",
     konkurs: "Bankruptcy", underTvangsavvikling: "In compulsory dissolution", underAvvikling: "In dissolution",

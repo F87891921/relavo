@@ -537,6 +537,9 @@ export const sv: Ordbok = {
   kontroll: {
     indikasjoner: "Indikationer",
     indikasjonerNote: "Inte krav och inte brott, men förhållanden som kan vara värda en fråga.",
+    egenerklaring: "Egenförsäkran ej ifylld",
+    egenerklaringNote: "De här punkterna bygger på leverantörens egen försäkran och är inte ifyllda. De säger inget om leverantören och räknas inte i risken.",
+    egenerklaringAntall: "punkter väntar på egenförsäkran",
     nokkeltall: {"visAlle": "Visa alla år", "tittel": "Nyckeltal", "note": "Från inlämnade årsredovisningar. Siffrorna är ingen bedömning.", "ar": "År", "omsetning": "Omsättning", "driftsresultat": "Rörelseresultat", "aarsresultat": "Årsresultat", "egenkapital": "Eget kapital", "gjeld": "Skulder", "eiendeler": "Tillgångar", "vekst": "Omsättningstillväxt", "driftsmargin": "Rörelsemarginal", "egenkapitalandel": "Soliditet", "ansatte": "Anställda nu", "perAnsatt": "Omsättning per anställd", "ingen": "Ingen årsredovisning är inlämnad. Det är vanligt för nya bolag, enskilda firmor och mindre företag, och är inte i sig något fel.", "kilde": "Källa", "mnok": "mkr", "tkr": "kr"},
     varsel: "Varning",
     info: "Info",
@@ -815,6 +818,7 @@ export const sv: Ordbok = {
     fristEttersending: "Frist för insändning",
     tiVirkedager: "Tio arbetsdagar är vanligt.",
     kjorKontrollen: "Kör kontrollen",
+    leggTilOpplysninger: "Lägg till uppgifter",
     kjorer: "Kör …",
     organisasjonsform: "Bolagsform", ansatte: "Anställda", registrert: "Registrerad",
     konkurs: "Konkurs", underTvangsavvikling: "Under tvångslikvidation", underAvvikling: "Under likvidation",

@@ -99,6 +99,15 @@ export function NyKontrollVeiviser() {
     }
   }
 
+  // Slår opp av seg selv så snart nummeret er fullt og gyldig — det er ikke
+  // noe man skal måtte be om.
+  useEffect(() => {
+    if (!fullLengde || !validering.ok) return;
+    if (enhet?.orgnr === validering.orgnr || slaarOpp) return;
+    slaOpp();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sifre]);
+
   // Nøkkeltallene vises med en gang selskapet er slått opp, før man har svart på noe.
   useEffect(() => {
     setNokkeltall(null);
@@ -224,10 +233,11 @@ export function NyKontrollVeiviser() {
             <div className="text-xs text-bad bg-bad-bg rounded-xl px-3.5 py-2.5 mt-4">{kjorFeil}</div>
           )}
           <Foten
-            neste={() => setSteg(1)}
+            neste={kjor}
+            nesteTekst={kjorer ? v.kjorer : v.kjorKontrollen}
             nesteAv={!enhet || kjorer}
-            hoppOver={enhet ? kjor : undefined}
-            hoppOverTekst={kjorer ? v.kjorer : v.kjorKontrollen}
+            hoppOver={enhet ? () => setSteg(1) : undefined}
+            hoppOverTekst={v.leggTilOpplysninger}
           />
         </>
       )}
