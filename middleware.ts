@@ -39,7 +39,9 @@ export async function middleware(request: NextRequest) {
   // Portvakten kommer først av alt. Er SIDE_PASSORD satt, slipper ingen
   // inn noe sted uten kapselen — heller ikke forsiden, og heller ikke
   // API-rutene. Er variabelen ikke satt, er sperren av.
-  const sidePassord = process.env.SIDE_PASSORD;
+  // RELAVO_APEN=1 slår sperren av uten at passordet må slettes. Fjernes
+  // variabelen, er sperren på igjen.
+  const sidePassord = process.env.RELAVO_APEN === "1" ? undefined : process.env.SIDE_PASSORD;
   if (sidePassord && sti !== "/port" && !medToken) {
     const kapsel = request.cookies.get(KAPSEL)?.value ?? "";
     const forventet = await avtrykk(sidePassord);
@@ -123,6 +125,8 @@ export async function middleware(request: NextRequest) {
     "/tofaktor",
     "/kontakt",
     "/juridisk",
+    "/robots.txt",
+    "/sitemap.xml",
     "/api/kommune",
     "/api/feil",
     "/api/stripe/webhook",

@@ -19,7 +19,7 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "Relavo — leverandørkontroll for offentlige anskaffelser",
   description:
-    "Relavo henter selskapsdata, skatterestanser og betalingsanmerkninger, kartlegger leverandørkjeden, og lagrer resultatet som dokumentasjon på kontrollplikten i § 5i.",
+    "Relavo kontrollerer leverandører mot offentlige registre, viser nøkkeltall, kredittrating og betalingsanmerkninger, sanksjons- og PEP-treff og leverandørkjeden, og lagrer resultatet som dokumentasjon på kontrollplikten i § 5i.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
