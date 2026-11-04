@@ -6,6 +6,14 @@
   ],
   "crons": [
     {
+      "path": "/api/synk-sanksjoner",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/synk-renhold",
+      "schedule": "15 4 * * *"
+    },
+    {
       "path": "/api/overvaking",
       "schedule": "0 5 * * *"
     },
