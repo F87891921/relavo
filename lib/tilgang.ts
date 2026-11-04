@@ -23,6 +23,16 @@ export const krevProfil = cache(async () => {
   } = await supabase.auth.getUser();
   if (!user) redirect("/logg-inn");
 
+  // E-postadressen må være bekreftet før kontoen kan brukes, også for å bestille
+  // og betale. Brukere som fantes fra før og de som er invitert av en
+  // administrator er bekreftet. Siden som ber om bekreftelsen er den eneste
+  // som slipper gjennom.
+  const sti0 = headers().get("x-sti") ?? "";
+  if (sti0 !== "/bekreft-epost") {
+    const { data: bekreftet } = await supabase.rpc("epost_er_bekreftet");
+    if (bekreftet === false) redirect("/bekreft-epost");
+  }
+
   const { data: profil } = await supabase
     .from("profiler")
     .select("organisasjon_id, navn, rolle, ansatt, ansatt_rolle, sprak, organisasjoner!profiler_organisasjon_id_fkey(navn, status, betalingsmate, krever_tofaktor, slettes_den)")

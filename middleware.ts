@@ -132,6 +132,8 @@ export async function middleware(request: NextRequest) {
     "/api/stripe/webhook",
     "/auth/callback",
     "/auth/bekreft",
+    "/auth/epost",
+    "/bekreft-epost",
     ...TOKENSIDER,
   ];
   const apen = APNE.some((p) => sti === p || sti.startsWith(`${p}/`));

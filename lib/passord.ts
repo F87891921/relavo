@@ -4,7 +4,7 @@
  * faktisk håndheves, ikke bare vises). Validering som bare finnes i
  * nettleseren er en anbefaling, ikke et krav.
  */
-export const MIN_LENGDE = 12;
+export const MIN_LENGDE = 10;
 
 export type Krav = {
   id: string;

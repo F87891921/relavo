@@ -1343,6 +1343,7 @@ export const en: Ordbok = {
     knappKommune: "Create account and order",
     knappSelskap: "Create account and choose payment",
   },
+  bekreft: {epostEmne: "Confirm your email address for Relavo", epostHei: "Hello,", epostIngress: "Thank you for creating an account with Relavo. Press the button below to confirm your email address. The link is valid for 24 hours.", epostKnapp: "Confirm email address", epostEllerLenke: "Button not working? Paste this link into your browser:", epostIgnorer: "If you did not create an account, you can ignore this email.", tittel: "Confirm your email address", ingress: "We have sent a link to {epost}. Open it to continue.", hjelp: "Can’t find it? Check your spam folder. The link is valid for 24 hours.", sendPaNytt: "Send the link again", sendtNy: "A new link has been sent. Check your inbox.", ventLitt: "Please wait a moment before asking for a new link.", sendingFeilet: "We could not send the email. Please try again shortly.", feilAdresse: "Wrong address? Log out"},
   glemt: {
     lenke: "Forgot password?",
     epostEmne: "Choose a new password for Relavo",

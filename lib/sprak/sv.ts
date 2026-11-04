@@ -1343,6 +1343,7 @@ export const sv: Ordbok = {
     knappKommune: "Skapa konto och beställ",
     knappSelskap: "Skapa konto och välj betalning",
   },
+  bekreft: {epostEmne: "Bekräfta din e-postadress för Relavo", epostHei: "Hej,", epostIngress: "Tack för att du skapade ett konto hos Relavo. Tryck på knappen nedan för att bekräfta din e-postadress. Länken gäller i 24 timmar.", epostKnapp: "Bekräfta e-postadressen", epostEllerLenke: "Fungerar inte knappen? Klistra in den här länken i webbläsaren:", epostIgnorer: "Har du inte skapat ett konto kan du bortse från mejlet.", tittel: "Bekräfta din e-postadress", ingress: "Vi har skickat en länk till {epost}. Öppna den för att fortsätta.", hjelp: "Hittar du den inte? Kolla skräpposten. Länken gäller i 24 timmar.", sendPaNytt: "Skicka länken igen", sendtNy: "En ny länk är skickad. Kolla inkorgen.", ventLitt: "Vänta en stund innan du ber om en ny länk.", sendingFeilet: "Vi kunde inte skicka mejlet. Försök igen om en stund.", feilAdresse: "Fel adress? Logga ut"},
   glemt: {
     lenke: "Glömt lösenord?",
     epostEmne: "Välj nytt lösenord för Relavo",

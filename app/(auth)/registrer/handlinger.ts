@@ -3,7 +3,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { admin } from "@/lib/supabase/admin";
 import { manglendeKrav, KRAV } from "@/lib/passord";
-import { ord } from "@/lib/sprak";
+import { sendBekreftelse } from "@/lib/epostbekreftelse";
+import { grunnUrl } from "@/lib/url";
+import { ord, aktivtSprak } from "@/lib/sprak";
 import { kommuner } from "@/lib/kommuner";
 import { BEDRIFT, NIVAER, mndBedrift, mndFor, nivaFor, type Lopetid } from "@/lib/priser";
 import { regnUt } from "@/lib/offert";
@@ -80,6 +82,16 @@ async function lagKonto(
     password: passord,
   });
   if (innFeil) return { ok: false, feil: innFeil.message };
+
+  // Bekreftelseslenken. Feiler utsendingen, kommer kunden til siden som lar
+  // dem be om en ny, så registreringen trenger ikke stoppe her.
+  await sendBekreftelse({
+    userId: data.user.id,
+    epost,
+    sprak: aktivtSprak(),
+    origin: grunnUrl(),
+    forste: true,
+  });
 
   return { ok: true, supabase };
 }

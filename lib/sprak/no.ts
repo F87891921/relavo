@@ -1352,6 +1352,7 @@ export const no = {
     knappKommune: "Opprett konto og bestill",
     knappSelskap: "Opprett konto og velg betaling",
   },
+  bekreft: {epostEmne: "Bekreft e-postadressen din for Relavo", epostHei: "Hei,", epostIngress: "Takk for at du opprettet en konto hos Relavo. Trykk på knappen under for å bekrefte e-postadressen din. Lenken gjelder i 24 timer.", epostKnapp: "Bekreft e-postadressen", epostEllerLenke: "Fungerer ikke knappen? Lim inn denne lenken i nettleseren:", epostIgnorer: "Har du ikke opprettet en konto, kan du se bort fra e-posten.", tittel: "Bekreft e-postadressen din", ingress: "Vi har sendt en lenke til {epost}. Åpne den for å fortsette.", hjelp: "Finner du den ikke? Sjekk søppelposten. Lenken gjelder i 24 timer.", sendPaNytt: "Send lenken på nytt", sendtNy: "Ny lenke er sendt. Sjekk innboksen.", ventLitt: "Vent litt før du ber om en ny lenke.", sendingFeilet: "Vi fikk ikke sendt e-posten. Prøv igjen om litt.", feilAdresse: "Feil adresse? Logg ut"},
   glemt: {
     lenke: "Glemt passord?",
     epostEmne: "Velg nytt passord for Relavo",
