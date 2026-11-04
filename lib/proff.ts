@@ -88,9 +88,7 @@ export async function proffIndikatorer(orgnr: string): Promise<Indikator[]> {
       tekst:
         `Proff vurderer selskapet til ${r.rating}` +
         (r.ratingScore != null ? ` (score ${r.ratingScore})` : "") +
-        (r.probabilityOfBankruptcy != null
-          ? `, konkurssannsynlighet ${(r.probabilityOfBankruptcy * 100).toFixed(1)} %`
-          : "") +
+        // Konkurssannsynligheten vises ikke før vi vet hvilken enhet Proff bruker.
         `. Kilde: Proff${dato ? `, oppdatert ${dato}` : ""}. Dette er en vurdering fra et kredittbyrå, ikke en offentlig kilde.`,
     });
 
