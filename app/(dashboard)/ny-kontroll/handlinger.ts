@@ -304,7 +304,7 @@ function vurder(
           ref: "§ 5i",
           status: "na",
           tekst:
-            "Skatteattest er ikke mottatt. Skatt og merverdiavgift er ikke kontrollert.",
+            "Venter på skatteattest fra leverandøren. Skatteetaten utleverer den bare til selskapet selv, så leverandøren må sende den inn. Inntil den er mottatt er skatt og merverdiavgift ikke kontrollert.",
         }
       : attestAlder > GYLDIG_DAGER
         ? {
