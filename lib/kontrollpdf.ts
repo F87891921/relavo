@@ -32,7 +32,7 @@ const RISIKOFARGE = { lav: GRONN, middels: GUL, hoy: ROD };
 
 const KRAVMERKE = {
   ok: { ord: "OPPFYLT", farge: GRONN },
-  no: { ord: "BRUDD", farge: ROD },
+  no: { ord: "AVVIK", farge: ROD },
   na: { ord: "IKKE SJEKKET", farge: GUL },
 };
 
@@ -89,8 +89,8 @@ export function kontrollrapportPdf(r: Kontrollrapport): ArrayBuffer {
   });
   pdf.tekst(
     brudd === 0
-      ? `Ingen brudd funnet. ${ukontrollert} ${ukontrollert === 1 ? "punkt" : "punkter"} kunne ikke kontrolleres.`
-      : `${brudd} ${brudd === 1 ? "krav er ikke oppfylt" : "krav er ikke oppfylt"}. ${ukontrollert} ${ukontrollert === 1 ? "punkt" : "punkter"} kunne ikke kontrolleres.`,
+      ? `Ingen avvik funnet i registrene vi kontrollerer. ${ukontrollert} ${ukontrollert === 1 ? "punkt" : "punkter"} kunne ikke kontrolleres.`
+      : `${brudd} ${brudd === 1 ? "avvik funnet" : "avvik funnet"}. ${ukontrollert} ${ukontrollert === 1 ? "punkt" : "punkter"} kunne ikke kontrolleres.`,
     { storrelse: 9, farge: DIM, x: 68, linjehoyde: 12 },
   );
   pdf.luft(22);
@@ -109,7 +109,7 @@ export function kontrollrapportPdf(r: Kontrollrapport): ArrayBuffer {
   pdf.luft(6);
 
   /* -------------------------------------------------------- Vurderingen */
-  pdf.overskrift("Vurdering mot regelverket");
+  pdf.overskrift("Kontroll mot registre og krav");
 
   // Brudd først. En rapport som lister kravene i den rekkefølgen koden
   // tilfeldigvis la dem inn, lar det viktigste drukne.
