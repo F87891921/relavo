@@ -2,6 +2,9 @@ import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
 import { Side, Sidehode, Kort } from "@/components/ui";
 import { FELT_FULL } from "@/components/ui/felt";
+import { slaOppEnhet } from "@/lib/brreg";
+import { proffIndikatorer } from "@/lib/proff";
+import { proffComplianceIndikatorer } from "@/lib/proff-compliance";
 
 /**
  * Intern visning av hva Proff Credit API faktisk returnerer for et
@@ -30,6 +33,13 @@ export default async function ProffSide({ searchParams }: { searchParams: { org?
   const org = (searchParams.org ?? "").replace(/\D/g, "");
   const gyldig = org.length === 9;
 
+  // Det kunden faktisk ville sett i rapporten fra Proff (kreditt og compliance).
+  const oppslag = gyldig ? await slaOppEnhet(org) : null;
+  const rapportRader =
+    gyldig && oppslag?.status === "funnet"
+      ? [...(await proffIndikatorer(org)), ...(await proffComplianceIndikatorer(org, oppslag.enhet.navn))]
+      : null;
+
   const [kreditt, rapport] = gyldig
     ? await Promise.all([hent(`/CompanyCreditReport/${org}`), hent(`/CompanyReport/${org}`)])
     : [null, null];
@@ -47,6 +57,23 @@ export default async function ProffSide({ searchParams }: { searchParams: { org?
         </form>
 
         {org && !gyldig && <p className="text-sm text-bad">Skriv ni siffer.</p>}
+
+        {rapportRader && (
+          <Kort tittel="Slik vises det i kundens rapport" className="mb-4">
+            {rapportRader.length === 0 ? (
+              <p className="px-5 py-4 text-[12.5px] text-dim">Ingen rader. Er PROFF_CREDIT_TOKEN / PROFF_COMPLIANCE_TOKEN satt?</p>
+            ) : (
+              <ul className="divide-y divide-border">
+                {rapportRader.map((i) => (
+                  <li key={i.id} className="px-5 py-3">
+                    <div className="text-[13px] font-semibold">{i.tittel} <span className="text-faint font-normal">({i.niva})</span></div>
+                    <p className="text-[12.5px] text-dim leading-relaxed">{i.tekst}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Kort>
+        )}
 
         {[["Kredittrapport (CompanyCreditReport)", kreditt], ["Selskapsrapport (CompanyReport)", rapport]].map(([tittel, r]) =>
           r ? (

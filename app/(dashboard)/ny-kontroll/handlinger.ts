@@ -14,6 +14,7 @@ import { grenseFeil } from "@/lib/grenser";
 import { hentRegnskap } from "@/lib/regnskap";
 import { lagIndikatorer } from "@/lib/indikatorer";
 import { proffIndikatorer } from "@/lib/proff";
+import { proffComplianceIndikatorer } from "@/lib/proff-compliance";
 import { lagNokkeltall } from "@/lib/nokkeltall";
 import { orgnrFeil, brregFeil } from "@/lib/orgnrtekst";
 
@@ -78,7 +79,11 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
 
   // Indikasjoner fra årsregnskapet. Feiler oppslaget, er det bare ingen indikasjoner.
   const regnskap = await hentRegnskap(enhet.orgnr).catch(() => []);
-  const indikatorer = [...lagIndikatorer(enhet, regnskap), ...(await proffIndikatorer(enhet.orgnr))];
+  const indikatorer = [
+    ...lagIndikatorer(enhet, regnskap),
+    ...(await proffIndikatorer(enhet.orgnr)),
+    ...(await proffComplianceIndikatorer(enhet.orgnr, enhet.navn)),
+  ];
   const nokkeltall = lagNokkeltall(regnskap, enhet.ansatte);
 
   const { krav, kilder, risiko } = vurder(
