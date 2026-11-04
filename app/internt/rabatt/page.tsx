@@ -1,7 +1,8 @@
 import { krevSuperadmin } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
 import { Side, Sidehode, Kort } from "@/components/ui";
-import { listKampanjekoder, stripeOppsatt } from "@/lib/stripe";
+import { listKampanjekoder, stripeOppsatt, stripeModus } from "@/lib/stripe";
+import { Merke } from "@/components/ui";
 import { RabattSkjema, SlaAv, Aktiv } from "@/components/internt/Rabatt";
 
 /**
@@ -20,6 +21,17 @@ export default async function RabattSide() {
           tittel="Rabattkoder"
           tekst="Lag koder som kunden skriver inn på betalingssiden. Virker på kortbetaling; kommuner får rabatten som lavere pris på tilbudet."
         />
+
+        <div className="mb-4 flex items-center gap-2 text-[12.5px] text-dim">
+          Stripe:
+          {stripeModus() === "live" ? (
+            <Merke tone="god">Live – ekte betalinger</Merke>
+          ) : stripeModus() === "test" ? (
+            <Merke tone="advarsel">Testmodus – ingen ekte betalinger. Kodene her virker bare i testmodus.</Merke>
+          ) : (
+            <Merke tone="noytral">Ikke koblet</Merke>
+          )}
+        </div>
 
         <Kort tittel="Ny kode" className="mb-4">
           <div className="px-5 py-5">

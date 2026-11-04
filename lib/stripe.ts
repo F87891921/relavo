@@ -12,6 +12,14 @@
  */
 export const stripeOppsatt = () => Boolean(process.env.STRIPE_SECRET_KEY);
 
+/** Hvilken Stripe-modus nøkkelen peker mot. Vises internt så ingen tror de tar imot ekte betalinger i testmodus. */
+export function stripeModus(): "test" | "live" | null {
+  const k = process.env.STRIPE_SECRET_KEY ?? "";
+  if (k.startsWith("sk_live_") || k.startsWith("rk_live_")) return "live";
+  if (k.startsWith("sk_test_") || k.startsWith("rk_test_")) return "test";
+  return null;
+}
+
 type Svar<T> = { ok: true; data: T } | { ok: false; feil: string; mangler?: true };
 
 async function kall<T>(sti: string, kropp?: URLSearchParams): Promise<Svar<T>> {
@@ -87,6 +95,11 @@ export function opprettKasseokt(o: {
   p.set("line_items[0][price_data][product_data][name]", o.beskrivelse);
   p.set("line_items[0][price_data][unit_amount]", String(Math.round(o.belopNok * 100)));
   if (o.gjentakende) p.set("line_items[0][price_data][recurring][interval]", o.intervall ?? "month");
+  // Moms. Prisene våre er eks. mva, og uten dette tar Stripe bare imot netto-
+  // beløpet. Settes STRIPE_MVA_ID (en skattesats lagt inn i Stripe, 25 %, ikke
+  // inkludert i prisen) legges mva på betalingen. Ikke satt = ingen mva, helt
+  // til det er avklart med revisor om og hvordan vi skal kreve inn den.
+  if (process.env.STRIPE_MVA_ID) p.set("line_items[0][tax_rates][0]", process.env.STRIPE_MVA_ID);
 
   return kall<Kasseokt>("checkout/sessions", p);
 }
