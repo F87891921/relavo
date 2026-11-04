@@ -1,5 +1,5 @@
 import { Pdf, GRAFITT, DIM, AKSENT, ROD, GRONN, GUL } from "@/lib/pdf";
-import { RELAVO, relavoOrgNr } from "@/lib/relavo";
+import { RELAVO, avsenderlinje } from "@/lib/relavo";
 import { HMS_PUNKTER } from "@/lib/kontroll";
 import {
   antallBrudd,
@@ -59,7 +59,7 @@ export function kontrollrapportPdf(r: Kontrollrapport): ArrayBuffer {
   pdf.logo({ hoyde: 21, etter: 10 });
 
   pdf.tekst(
-    `${RELAVO.navn} · org.nr ${relavoOrgNr()} · ${RELAVO.nett}`,
+    `${avsenderlinje()} · ${RELAVO.nett}`,
     { storrelse: 8, farge: DIM, etter: 16 },
   );
 
@@ -221,7 +221,7 @@ export function kontrollrapportPdf(r: Kontrollrapport): ArrayBuffer {
     { storrelse: 9, farge: DIM, linjehoyde: 13, etter: 10 },
   );
   pdf.tekst(
-    `Utstedt av ${RELAVO.navn}, org.nr ${relavoOrgNr()}, ${RELAVO.adresse}.`,
+    `Utstedt av ${avsenderlinje()}, ${RELAVO.adresse}.`,
     { storrelse: 8, farge: DIM },
   );
 

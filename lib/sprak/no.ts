@@ -495,7 +495,7 @@ export const no = {
       snakkMedOss: "Snakk med oss",
     },
     foot: {
-      avdeling: "norsk avdeling av",
+      avdeling: "norsk filial av",
       tekst: "Relavo kontrollerer selskaper, ikke enkeltpersoner. Opplysninger om straffedommer behandles ikke.",
       vilkar: "Vilkår",
       personvern: "Personvern",

@@ -44,5 +44,12 @@ export const relavoOrgNr = () =>
  * i Norge og aksjebolaget som faktisk er part.
  */
 export const avtalepart = () =>
-  `${RELAVO.navn}, org.nr ${relavoOrgNr()}, norsk avdeling av ` +
+  `${RELAVO.navn}, org.nr ${relavoOrgNr()}, norsk filial av ` +
   `${RELAVO.morNavn}, org.nr ${RELAVO.morOrgNr}, ${RELAVO.adresse}`;
+
+/**
+ * Avsenderlinjen i brevhodet: filialen og rettssubjektet, uten adresse.
+ * LOD TECH AB NUF, org.nr 938 518 858 — norsk filial av LOD TECH AB, org.nr 559471-0419
+ */
+export const avsenderlinje = () =>
+  `${RELAVO.navn}, org.nr ${relavoOrgNr()} — norsk filial av ${RELAVO.morNavn}, org.nr ${RELAVO.morOrgNr}`;

@@ -7,7 +7,7 @@ import { krevProfil } from "@/lib/tilgang";
 import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Kort, Merke, type Tone } from "@/components/ui";
 import { RelavoLogo } from "@/components/RelavoLogo";
-import { RELAVO, relavoOrgNr } from "@/lib/relavo";
+import { RELAVO, avsenderlinje } from "@/lib/relavo";
 import {
   hentKontrollrapport,
   antallBrudd,
@@ -111,7 +111,7 @@ export default async function KontrollSide({
         <div className="flex items-end justify-between gap-4 pb-4 mb-5 border-b border-border">
           <RelavoLogo className="w-[96px] h-auto text-ink" />
           <p className="text-[11px] text-faint text-right leading-relaxed">
-            {RELAVO.navn} · org.nr {relavoOrgNr()}
+            {avsenderlinje()}
             <span className="block">{RELAVO.nett}</span>
           </p>
         </div>

@@ -5,7 +5,7 @@
  *
  * Avtaleparten settes fra lib/relavo.ts, ikke som fast tekst. Den sto før
  * som «Relavo AS, org.nr FYLLES UT» — og Relavo AS finnes ikke. Relavo er
- * produktnavnet; selskapet er LOD TECH AB NUF, den norske avdelingen av
+ * produktnavnet; selskapet er LOD TECH AB NUF, den norske filialen av
  * svenske LOD TECH AB. En avtale som oppgir et selskap som ikke er
  * registrert, er en avtale motparten kan bestride.
  *
