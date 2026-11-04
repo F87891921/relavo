@@ -1105,6 +1105,7 @@ export const sv: Ordbok = {
     ingenKontaktServer: "Fick ingen kontakt med servern.",
     henter22: "Hämtar 22 MB …",
     hentRegisteret: "Hämta registret nu",
+    autoHenting: "Hämtas även automatiskt varje natt när kopian är äldre än 36 timmar. Knappen hämtar direkt.",
     inntektPerManed: "intäkt per månad",
     inntekt: "Intäkt",
     gjaldt: "Gällde",

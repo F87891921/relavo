@@ -1105,6 +1105,7 @@ export const en: Ordbok = {
     ingenKontaktServer: "Could not reach the server.",
     henter22: "Fetching 22 MB …",
     hentRegisteret: "Fetch the register now",
+    autoHenting: "Also fetched automatically every night when the copy is older than 36 hours. The button fetches immediately.",
     inntektPerManed: "revenue per month",
     inntekt: "Revenue",
     gjaldt: "Concerned",

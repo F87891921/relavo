@@ -6,9 +6,9 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 /**
- * Hämtar Arbeidstilsynets renholdsregister till databasen. Körs för hand,
- * inte automatiskt: filen är 22 MB och uppdateras en gång per dygn, så det
- * finns ingen anledning att hämta den oftare än någon gör det.
+ * Arbeidstilsynets renholdsregister. Hämtas automatiskt av den nattliga
+ * övervakningen när kopian är äldre än 36 timmar; knappen här är bara för att
+ * hämta direkt, till exempel efter ett fel.
  */
 export function SynkRenhold({
   sistHentet,
@@ -80,6 +80,7 @@ export function SynkRenhold({
           )}
         </span>
       </div>
+      <p className="text-[11.5px] text-faint mt-3 leading-relaxed">{t.internt.autoHenting}</p>
 
       {melding && (
         <div className="text-xs text-good bg-good-bg rounded-xl px-3.5 py-2.5 mt-4">

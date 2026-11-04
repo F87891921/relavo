@@ -1114,6 +1114,7 @@ export const no = {
     ingenKontaktServer: "Fikk ikke kontakt med serveren.",
     henter22: "Henter 22 MB …",
     hentRegisteret: "Hent registeret nå",
+    autoHenting: "Hentes også automatisk hver natt når kopien er eldre enn 36 timer. Knappen henter med en gang.",
     inntektPerManed: "inntekt per måned",
     inntekt: "Inntekt",
     gjaldt: "Gjaldt",
