@@ -45,7 +45,19 @@ export async function POST(req: NextRequest) {
 
   const hendelse = JSON.parse(kropp) as {
     type: string;
-    data: { object: { id: string; payment_status?: string; customer?: string | null; metadata?: Record<string, string> } };
+    data: {
+      object: {
+        id: string;
+        payment_status?: string;
+        customer?: string | null;
+        metadata?: Record<string, string>;
+        amount_total?: number | null;
+        amount_paid?: number | null;
+        total_excluding_tax?: number | null;
+        currency?: string;
+        billing_reason?: string;
+      };
+    };
   };
 
   if (
@@ -54,6 +66,13 @@ export async function POST(req: NextRequest) {
   ) {
     const okt = hendelse.data.object;
     const org = okt.metadata?.organisasjon_id;
+    // Omsetningen lagres for mva-vakten. Netto: er det lagt mva på økten, trekkes den fra.
+    if (okt.payment_status === "paid" && (okt.currency ?? "nok").toLowerCase() === "nok") {
+      const netto = okt.total_excluding_tax ?? okt.amount_total ?? 0;
+      await admin()
+        .from("omsetning")
+        .upsert({ referanse: okt.id, kilde: "stripe", belop_ore: netto }, { onConflict: "referanse", ignoreDuplicates: true });
+    }
     if (okt.payment_status === "paid" && org) {
       const { error } = await admin().rpc("registrer_betaling", {
         p_okt: okt.id,
@@ -65,6 +84,17 @@ export async function POST(req: NextRequest) {
         await meldFeil({ kilde: "server", melding: "Stripe-betaling kunne ikke registreres", detaljer: `${okt.id}: ${error.message}` });
         return NextResponse.json({ feil: error.message }, { status: 500 });
       }
+    }
+  }
+
+  // Fornyelsen av et kortabonnement er ny omsetning. Første betaling telles via økten over.
+  if (hendelse.type === "invoice.paid") {
+    const f = hendelse.data.object;
+    if (f.billing_reason === "subscription_cycle" && (f.currency ?? "nok").toLowerCase() === "nok") {
+      const netto = f.total_excluding_tax ?? f.amount_paid ?? 0;
+      await admin()
+        .from("omsetning")
+        .upsert({ referanse: f.id, kilde: "stripe", belop_ore: netto }, { onConflict: "referanse", ignoreDuplicates: true });
     }
   }
 

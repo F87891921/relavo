@@ -1,4 +1,5 @@
 import { KILDER } from "@/lib/kilder";
+import { omsetning12Maneder, MVA_GRENSE, MVA_VARSEL } from "@/lib/mvagrense";
 import { NextResponse, type NextRequest } from "next/server";
 import { admin } from "@/lib/supabase/admin";
 import { vurder, type Aktivitetsrad } from "@/lib/aktivitet";
@@ -180,6 +181,36 @@ export async function GET(req: NextRequest) {
         { onConflict: "noekkel", ignoreDuplicates: true },
       );
     }
+  }
+
+  // Mva-grensen: under 50 000 kr på 12 måneder trenger vi ikke være momsregistrert.
+  // Nærmer vi oss, skal vi vite det i god tid; passerer vi, må vi registrere oss.
+  {
+    const o = await omsetning12Maneder();
+    const mnd = new Date().toISOString().slice(0, 7);
+    const kr = (n: number) => n.toLocaleString("nb-NO");
+    if (o.totalt >= MVA_GRENSE)
+      await db.from("interne_varsler").upsert(
+        {
+          slag: "mva",
+          tittel: `Over mva-grensen: ${kr(o.totalt)} kr på 12 måneder`,
+          tekst: "Grensen er 50 000 kr. Avtal med revisor og registrer foretaket i MVA-registeret, og legg på 25 % mva på nye salg (sett STRIPE_MVA_ID).",
+          lenke: "/internt/fakturering",
+          noekkel: `mva-over:${mnd}`,
+        },
+        { onConflict: "noekkel", ignoreDuplicates: true },
+      );
+    else if (o.totalt >= MVA_VARSEL)
+      await db.from("interne_varsler").upsert(
+        {
+          slag: "mva",
+          tittel: `Nærmer seg mva-grensen: ${kr(o.totalt)} av 50 000 kr`,
+          tekst: "Over 80 % av grensen på 12 måneder. Snakk med revisor nå, så registreringen er klar når dere passerer.",
+          lenke: "/internt/fakturering",
+          noekkel: `mva-naer:${mnd}`,
+        },
+        { onConflict: "noekkel", ignoreDuplicates: true },
+      );
   }
 
   await hjerteslag("paminnelser");

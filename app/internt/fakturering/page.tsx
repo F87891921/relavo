@@ -2,7 +2,8 @@ import { krevAnsatt } from "@/lib/tilgang-ansatt";
 import { StaffShell } from "@/components/StaffShell";
 import { Fortnox } from "@/components/internt/Fortnox";
 import type { Ordbok } from "@/lib/sprak";
-import { Side, Sidehode, Kort, Tabell, Tall, Rad, NOK, Merke } from "@/components/ui";
+import { Side, Sidehode, Kort, Tabell, Tall, Rad, NOK, Merke, Stripe } from "@/components/ui";
+import { omsetning12Maneder, MVA_GRENSE, MVA_VARSEL } from "@/lib/mvagrense";
 import { StatusMerke, type StatusVal } from "@/components/ui/StatusMerke";
 import { Skjema, Felt } from "@/components/internt/Skjema";
 import { KundeSok } from "@/components/internt/KundeSok";
@@ -41,6 +42,9 @@ export default async function InterntFaktureringSide() {
     .order("forfaller");
   const plan = (planrader ?? []) as unknown as { id: string; aar: number; forfaller: string; belopp: number; status: string; organisasjoner: { navn: string } | null }[];
 
+  const oms = await omsetning12Maneder();
+  const omsAndel = Math.round((oms.totalt / MVA_GRENSE) * 100);
+
   const alle = fakturaer ?? [];
   const utestaende = alle.filter(
     (f) => f.status === "obetald" || f.status === "forfallen",
@@ -76,6 +80,23 @@ export default async function InterntFaktureringSide() {
               <PlanKnapp key="h" id={p.id} status={p.status} />,
             ])}
           />
+        </Kort>
+
+        <Kort tittel="Mva-grensen" note="Siste 12 måneder, uten mva" className="mb-5">
+          <div className="px-5 py-5">
+            <div className="flex items-baseline justify-between gap-3 mb-2.5">
+              <div className="text-[22px] font-semibold tracking-tight tabular-nums">
+                {oms.totalt.toLocaleString("nb-NO")} <span className="text-[13px] font-normal text-dim">av {MVA_GRENSE.toLocaleString("nb-NO")} kr</span>
+              </div>
+              <Merke tone={oms.totalt >= MVA_GRENSE ? "brudd" : oms.totalt >= MVA_VARSEL ? "advarsel" : "god"}>
+                {oms.totalt >= MVA_GRENSE ? "Over grensen" : oms.totalt >= MVA_VARSEL ? "Nærmer seg" : "Under grensen"}
+              </Merke>
+            </div>
+            <Stripe andel={omsAndel} tone={oms.totalt >= MVA_GRENSE ? "brudd" : oms.totalt >= MVA_VARSEL ? "advarsel" : "aksent"} />
+            <p className="text-[12px] text-dim mt-3 leading-relaxed">
+              Kort (Stripe): {oms.stripe.toLocaleString("nb-NO")} kr · Fakturaer: {oms.faktura.toLocaleString("nb-NO")} kr. Under 50 000 kr på 12 måneder trenger vi ikke være momsregistrert. Passerer vi, må vi registrere oss og legge på 25 % mva. Du får et varsel i «Å gjøre» ved 80 %. Dette er en varsellampe; revisor avgjør hva som teller.
+            </p>
+          </div>
         </Kort>
 
         <Rad>
