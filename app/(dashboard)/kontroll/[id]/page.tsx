@@ -111,8 +111,8 @@ export default async function KontrollSide({
               </Merke>
               <p className="text-[13px] mt-2.5 leading-relaxed max-w-[52ch]">
                 {brudd === 0 ? t.kontroll.ingenBrudd : `${brudd} ${t.kontroll.kravIkkeOppfylt}`}
-                {ukontrollert > 0 && ` ${ukontrollert} ${t.kontroll.ikkeKontrollert}`}
-                {egen.length > 0 && ` ${egen.length} ${t.kontroll.egenerklaringAntall}.`}
+                {ukontrollert > 0 && ` ${t.kontroll.ikkeKontrollert} ${ukontrollert}.`}
+                {egen.length > 0 && ` ${t.kontroll.egenerklaringAntall} ${egen.length}.`}
               </p>
             </div>
             <dl className="text-[12.5px] space-y-1.5 min-w-[200px]">
