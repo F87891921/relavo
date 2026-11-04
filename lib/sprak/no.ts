@@ -416,7 +416,7 @@ export const no = {
         "manedlig": "Månedlig",
         "offert": "Offert",
         "sparerForklaring": "Prosenten under prisen for selskap viser hva dere sparer mot å kjøpe en enkeltkontroll (890 kr) for hver leverandør i planen.",
-        "inkludert": "Inkludert på alle nivåer: ubegrenset antall kontroller og brukere, daglig overvåking, rapport som PDF og databehandleravtale. Kommuner har alle leverandører inkludert; selskap betaler etter hvor mange leverandører de følger."
+        "inkludert": "Kommuner har alle leverandører inkludert; selskap betaler etter hvor mange leverandører de følger. Alt nedenfor er med på alle nivåer."
       },
       sok: {
         etikett: "Kommunens navn",

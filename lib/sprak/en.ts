@@ -407,7 +407,7 @@ export const en: Ordbok = {
         "manedlig": "Monthly",
         "offert": "Quote",
         "sparerForklaring": "The percentage under each company price shows what you save compared with buying a single control (890 NOK) for every supplier in the plan.",
-        "inkludert": "Included on every tier: unlimited controls and users, daily monitoring, report as PDF and a data processing agreement. Municipalities have all suppliers included; companies pay by how many suppliers they follow."
+        "inkludert": "Municipalities have all suppliers included; companies pay by how many suppliers they follow. Everything below is included on every tier."
       },
       sok: {
         etikett: "Municipality name",
