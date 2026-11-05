@@ -160,3 +160,32 @@ export const foresporselSvartBrev = (o: { leverandor: string; antall: number; in
     ],
     knapp: { tekst: "Se kjeden", lenke: o.lenke },
   });
+
+export const kvitteringBrev = (o: {
+  vare: string;
+  delsumma: string;
+  rabatt: string | null;
+  mva: string | null;
+  betalt: string;
+  dato: string;
+  referanse: string;
+  avsender: string;
+}) =>
+  ferdig(
+    "Kvittering fra Relavo",
+    {
+      tittel: "Kvittering",
+      hei: "Hei,",
+      avsnitt: ["Takk for betalingen. Her er kvitteringen for kjøpet ditt hos Relavo."],
+      punkter: [
+        { tekst: `${o.vare}: ${o.delsumma}` },
+        ...(o.rabatt ? [{ tekst: `Rabatt: ${o.rabatt}` }] : []),
+        ...(o.mva ? [{ tekst: `Mva: ${o.mva}` }] : []),
+        { tekst: `Betalt med kort: ${o.betalt}` },
+        { tekst: `Dato: ${o.dato}` },
+      ],
+      etterPunkter: `Selger: ${o.avsender}\nReferanse: ${o.referanse}`,
+      liten: ["Dette er en kvittering for betalingen. Har du spørsmål, svar på denne e-posten."],
+    },
+    "no",
+  );

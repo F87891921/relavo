@@ -2,6 +2,10 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { admin } from "@/lib/supabase/admin";
 import { meldFeil } from "@/lib/feil";
+import { sendEpost } from "@/lib/epost";
+import { kvitteringBrev } from "@/lib/epostbrev";
+import { avsenderlinje } from "@/lib/relavo";
+import { hentVarenavn } from "@/lib/stripe";
 
 export const runtime = "nodejs";
 
@@ -56,6 +60,10 @@ export async function POST(req: NextRequest) {
         total_excluding_tax?: number | null;
         currency?: string;
         billing_reason?: string;
+        amount_subtotal?: number | null;
+        total_details?: { amount_discount?: number; amount_tax?: number } | null;
+        customer_details?: { email?: string | null } | null;
+        customer_email?: string | null;
       };
     };
   };
@@ -69,9 +77,36 @@ export async function POST(req: NextRequest) {
     // Omsetningen lagres for mva-vakten. Netto: er det lagt mva på økten, trekkes den fra.
     if (okt.payment_status === "paid" && (okt.currency ?? "nok").toLowerCase() === "nok") {
       const netto = okt.total_excluding_tax ?? okt.amount_total ?? 0;
-      await admin()
+      const { data: ny } = await admin()
         .from("omsetning")
-        .upsert({ referanse: okt.id, kilde: "stripe", belop_ore: netto }, { onConflict: "referanse", ignoreDuplicates: true });
+        .upsert({ referanse: okt.id, kilde: "stripe", belop_ore: netto }, { onConflict: "referanse", ignoreDuplicates: true })
+        .select("referanse");
+
+      // Relavos eget kvitto, bare ved første gang vi ser betalingen (Stripe sender
+      // samme hendelse flere ganger) og bare for betalinger startet fra Relavo.
+      // Stripes eget kvitto bruker kontoens felles utseende, som er ISO-kollens.
+      const til = okt.customer_details?.email ?? okt.customer_email;
+      if (ny?.length && org && til) {
+        try {
+          const kr = (ore: number) => `${(ore / 100).toLocaleString("nb-NO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} kr`;
+          const rabatt = okt.total_details?.amount_discount ?? 0;
+          const mva = okt.total_details?.amount_tax ?? 0;
+          const brev = kvitteringBrev({
+            vare: (await hentVarenavn(okt.id)) ?? "Relavo",
+            delsumma: kr(okt.amount_subtotal ?? okt.amount_total ?? 0),
+            rabatt: rabatt > 0 ? `\u2212${kr(rabatt)}` : null,
+            mva: mva > 0 ? kr(mva) : null,
+            betalt: kr(okt.amount_total ?? 0),
+            dato: new Date().toLocaleDateString("nb-NO", { day: "2-digit", month: "long", year: "numeric" }),
+            referanse: okt.id.slice(-12),
+            avsender: avsenderlinje(),
+          });
+          const svar = await sendEpost({ til, ...brev });
+          if (!svar.ok) await meldFeil({ kilde: "server", melding: "Kvittering kunne ikke sendes", detaljer: `${okt.id}: ${svar.feil}` });
+        } catch (e) {
+          await meldFeil({ kilde: "server", melding: "Kvittering feilet", detaljer: `${okt.id}: ${String(e).slice(0, 200)}` });
+        }
+      }
     }
     if (okt.payment_status === "paid" && org) {
       const { error } = await admin().rpc("registrer_betaling", {

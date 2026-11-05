@@ -325,3 +325,12 @@ export async function finnRabattkode(kode: string): Promise<{ ok: true; id: stri
   if (!r || r.metadata?.app !== "relavo") return { ok: false };
   return { ok: true, id: r.id };
 }
+
+
+/** Navnet på det som ble kjøpt i en betalingsøkt, til kvitteringen. */
+export async function hentVarenavn(oktId: string): Promise<string | null> {
+  const svar = await kall<{ data: { description?: string | null }[] }>(
+    `checkout/sessions/${encodeURIComponent(oktId)}/line_items?limit=1`,
+  );
+  return svar.ok ? (svar.data.data[0]?.description ?? null) : null;
+}
