@@ -47,13 +47,21 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
     setKodeFeil("");
   }, [plan, intervall, mate]);
   const [venter, start] = useTransition();
+  const [forvalgt, setForvalgt] = useState(false);
+  const [bytter, setBytter] = useState(false);
+  const skjul = forvalgt && !bytter;
 
   const t = o.landing.priser;
 
   // Nivået følger med fra prisfinneren på forsiden.
   useEffect(() => {
     const fra = new URLSearchParams(window.location.search).get("plan");
-    if (fra && PLANER.some((x) => x.verdi === fra)) setPlan(fra);
+    if (fra && PLANER.some((x) => x.verdi === fra)) {
+      setPlan(fra);
+      // Planen er valgt i registreringen. Da skal ikke kunden få det samme
+      // spørsmålet en gang til; bare det valgte vises, med en lenke til å bytte.
+      setForvalgt(true);
+    }
     const mnd = Number(new URLSearchParams(window.location.search).get("mnd"));
     if ([1, 12, 24, 36].includes(mnd)) setBinding(mnd);
     if (mnd === 1) {
@@ -101,7 +109,7 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
 
   return (
     <>
-      <div className="flex gap-2 mb-3" role="group">
+      <div className={`flex gap-2 mb-3 ${skjul ? "hidden" : ""}`} role="group">
         {(["kommune", "selskap"] as const).map((m) => (
           <button
             key={m}
@@ -120,7 +128,7 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
         ))}
       </div>
       <div className="grid sm:grid-cols-2 gap-3 mb-6">
-        {PLANER.filter((r) => r.verdi === "engangs" || Boolean((r as { selskap?: boolean }).selskap) === (maltype === "selskap")).map((rad) => {
+        {PLANER.filter((r) => (skjul ? r.verdi === plan : r.verdi === "engangs" || Boolean((r as { selskap?: boolean }).selskap) === (maltype === "selskap"))).map((rad) => {
           const valgt = plan === rad.verdi;
           return (
             <button
@@ -157,6 +165,16 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
           );
         })}
       </div>
+
+      {skjul && (
+        <button
+          type="button"
+          onClick={() => setBytter(true)}
+          className="text-[12.5px] font-semibold text-accent hover:underline -mt-3 mb-6"
+        >
+          {o.oppstart.byttPlan}
+        </button>
+      )}
 
       <div className="space-y-2.5 mb-6">
         <Mate

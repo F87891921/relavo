@@ -5,7 +5,9 @@ import { stripeOppsatt } from "@/lib/stripe";
 import { ord } from "@/lib/sprak";
 import { Valg } from "./Valg";
 
-export default async function BetalingSide() {
+const PLANER = ["liten", "kommune", "medelstor", "engangs", "start", "vekst", "bygg"];
+
+export default async function BetalingSide({ searchParams }: { searchParams: { plan?: string } }) {
   const { supabase, profil } = await krevProfil();
   const o = ord();
 
@@ -26,7 +28,7 @@ export default async function BetalingSide() {
         <div className="text-center mb-7">
           <RelavoMark className="w-12 h-auto mx-auto mb-3 text-accent" />
           <h1 className="text-[22px] font-semibold tracking-tight">
-            {o.oppstart.velgPlan}
+            {PLANER.includes(searchParams.plan ?? "") ? o.oppstart.velgBetaling : o.oppstart.velgPlan}
           </h1>
           <p className="text-[13px] text-dim mt-2">{o.oppstart.kanByttes}</p>
         </div>

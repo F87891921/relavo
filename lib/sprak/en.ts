@@ -1254,6 +1254,8 @@ export const en: Ordbok = {
     oppretter: "Creating …",
     opprettOrganisasjon: "Create organisation",
     velgPlan: "Choose a plan",
+    velgBetaling: "Choose payment",
+    byttPlan: "Change plan",
     kanByttes: "You can switch or cancel at any time.",
     ikkeIDrift: "Not live yet.",
     vanligst: "Most common",

@@ -1263,6 +1263,8 @@ export const no = {
     oppretter: "Oppretter …",
     opprettOrganisasjon: "Opprett organisasjon",
     velgPlan: "Velg plan",
+    velgBetaling: "Velg betaling",
+    byttPlan: "Bytt plan",
     kanByttes: "Du kan bytte eller si opp når som helst.",
     ikkeIDrift: "Ikke i drift ennå.",
     vanligst: "Vanligst",
