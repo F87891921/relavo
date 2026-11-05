@@ -96,7 +96,7 @@ export function Sprakvelger({
             retning === "opp" ? "bottom-full mb-1.5" : "top-full mt-1.5"
           }`}
         >
-          {SPRAK.filter((s) => s.kode !== "sv" || medSvensk || na === "sv").map((s) => (
+          {SPRAK.filter((s) => s.kode !== "en" && (s.kode !== "sv" || medSvensk || na === "sv")).map((s) => (
             <li key={s.kode}>
               <button
                 type="button"

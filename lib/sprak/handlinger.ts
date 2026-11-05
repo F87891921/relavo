@@ -20,10 +20,11 @@ export async function settSprak(sprak: Sprak): Promise<void> {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Kundene ser bare norsk. Svensk og engelsk kan velges av ansatte som er
-  // innlogget; alt annet blir norsk, også om noen kaller handlingen direkte.
+  // Kundene ser bare norsk. Svensk kan velges av ansatte som er innlogget
+  // (engelsk brukes ikke); alt annet blir norsk, også om noen kaller
+  // handlingen direkte.
   let valgt: Sprak = "no";
-  if (sprak !== "no" && user) {
+  if (sprak === "sv" && user) {
     const { data } = await supabase.from("profiler").select("ansatt").eq("id", user.id).maybeSingle();
     if (data?.ansatt) valgt = sprak;
   }

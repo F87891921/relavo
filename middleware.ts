@@ -98,6 +98,7 @@ export async function middleware(request: NextRequest) {
   // bare når kapselen peker på noe annet enn norsk, eller mangler for en
   // innlogget bruker; vanlige kunder koster ingen ekstra spørring.
   const kapsel = request.cookies.get(KAPSEL_SPRAK)?.value;
+  // Bare norsk og svensk er i bruk. Engelsk finnes i ordboka, men velges ikke.
   const settNorsk = () => {
     request.cookies.set(KAPSEL_SPRAK, "no");
     response = NextResponse.next({ request: { headers: videre } });
@@ -113,7 +114,9 @@ export async function middleware(request: NextRequest) {
       .maybeSingle();
     if (data?.ansatt) {
       // Ansatt: profilens valg gjelder når kapselen mangler på en ny maskin.
-      if (!erSprak(kapsel) && erSprak(data.sprak)) {
+      if (kapsel === "en") {
+        settNorsk();
+      } else if (!erSprak(kapsel) && (data.sprak === "no" || data.sprak === "sv")) {
         request.cookies.set(KAPSEL_SPRAK, data.sprak);
         response = NextResponse.next({ request: { headers: videre } });
         response.cookies.set(KAPSEL_SPRAK, data.sprak, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });

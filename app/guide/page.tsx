@@ -92,7 +92,7 @@ export default function GuideSide() {
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Relavo", item: "https://relavo.no" },
-        { "@type": "ListItem", position: 2, name: "Guide", item: URL },
+        { "@type": "ListItem", position: 2, name: "Videoguide", item: URL },
       ],
     },
   ];
@@ -104,7 +104,7 @@ export default function GuideSide() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="kicker">Guide</div>
+      <div className="kicker">Videoguide</div>
       <h1>Se hvordan Relavo fungerer.</h1>
       <p className="ingress">
         En gjennomgang på to minutter: fra du legger inn en leverandør, til du har en kontroll du kan vise fram.
