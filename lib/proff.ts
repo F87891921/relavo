@@ -1,4 +1,5 @@
 import type { Indikator } from "@/lib/indikatorer";
+import type { Proffbruk } from "@/lib/proffpris";
 
 /**
  * Proff Premium Credit API: kredittrating og betalingsanmerkninger.
@@ -48,11 +49,12 @@ export const proffOppsatt = () => Boolean(process.env.PROFF_CREDIT_TOKEN);
  * hentet, ingen data hos Proff, eller kunne ikke hentes. Bare når nøkkelen
  * ikke er satt (funksjonen er ikke slått på) står det ingenting.
  */
-export async function proffIndikatorer(orgnr: string): Promise<Indikator[]> {
+export async function proffIndikatorer(orgnr: string, bruk?: Proffbruk): Promise<Indikator[]> {
   const nokkel = process.env.PROFF_CREDIT_TOKEN;
   if (!nokkel) return [];
 
   const svar = await hent<Rating>(`/CreditRating/${orgnr}`, nokkel);
+  if (bruk && svar.status !== "feil") bruk.kredit += 1;
 
   if (svar.status === "ingen")
     return [

@@ -8,6 +8,21 @@
   body {
     @apply bg-surface text-ink antialiased;
   }
+  /* En for bred boks får aldri gjøre hele siden bredere enn telefonen. Da
+     zoomer og forskyver mobilnettleseren hele visningen. */
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+  }
+  /* iOS gir datofelt en egen bredde som ellers sprenger skjemaet. */
+  input[type="date"] {
+    min-width: 0;
+    max-width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+  }
 }
 
 /* Utskrift. «Lagre som PDF» i nettleserens utskriftsdialog er hele

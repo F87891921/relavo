@@ -16,19 +16,30 @@ import { glemtPassordBrev } from "@/lib/epostbrev";
  * feilmelding. Tokenet verifiseres i /auth/bekreft uten noen kode fra
  * nettleseren.
  *
- * Svaret til skjemaet er det samme om adressen har en konto eller ikke.
- * Ellers kunne hvem som helst kartlegge hvem som er kunde hos oss.
+ * Skjemaet sier fra når adressen ikke har en konto. Det er et bevisst valg:
+ * den som skrev feil adresse skal få vite det i stedet for å vente på et brev
+ * som aldri kommer. Det betyr at man kan se om en adresse har konto.
  */
-export async function glemtPassord(epost: string): Promise<void> {
+export type GlemtSvar = "sendt" | "ukjent" | "feil";
+
+export async function glemtPassord(epost: string): Promise<GlemtSvar> {
   const adresse = epost.trim().toLowerCase();
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(adresse)) return;
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(adresse)) {
+    console.warn("glemt-passord: ugyldig adresse, ingenting sendt");
+    return "ukjent";
+  }
 
   const { data, error } = await admin().auth.admin.generateLink({
     type: "recovery",
     email: adresse,
   });
   const token = data?.properties?.hashed_token;
-  if (error || !token) return;
+  // Skjemaet svarer likt uansett. Her står det hvorfor ingenting ble sendt,
+  // uten adressen: ukjent adresse er den vanligste grunnen (feil adresse skrevet).
+  if (error || !token) {
+    console.warn("glemt-passord: ingen lenke laget:", error?.message ?? "ingen token (ukjent adresse)");
+    return /not found|no user/i.test(error?.message ?? "") || !error ? "ukjent" : "feil";
+  }
 
   const h = headers();
   const proto = h.get("x-forwarded-proto") ?? "https";
@@ -37,5 +48,10 @@ export async function glemtPassord(epost: string): Promise<void> {
 
   const svar = await sendEpost({ til: adresse, ...glemtPassordBrev(ord().glemt, lenke, aktivtSprak()) });
   // Skjemaet svarer likt uansett, så feilen må stå i loggen — ellers får ingen vite at utsendingen ikke virker.
-  if (!svar.ok) console.error("glemt-passord: e-post ikke sendt:", svar.feil);
+  if (!svar.ok) {
+    console.error("glemt-passord: e-post ikke sendt:", svar.feil);
+    return "feil";
+  }
+  console.info("glemt-passord: e-post sendt");
+  return "sendt";
 }

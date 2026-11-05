@@ -1,4 +1,5 @@
 import type { Indikator } from "@/lib/indikatorer";
+import type { Proffbruk } from "@/lib/proffpris";
 
 /**
  * Sanksjons- og PEP-kontroll av selskapet og personene i styre og ledelse,
@@ -77,7 +78,7 @@ const lister = (navn: string[]) => navn.map((n) => `listName=${n}`).join("&");
 export const complianceOppsatt = () =>
   Boolean(process.env.PROFF_COMPLIANCE_TOKEN && (process.env.PROFF_PREMIUM_TOKEN ?? process.env.PROFF_CREDIT_TOKEN));
 
-export async function proffComplianceIndikatorer(orgnr: string, selskapsnavn: string): Promise<Indikator[]> {
+export async function proffComplianceIndikatorer(orgnr: string, selskapsnavn: string, bruk?: Proffbruk): Promise<Indikator[]> {
   const cNokkel = process.env.PROFF_COMPLIANCE_TOKEN;
   // Roller hentes fra Premium API, som har egen nøkkel. Faller tilbake på den
   // gamle variabelen så ingenting slutter å virke før den nye er satt.
@@ -91,6 +92,7 @@ export async function proffComplianceIndikatorer(orgnr: string, selskapsnavn: st
 
   // Selskapet: sanksjoner og statlig eide selskaper.
   const sSel = await json(`${base}/sanctions?companyName=${encodeURIComponent(selskapsnavn)}&${lister(["SANCTIONS_AT"])}`, cNokkel);
+  if (bruk && sSel.ok) bruk.sanksjon += 1;
   if (!sSel.ok) feil = true;
   else if (antallTreff(sSel.data) > 0)
     ut.push({
@@ -129,6 +131,7 @@ export async function proffComplianceIndikatorer(orgnr: string, selskapsnavn: st
       const gruppe = await Promise.all(personer.slice(i, i + 5).map(sok));
       for (const { p, s, pep } of gruppe) {
         if (!s.ok || !pep.ok) feil = true;
+        if (bruk) { if (s.ok) bruk.sanksjon += 1; if (pep.ok) bruk.pep += 1; }
         if (s.ok && antallTreff(s.data) > 0) sanksjonsTreff.push(p.navn);
         if (pep.ok && antallTreff(pep.data) > 0) pepTreff.push(p.navn);
       }

@@ -738,6 +738,7 @@ export async function lagRabattkode(fd: FormData): Promise<Svar> {
   const varighet = (tekst(fd, "varighet") || "once") as "once" | "repeating" | "forever";
   const maneder = Number(tekst(fd, "maneder")) || undefined;
   if (varighet === "repeating" && !maneder) return { ok: false, feil: "Skriv hvor mange måneder rabatten gjelder." };
+  if (varighet === "repeating" && maneder && (maneder < 1 || maneder > 36 || !Number.isInteger(maneder))) return { ok: false, feil: "Antall måneder må være et helt tall mellom 1 og 36." };
 
   const maks = Number(tekst(fd, "maks")) || undefined;
   const utloper = tekst(fd, "utloper") || undefined;

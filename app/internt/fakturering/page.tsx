@@ -3,6 +3,7 @@ import { StaffShell } from "@/components/StaffShell";
 import { Fortnox } from "@/components/internt/Fortnox";
 import type { Ordbok } from "@/lib/sprak";
 import { Side, Sidehode, Kort, Tabell, Tall, Rad, NOK, Merke, Stripe } from "@/components/ui";
+import { proffKostnad12Maneder } from "@/lib/proffkostnad";
 import { omsetning12Maneder, MVA_GRENSE, MVA_VARSEL } from "@/lib/mvagrense";
 import { StatusMerke, type StatusVal } from "@/components/ui/StatusMerke";
 import { Skjema, Felt } from "@/components/internt/Skjema";
@@ -43,6 +44,7 @@ export default async function InterntFaktureringSide() {
   const plan = (planrader ?? []) as unknown as { id: string; aar: number; forfaller: string; belopp: number; status: string; organisasjoner: { navn: string } | null }[];
 
   const oms = await omsetning12Maneder();
+  const pk = await proffKostnad12Maneder();
   const omsAndel = Math.round((oms.totalt / MVA_GRENSE) * 100);
 
   const alle = fakturaer ?? [];
@@ -95,6 +97,28 @@ export default async function InterntFaktureringSide() {
             <Stripe andel={omsAndel} tone={oms.totalt >= MVA_GRENSE ? "brudd" : oms.totalt >= MVA_VARSEL ? "advarsel" : "aksent"} />
             <p className="text-[12px] text-dim mt-3 leading-relaxed">
               Kort (Stripe): {oms.stripe.toLocaleString("nb-NO")} kr · Fakturaer: {oms.faktura.toLocaleString("nb-NO")} kr. Under 50 000 kr på 12 måneder trenger vi ikke være momsregistrert. Passerer vi, må vi registrere oss og legge på 25 % mva. Du får et varsel i «Å gjøre» ved 80 %. Dette er en varsellampe; revisor avgjør hva som teller.
+            </p>
+          </div>
+        </Kort>
+
+        <Kort tittel="Proff-kostnad" note="Siste 12 måneder, uten mva" className="mb-5">
+          <div className="px-5 py-5">
+            <div className="flex flex-wrap items-baseline gap-x-8 gap-y-2">
+              <div>
+                <div className="text-[22px] font-semibold tracking-tight tabular-nums">{Math.round(pk.totalt).toLocaleString("nb-NO")} kr</div>
+                <div className="text-[12px] text-dim">Totalt: {Math.round(pk.rorlig).toLocaleString("nb-NO")} kr oppslag + {pk.fast.toLocaleString("nb-NO")} kr lisenser</div>
+              </div>
+              <div>
+                <div className="text-[22px] font-semibold tracking-tight tabular-nums">{pk.snitt.toLocaleString("nb-NO", { maximumFractionDigits: 0 })} kr</div>
+                <div className="text-[12px] text-dim">Per kontroll i snitt ({pk.antall} kontroller)</div>
+              </div>
+              <div>
+                <div className="text-[22px] font-semibold tracking-tight tabular-nums">{Math.round(oms.totalt - pk.totalt).toLocaleString("nb-NO")} kr</div>
+                <div className="text-[12px] text-dim">Omsetning minus Proff</div>
+              </div>
+            </div>
+            <p className="text-[12px] text-dim mt-3 leading-relaxed">
+              Oppslagskostnaden lagres per kontroll etter prisene i Proff-avtalet (rating 5, betalingsanmerkninger 20, sanksjon 5 og PEP 5 kr per vellykket anrop). Lisensene på 26 000 kr per år faktureres i forskudd. Kontroller utført før denne oversikten ble satt opp mangler kostnad og er ikke med. Proffs faktura er fasit.
             </p>
           </div>
         </Kort>

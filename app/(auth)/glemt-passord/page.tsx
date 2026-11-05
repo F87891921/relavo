@@ -5,13 +5,14 @@ import Link from "next/link";
 import { useOrd } from "@/components/Sprakgiver";
 import { RelavoMark } from "@/components/RelavoMark";
 import { FELT_FULL } from "@/components/ui/felt";
-import { glemtPassord } from "./handlinger";
+import { glemtPassord, type GlemtSvar } from "./handlinger";
 
 export default function GlemtPassordSide() {
   const o = useOrd();
   const t = o.glemt;
   const [epost, setEpost] = useState("");
-  const [sendt, setSendt] = useState(false);
+  const [svar, setSvar] = useState<GlemtSvar | null>(null);
+  const sendt = svar === "sendt";
   const [venter, start] = useTransition();
 
   return (
@@ -30,13 +31,23 @@ export default function GlemtPassordSide() {
             onSubmit={(e) => {
               e.preventDefault();
               start(async () => {
-                await glemtPassord(epost);
-                setSendt(true);
+                setSvar(await glemtPassord(epost));
               });
             }}
           >
             <label htmlFor="epost" className="block text-xs font-semibold mb-1.5">{o.auth.epost}</label>
             <input id="epost" type="email" required autoComplete="username" value={epost} onChange={(e) => setEpost(e.target.value)} className={`${FELT_FULL} max-w-none mb-4`} />
+            {(svar === "ukjent" || svar === "feil") && (
+              <p role="alert" className="text-[12.5px] text-bad bg-canvas rounded-xl px-3.5 py-2.5 mb-3 leading-relaxed">
+                {svar === "ukjent" ? t.ukjent : t.feilSending}
+                {svar === "ukjent" && (
+                  <>
+                    {" "}
+                    <Link href="/registrer" className="text-accent font-semibold hover:underline">{t.opprettKonto}</Link>
+                  </>
+                )}
+              </p>
+            )}
             <button type="submit" disabled={venter} className="w-full bg-accent hover:bg-accent-hover active:scale-[0.99] transition text-white text-sm font-semibold py-2.5 rounded-xl disabled:opacity-60">
               {venter ? o.felles.sender : t.knapp}
             </button>

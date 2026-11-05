@@ -16,6 +16,7 @@ import { lagIndikatorer } from "@/lib/indikatorer";
 import { proffIndikatorer, kreditStatus } from "@/lib/proff";
 import { proffComplianceIndikatorer, complianceStatus } from "@/lib/proff-compliance";
 import { lagNokkeltall } from "@/lib/nokkeltall";
+import { nyBruk, proffKostnad } from "@/lib/proffpris";
 import { orgnrFeil, brregFeil } from "@/lib/orgnrtekst";
 
 /**
@@ -79,10 +80,11 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
 
   // Indikasjoner fra årsregnskapet. Feiler oppslaget, er det bare ingen indikasjoner.
   // Registre og Proff hentes samtidig. Etter hverandre tok det over 20 sekunder.
+  const bruk = nyBruk();
   const [regnskap, kreditInd, complianceInd] = await Promise.all([
     hentRegnskap(enhet.orgnr).catch(() => []),
-    proffIndikatorer(enhet.orgnr),
-    proffComplianceIndikatorer(enhet.orgnr, enhet.navn),
+    proffIndikatorer(enhet.orgnr, bruk),
+    proffComplianceIndikatorer(enhet.orgnr, enhet.navn, bruk),
   ]);
   const indikatorer = [...lagIndikatorer(enhet, regnskap), ...kreditInd, ...complianceInd];
   const proff = { kredit: kreditStatus(kreditInd), compliance: complianceStatus(complianceInd) };
@@ -145,6 +147,7 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
       kilder,
       indikatorer,
       nokkeltall,
+      proff_kostnad: proffKostnad(bruk),
     })
     .select("id")
     .single();

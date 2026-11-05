@@ -24,7 +24,7 @@ export function stripeModus(): "test" | "live" | null {
 
 type Svar<T> = { ok: true; data: T } | { ok: false; feil: string; mangler?: true };
 
-async function kall<T>(sti: string, kropp?: URLSearchParams): Promise<Svar<T>> {
+async function kall<T>(sti: string, kropp?: URLSearchParams, metode?: "DELETE"): Promise<Svar<T>> {
   const nokkel = process.env.STRIPE_SECRET_KEY;
   if (!nokkel)
     return {
@@ -35,7 +35,7 @@ async function kall<T>(sti: string, kropp?: URLSearchParams): Promise<Svar<T>> {
 
   try {
     const svar = await fetch(`https://api.stripe.com/v1/${sti}`, {
-      method: kropp ? "POST" : "GET",
+      method: metode ?? (kropp ? "POST" : "GET"),
       headers: {
         Authorization: `Bearer ${nokkel}`,
         ...(kropp ? { "Content-Type": "application/x-www-form-urlencoded" } : {}),
@@ -227,8 +227,20 @@ export async function lagKampanjekode(o: {
   // Kontoens API-versjon er ny, og den vil ha promotion[coupon]. Prøver den
   // nye måten først og faller tilbake på den gamle for eldre kontoer.
   let svar = await lag(true);
-  if (!svar.ok && /unknown parameter|promotion|coupon/i.test(svar.feil)) svar = await lag(false);
-  return svar.ok ? { ok: true } : svar;
+  // Bare «ukjent parameter» betyr at Stripe vil ha den andre formen. Alle andre
+  // feil (koden finnes, ugyldig dato) skal vises som de er, ikke skjules av
+  // et andre forsøk som feiler på en annen måte.
+  if (!svar.ok && /unknown parameter/i.test(svar.feil)) {
+    const forste = svar;
+    svar = await lag(false);
+    if (!svar.ok) svar = forste;
+  }
+  if (!svar.ok) {
+    // Kupongen er lagd, men koden ble det ikke. Fjern den så den ikke blir liggende.
+    await kall(`coupons/${encodeURIComponent(kupong.data.id)}`, undefined, "DELETE");
+    return svar;
+  }
+  return { ok: true };
 }
 
 export async function listKampanjekoder(): Promise<{ ok: true; koder: Kampanjekode[] } | { ok: false; feil: string }> {
@@ -236,17 +248,29 @@ export async function listKampanjekoder(): Promise<{ ok: true; koder: Kampanjeko
     id: string; code: string; active: boolean; times_redeemed: number;
     max_redemptions: number | null; expires_at: number | null;
     metadata?: Record<string, string> | null;
-    coupon?: Kupong | null; promotion?: { coupon?: Kupong | string | null } | null;
+    coupon?: Kupong | string | null; promotion?: { coupon?: Kupong | string | null } | null;
   };
   let svar = await kall<{ data: Rad[] }>("promotion_codes?limit=100&expand[]=data.coupon");
   if (!svar.ok) svar = await kall<{ data: Rad[] }>("promotion_codes?limit=100&expand[]=data.promotion.coupon");
   if (!svar.ok) svar = await kall<{ data: Rad[] }>("promotion_codes?limit=100");
   if (!svar.ok) return svar;
+  // Uten utvidelse kommer kupongen bare som id. Hent den, ellers står det «—».
+  const egne = svar.data.data.filter((r) => r.metadata?.app === "relavo");
+  const kuponger = new Map<string, Kupong>();
+  await Promise.all(
+    egne.map(async (r) => {
+      const ref = r.coupon ?? r.promotion?.coupon;
+      if (typeof ref === "string") {
+        const k = await kall<Kupong>(`coupons/${encodeURIComponent(ref)}`);
+        if (k.ok) kuponger.set(r.id, k.data);
+      }
+    }),
+  );
   return {
     ok: true,
     // Bare Relavos egne koder. Kontoen deles med ISO-kollen, og de skal ikke se hverandres.
-    koder: svar.data.data.filter((r) => r.metadata?.app === "relavo").map((r) => {
-      const c = r.coupon ?? (typeof r.promotion?.coupon === "object" ? r.promotion?.coupon : null);
+    koder: egne.map((r) => {
+      const c = kuponger.get(r.id) ?? (typeof r.coupon === "object" ? r.coupon : null) ?? (typeof r.promotion?.coupon === "object" ? r.promotion?.coupon : null);
       return {
         id: r.id,
         code: r.code,
