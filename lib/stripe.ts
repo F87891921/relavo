@@ -326,6 +326,50 @@ export async function finnRabattkode(kode: string): Promise<{ ok: true; id: stri
   return { ok: true, id: r.id };
 }
 
+/**
+ * Samme oppslag som finnRabattkode, men med det koden gir: prosent eller et
+ * fast beløp i kroner, og hvor lenge den gjelder. Brukes til å vise kunden
+ * hva rabatten blir før de går videre til betaling.
+ */
+export async function rabattDetaljer(
+  kode: string,
+): Promise<
+  | { ok: true; id: string; prosent: number | null; belopNok: number | null; varighet: string; maneder: number | null }
+  | { ok: false }
+> {
+  const ren = kode.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
+  if (ren.length < 3) return { ok: false };
+  type Rad = {
+    id: string;
+    metadata?: Record<string, string> | null;
+    coupon?: Kupong | string | null;
+    promotion?: { coupon?: Kupong | string | null } | null;
+  };
+  const sti = `promotion_codes?code=${encodeURIComponent(ren)}&active=true&limit=1`;
+  let svar = await kall<{ data: Rad[] }>(`${sti}&expand[]=data.coupon`);
+  if (!svar.ok) svar = await kall<{ data: Rad[] }>(`${sti}&expand[]=data.promotion.coupon`);
+  if (!svar.ok) svar = await kall<{ data: Rad[] }>(sti);
+  const r = svar.ok ? svar.data.data[0] : null;
+  if (!r || r.metadata?.app !== "relavo") return { ok: false };
+
+  let k: Kupong | null = null;
+  const ref = r.coupon ?? r.promotion?.coupon ?? null;
+  if (ref && typeof ref === "object") k = ref;
+  else if (typeof ref === "string") {
+    const hentet = await kall<Kupong>(`coupons/${encodeURIComponent(ref)}`);
+    if (hentet.ok) k = hentet.data;
+  }
+  if (!k) return { ok: false };
+  return {
+    ok: true,
+    id: r.id,
+    prosent: k.percent_off ?? null,
+    belopNok: k.amount_off != null ? k.amount_off / 100 : null,
+    varighet: k.duration ?? "once",
+    maneder: k.duration_in_months ?? null,
+  };
+}
+
 
 /** Navnet på det som ble kjøpt i en betalingsøkt, til kvitteringen. */
 export async function hentVarenavn(oktId: string): Promise<string | null> {

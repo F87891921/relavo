@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { krevProfil } from "@/lib/tilgang";
 import { grunnUrl } from "@/lib/url";
 import { PLANER, type PlanId } from "@/lib/plan";
-import { opprettKasseokt, opprettPortal, stripeOppsatt, finnRabattkode } from "@/lib/stripe";
+import { opprettKasseokt, opprettPortal, stripeOppsatt, finnRabattkode, rabattDetaljer } from "@/lib/stripe";
 import { ord } from "@/lib/sprak";
 import { BEDRIFT, ENKELTKONTROLL, mndBedrift } from "@/lib/priser";
 
@@ -103,6 +103,39 @@ export async function bestill(
   if (!okt.data.url) return { ok: false, feil: ord().feil.ingenBetalingslenke };
 
   redirect(okt.data.url);
+}
+
+export type RabattSvar =
+  | {
+      ok: true;
+      /** Beløpet uten rabatt og med, i kroner (eks. mva), for første betaling. */
+      for: number;
+      etter: number;
+      prosent: number | null;
+      varighet: string;
+      maneder: number | null;
+    }
+  | { ok: false };
+
+/**
+ * Viser kunden hva koden gir før hun går til betaling. Beløpet regnes ut her
+ * fra prislista, ikke tatt fra nettleseren, på samme måte som i bestill().
+ * Stripe trekker rabatten når betalingen gjøres; dette er bare forhåndsvisningen.
+ */
+export async function sjekkRabatt(plan: string, intervall: "month" | "year", rabattkode: string): Promise<RabattSvar> {
+  await krevProfil();
+  const d = await rabattDetaljer(rabattkode);
+  if (!d.ok) return { ok: false };
+  const brutto = kortBelop(plan, intervall);
+  const etter = d.prosent != null ? brutto * (1 - d.prosent / 100) : Math.max(0, brutto - (d.belopNok ?? 0));
+  return {
+    ok: true,
+    for: brutto,
+    etter: Math.round(etter * 100) / 100,
+    prosent: d.prosent,
+    varighet: d.varighet,
+    maneder: d.maneder,
+  };
 }
 
 /**

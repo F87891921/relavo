@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useOrd } from "@/components/Sprakgiver";
-import { bestill } from "./handlinger";
+import { bestill, sjekkRabatt, type RabattSvar } from "./handlinger";
 import { BEDRIFT, NIVAER, kr, mndBedrift, mndFor, type Lopetid } from "@/lib/priser";
 
 const PLANER = [
@@ -37,6 +37,15 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
   const [intervall, setIntervall] = useState<"month" | "year">("month");
   const [feil, setFeil] = useState("");
   const [kode, setKode] = useState("");
+  // Rabatten kunden har fått bekreftet. Gjelder bare for plan og intervall den ble
+  // sjekket mot; endres de, nullstilles den så beløpet aldri står feil.
+  const [rabatt, setRabatt] = useState<(RabattSvar & { ok: true }) | null>(null);
+  const [kodeFeil, setKodeFeil] = useState("");
+  const [sjekker, sjekk] = useTransition();
+  useEffect(() => {
+    setRabatt(null);
+    setKodeFeil("");
+  }, [plan, intervall, mate]);
   const [venter, start] = useTransition();
 
   const t = o.landing.priser;
@@ -191,13 +200,71 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
           <label htmlFor="rabattkode" className="block text-xs font-semibold mb-1.5">
             {o.betaling.rabattkode}
           </label>
-          <input
-            id="rabattkode"
-            value={kode}
-            onChange={(e) => setKode(e.target.value)}
-            autoComplete="off"
-            className="w-full max-w-[260px] rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm uppercase tracking-wide"
-          />
+          <div className="flex gap-2 max-w-[360px]">
+            <input
+              id="rabattkode"
+              value={kode}
+              onChange={(e) => {
+                setKode(e.target.value);
+                setRabatt(null);
+                setKodeFeil("");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  e.currentTarget.nextElementSibling instanceof HTMLButtonElement && e.currentTarget.nextElementSibling.click();
+                }
+              }}
+              autoComplete="off"
+              className="flex-1 min-w-0 rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm uppercase tracking-wide"
+            />
+            <button
+              type="button"
+              disabled={sjekker || kode.trim().length < 3}
+              onClick={() =>
+                sjekk(async () => {
+                  setKodeFeil("");
+                  const r = await sjekkRabatt(plan, intervall, kode);
+                  if (r.ok) setRabatt(r);
+                  else {
+                    setRabatt(null);
+                    setKodeFeil(o.betaling.ugyldigKode);
+                  }
+                })
+              }
+              className="shrink-0 rounded-xl border border-border-strong px-4 py-2.5 text-[13px] font-semibold hover:bg-accent-light disabled:opacity-50"
+            >
+              {sjekker ? o.felles.sender : o.betaling.bruk}
+            </button>
+          </div>
+          {kodeFeil && <p className="text-xs text-bad mt-2">{kodeFeil}</p>}
+          {rabatt && (
+            <div className="mt-3 max-w-[360px] rounded-xl border border-border bg-accent-light px-3.5 py-3 text-[13px]" role="status">
+              <div className="font-semibold text-accent mb-1.5">{o.betaling.kodeBrukt}</div>
+              <div className="flex justify-between text-dim">
+                <span>{o.betaling.kodeFor}</span>
+                <span className="line-through">{kr(rabatt.for)} NOK</span>
+              </div>
+              <div className="flex justify-between font-semibold">
+                <span>
+                  {rabatt.prosent != null
+                    ? o.betaling.kodeProsent.replace("{p}", String(rabatt.prosent))
+                    : o.betaling.kodeFast}
+                  {" · "}
+                  {o.betaling.kodeEtter}
+                </span>
+                <span>{kr(rabatt.etter)} NOK</span>
+              </div>
+              <div className="text-[11.5px] text-faint mt-1.5">
+                {rabatt.varighet === "forever"
+                  ? o.betaling.kodeAlltid
+                  : rabatt.varighet === "repeating" && rabatt.maneder
+                    ? o.betaling.kodeMaaneder.replace("{n}", String(rabatt.maneder))
+                    : o.betaling.kodeEnGang}{" "}
+                {o.betaling.kodeEksMva}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
