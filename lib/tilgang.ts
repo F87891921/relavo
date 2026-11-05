@@ -39,7 +39,10 @@ export const krevProfil = cache(async () => {
     .eq("id", user.id)
     .maybeSingle();
 
-  if (!profil) redirect("/betaling");
+  // Ny bruker uten selskap (typisk første innlogging med Microsoft) sendes til
+  // /velkommen. Den må ikke gå til /betaling: den siden kaller krevProfil selv,
+  // og da ble en bruker uten profil sendt til /betaling i det uendelige.
+  if (!profil) redirect("/velkommen");
 
   const sti = headers().get("x-sti") ?? "";
 
