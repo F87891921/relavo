@@ -106,30 +106,32 @@ export default function LoggInnSide() {
           </p>
         </div>
 
-        <div className="px-6 pt-5">
-          <button
-            type="button"
-            onClick={loggInnMedMicrosoft}
-            disabled={msLaster || laster}
-            className={`w-full flex items-center justify-center gap-2.5 border border-border-strong transition text-sm font-semibold py-2.5 rounded-xl disabled:opacity-60 ${
-              MICROSOFT_PA ? "hover:bg-surface2 active:scale-[0.97]" : "opacity-70"
-            }`}
-          >
-            <MicrosoftLogo className="w-[17px] h-[17px]" />
-            {msLaster ? t.senderTilMicrosoft : t.medMicrosoft}
-            {!MICROSOFT_PA && (
-              <span className="text-[11px] font-medium text-faint">kommer</span>
-            )}
-          </button>
-        </div>
+        {/* Skjult til Microsoft-innloggingen er satt opp og godkjent. */}
+        {MICROSOFT_PA && (
+          <>
+          <div className="px-6 pt-5">
+            <button
+              type="button"
+              onClick={loggInnMedMicrosoft}
+              disabled={msLaster || laster}
+              className={`w-full flex items-center justify-center gap-2.5 border border-border-strong transition text-sm font-semibold py-2.5 rounded-xl disabled:opacity-60 ${
+                "hover:bg-surface2 active:scale-[0.97]"
+              }`}
+            >
+              <MicrosoftLogo className="w-[17px] h-[17px]" />
+              {msLaster ? t.senderTilMicrosoft : t.medMicrosoft}
+            </button>
+          </div>
 
-        <div className="px-6 pt-4 pb-1 flex items-center gap-3">
-          <span className="h-px flex-1 bg-border" />
-          <span className="text-[11px] text-faint">{t.eller}</span>
-          <span className="h-px flex-1 bg-border" />
-        </div>
+          <div className="px-6 pt-4 pb-1 flex items-center gap-3">
+            <span className="h-px flex-1 bg-border" />
+            <span className="text-[11px] text-faint">{t.eller}</span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+          </>
+        )}
 
-        <form onSubmit={loggInn} className="px-6 pt-3 pb-7">
+        <form onSubmit={loggInn} className={`px-6 pb-7 ${MICROSOFT_PA ? "pt-3" : "pt-5"}`}>
           <div className="mb-3">
             <label htmlFor="epost" className="block text-xs font-semibold mb-1.5">
               {t.epost}

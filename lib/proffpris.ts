@@ -12,11 +12,12 @@ export const PROFF_PRIS = {
 };
 
 /** Antall vellykkede, fakturerbare anrop i en kontroll. */
-export type Proffbruk = { kredit: number; sanksjon: number; pep: number };
+export type Proffbruk = { kredit: number; detaljer: number; sanksjon: number; pep: number };
 
-export const nyBruk = (): Proffbruk => ({ kredit: 0, sanksjon: 0, pep: 0 });
+export const nyBruk = (): Proffbruk => ({ kredit: 0, detaljer: 0, sanksjon: 0, pep: 0 });
 
 export const proffKostnad = (b: Proffbruk) =>
   b.kredit * (PROFF_PRIS.rating + PROFF_PRIS.betalingsanmerkninger) +
+  b.detaljer * PROFF_PRIS.betalingsanmerkninger +
   b.sanksjon * PROFF_PRIS.sanksjon +
   b.pep * PROFF_PRIS.pep;

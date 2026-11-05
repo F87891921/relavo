@@ -23,6 +23,26 @@ type Rating = {
   paymentRemarks?: { hasRemarks?: boolean; hasVoluntaryMortgages?: boolean; hasCompulsoryMortgages?: boolean };
 };
 
+type Anmerkning = { amount?: number; registrationDate?: string };
+type Detaljer = {
+  paymentRemarks?: Anmerkning[];
+  compulsoryMortgages?: Anmerkning[];
+  voluntaryMortgages?: Anmerkning[];
+};
+
+/** «3 stk, til sammen 125 000 kr (siste 12.03.2026)». Beløpet er det Proff oppgir i kroner. */
+function oppsummer(rader: Anmerkning[] | undefined): string | null {
+  const r = (rader ?? []).filter((x) => x && typeof x === "object");
+  if (!r.length) return null;
+  const sum = r.reduce((a, x) => a + (Number(x.amount) || 0), 0);
+  const datoer = r
+    .map((x) => (x.registrationDate ? new Date(x.registrationDate) : null))
+    .filter((d): d is Date => !!d && !Number.isNaN(d.getTime()))
+    .sort((a, b) => b.getTime() - a.getTime());
+  const siste = datoer[0] ? ` (siste registrert ${datoer[0].toLocaleDateString("nb-NO")})` : "";
+  return `${r.length} stk, til sammen ${sum.toLocaleString("nb-NO")} kr${siste}`;
+}
+
 type Svar<T> = { status: "ok"; data: T } | { status: "ingen" } | { status: "feil" };
 
 async function hent<T>(sti: string, nokkel: string): Promise<Svar<T>> {
@@ -95,12 +115,24 @@ export async function proffIndikatorer(orgnr: string, bruk?: Proffbruk): Promise
     });
 
   const p = r.paymentRemarks;
+  // Antall og beløp hentes bare når det finnes noe å telle. Hvert anrop koster oss penger.
+  let detaljer: Detaljer | null = null;
+  if (p?.hasRemarks || p?.hasCompulsoryMortgages) {
+    const d = await hent<Detaljer>(`/PaymentRemarkDetails/${orgnr}`, nokkel);
+    if (d.status === "ok") {
+      detaljer = d.data;
+      if (bruk) bruk.detaljer += 1;
+    }
+  }
+  const anm = oppsummer(detaljer?.paymentRemarks);
+  const tvang = oppsummer(detaljer?.compulsoryMortgages);
+
   if (p?.hasRemarks)
     ut.push({
       id: "proff-betalingsanmerkninger",
       niva: "varsel",
       tittel: "Betalingsanmerkninger registrert",
-      tekst: `Det er registrert betalingsanmerkninger på selskapet. Kilde: Proff${dato ? `, ${dato}` : ""}.`,
+      tekst: `Det er registrert betalingsanmerkninger på selskapet${anm ? `: ${anm}` : ""}. Kilde: Proff${dato ? `, ${dato}` : ""}.`,
     });
   if (p && !p.hasRemarks && !p.hasCompulsoryMortgages)
     ut.push({
@@ -114,7 +146,7 @@ export async function proffIndikatorer(orgnr: string, bruk?: Proffbruk): Promise
       id: "proff-tvangspant",
       niva: "varsel",
       tittel: "Tvangspant registrert",
-      tekst: `Det er registrert pant ved tvang (for eksempel utlegg). Kilde: Proff${dato ? `, ${dato}` : ""}.`,
+      tekst: `Det er registrert pant ved tvang (for eksempel utlegg)${tvang ? `: ${tvang}` : ""}. Kilde: Proff${dato ? `, ${dato}` : ""}.`,
     });
 
   return ut;
