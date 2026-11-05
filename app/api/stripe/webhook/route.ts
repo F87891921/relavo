@@ -75,7 +75,8 @@ export async function POST(req: NextRequest) {
     const okt = hendelse.data.object;
     const org = okt.metadata?.organisasjon_id;
     // Omsetningen lagres for mva-vakten. Netto: er det lagt mva på økten, trekkes den fra.
-    if (okt.payment_status === "paid" && (okt.currency ?? "nok").toLowerCase() === "nok") {
+    // Bare Relavos egne betalinger (de har organisasjon i metadata). Kontoen deles med ISO-kollen, og deres betalinger skal ikke telle mot mva-grensen vår.
+    if (okt.payment_status === "paid" && org && (okt.currency ?? "nok").toLowerCase() === "nok") {
       const netto = okt.total_excluding_tax ?? okt.amount_total ?? 0;
       const { data: ny } = await admin()
         .from("omsetning")
@@ -125,7 +126,10 @@ export async function POST(req: NextRequest) {
   // Fornyelsen av et kortabonnement er ny omsetning. Første betaling telles via økten over.
   if (hendelse.type === "invoice.paid") {
     const f = hendelse.data.object;
-    if (f.billing_reason === "subscription_cycle" && (f.currency ?? "nok").toLowerCase() === "nok") {
+    const { data: egenKunde } = f.customer
+      ? await admin().from("organisasjoner").select("id").eq("stripe_kunde_id", f.customer).maybeSingle()
+      : { data: null };
+    if (egenKunde && f.billing_reason === "subscription_cycle" && (f.currency ?? "nok").toLowerCase() === "nok") {
       const netto = f.total_excluding_tax ?? f.amount_paid ?? 0;
       await admin()
         .from("omsetning")
