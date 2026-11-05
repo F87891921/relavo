@@ -581,6 +581,10 @@ html{scroll-behavior:smooth}
 .landing .pf-bt td:first-child { padding-left: 46px; position: relative; border-left: 1px solid var(--border, #e5e0e8); border-radius: 12px 0 0 12px; }
 .landing .pf-bt td:last-child { padding-right: 16px; text-align: right; font-weight: 600; border-right: 1px solid var(--border, #e5e0e8); border-radius: 0 12px 12px 0; }
 .landing .pf-bt small { display: block; color: var(--text-faint, #8a8289); font-size: 12.5px; font-weight: 400; }
+/* Nivåtekstene bryter likt på alle rader («Opptil 50 / leverandører»), så første
+   kolonne ikke vokser seg inn i prisen, og prisen får stå på én linje. */
+.landing .pf-bt td:first-child small { max-width: 15ch; }
+.landing .pf-bt td:last-child { white-space: nowrap; }
 .landing .pf-bt td:last-child small.pf-sp { color: #3d7a4f; font-weight: 600; }
 .landing .pf-bt tr { cursor: pointer; }
 /* Rund väljare till vänster: tom när raden inte är vald, fylld när den är det. */
