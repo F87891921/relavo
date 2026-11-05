@@ -78,7 +78,7 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
-        "v": "Priser fremgår av prislisten og av avtalen. Prisen for abonnement følger kommunens innbyggertall (SSB) og oppgis per måned. Abonnement har tolv måneders bindingstid og faktureres årlig forskuddsvis. Avtaler som betales mot faktura fornyes ikke automatisk. Selskap som betaler med kort velger å betale månedlig eller årlig, og abonnementet fornyes automatisk for en måned eller ett år av gangen til kunden sier det opp i betalingsportalen. Oppsigelse gjelder ut den perioden som er betalt, og betalt periode refunderes ikke. Kommuner betaler alltid mot faktura. Enkeltkontroller faktureres etterskuddsvis. Alle priser er oppgitt eksklusive merverdiavgift."
+        "v": "Priser fremgår av prislisten og av avtalen. Prisen for abonnement følger kommunens innbyggertall (SSB) og oppgis per måned. Abonnement har den bindingstiden kunden velger ved bestilling: 12, 24 eller 36 måneder mot faktura, som faktureres årlig forskuddsvis. Avtaler som betales mot faktura fornyes ikke automatisk. Selskap som betaler med kort velger å betale månedlig eller årlig, og abonnementet fornyes automatisk for en måned eller ett år av gangen til kunden sier det opp i betalingsportalen. Oppsigelse gjelder ut den perioden som er betalt, og betalt periode refunderes ikke. Kommuner betaler alltid mot faktura. Enkeltkontroller betales ved bestilling, med kort eller mot faktura. Alle priser er oppgitt eksklusive merverdiavgift."
       },
       {
         "t": "p",
@@ -159,24 +159,39 @@ export const JURIDISK: Seksjon[] = [
         "v": "2.2 Hva vi behandler om brukere"
       },
       {
+        "t": "liste",
+        "v": [
+          "Kontoopplysninger: navn, e-postadresse, rolle i organisasjonen og innloggingsdata. Passord lagres ikke i klartekst. Har du logget inn med Microsoft, får vi navn og e-postadresse derfra og ikke passordet ditt.",
+          "Organisasjonens opplysninger: navn, organisasjonsnummer, valgt plan og betalingsmåte.",
+          "Bruk av tjenesten: hvilke kontroller som er kjørt og av hvem, og en logg over tilgang og endringer i kontoen.",
+          "Henvendelser: det du skriver til oss i brukerstøtten eller kontaktskjemaet.",
+          "Betaling: kortopplysninger behandles av Stripe, og vi får aldri se kortnummeret. Vi lagrer bare at betalingen er gjennomført.",
+          "Nettstedet: tekniske opplysninger som IP-adresse i serverloggen hos hostingleverandøren, for drift og sikkerhet. Vi bruker ingen sporingsverktøy."
+        ]
+      },
+      {
+        "t": "p",
+        "v": "Behandlingsgrunnlaget er avtalen med kunden (personvernforordningen art. 6 nr. 1 bokstav b) for kontoopplysninger og bruk av tjenesten, og berettiget interesse (bokstav f) for sikkerhet og drift."
+      },
+      {
         "t": "h3",
         "v": "2.3 Opplysninger om personer i kontrollerte virksomheter"
       },
       {
         "t": "p",
-        "v": "I tre tilfeller behandler vi navn på personer knyttet til virksomhetene som kontrolleres:"
+        "v": "I tre tilfeller behandler vi navn på personer knyttet til virksomhetene som kontrolleres, og for habilitetskontrollen også personer kunden selv har registrert:"
       },
       {
         "t": "liste",
         "v": [
           "Signaturrett. Ved forespørsel om egenerklæring henter vi navn og rolle på dem som står med signaturrett eller prokura i Foretaksregisteret. Formålet er å vite hvem som kan binde selskapet. Vi lagrer ikke fødselsnummer.",
-          "Signatur. Når en egenerklæring signeres med BankID lagrer vi navn, rolle, tidspunkt og delvis maskert fødselsdato. Fullt fødselsnummer lagres ikke.",
+          "Habilitet. Ved en habilitetskontroll sammenligner vi navn på styre og daglig leder hos leverandøren, hentet fra Brønnøysundregistrene, med navn på dem kunden selv har registrert som deltakere i anskaffelsen. Gir sammenligningen et mulig treff, lagrer vi navn, rolle og fødselsdato fra registeret for det treffet i rapporten. Gir den ikke treff, lagrer vi ingen navn. Fødselsnummer lagres ikke.",
           "Sanksjons- og PEP-søk. Ved en kontroll søker vi hos Proff AS på navn og fødselsdato til personene i styre, ledelse, signatur og prokura i virksomheten, mot sanksjonslister (EU, FN, USA og Storbritannia) og lister over politisk eksponerte personer i Norden. Vi sender navn og fødselsdato til Proff for å få svaret, og lagrer dem ikke selv. Gir søket et mulig treff, lagrer vi personens navn, hvilken liste det gjelder og tidspunktet som et flagg i rapporten. Gir søket ikke treff, lagrer vi ingen navn. Behandlingsgrunnlaget er berettiget interesse (personvernforordningen art. 6 nr. 1 bokstav f) i å kunne dokumentere at leverandørkontrollen er gjort."
         ]
       },
       {
         "t": "p",
-        "v": "Vi gjør ingen vurdering av personene som sådan. For signatur er formålet avgrenset til å fastslå fullmakt og signaturens gyldighet. Ved sanksjons- og PEP-søk er et mulig treff navnelikhet og ikke en konklusjon om personen, og må kontrolleres av kunden."
+        "v": "Vi gjør ingen vurdering av personene som sådan. For signaturrett er formålet avgrenset til å vite hvem som kan binde selskapet. Ved sanksjons- og PEP-søk og ved habilitetskontroll er et mulig treff navnelikhet og ikke en konklusjon om personen, og må kontrolleres av kunden."
       },
       {
         "t": "h3",
@@ -200,7 +215,7 @@ export const JURIDISK: Seksjon[] = [
       },
       {
         "t": "p",
-        "v": "Tjenesten driftes innenfor EØS. Skjer overføring ut av EØS, skjer det på grunnlag av EU-kommisjonens standardvilkår eller tilstrekkelighetsbeslutning. Gjeldende oversikt finnes i punkt 3.3."
+        "v": "Data lagres og behandles i Frankfurt (EØS). Flere av underleverandørene er likevel selskaper utenfor EØS, og får dermed mulig tilgang til opplysninger. Overføring skjer på grunnlag av EU-kommisjonens standardvilkår (SCC), og for leverandører som er sertifisert, EU–USA Data Privacy Framework. Oversikten finnes i punkt 3.3."
       },
       {
         "t": "h3",
@@ -254,8 +269,8 @@ export const JURIDISK: Seksjon[] = [
         "t": "liste",
         "v": [
           "Formål: å utføre leverandørkontroller for kunden og lagre dem som dokumentasjon.",
-          "Registrerte: brukere hos kunden, og personer i styre, ledelse, signatur og prokura i de virksomhetene kunden kontrollerer.",
-          "Opplysninger: for brukere navn, e-postadresse, rolle og innloggingsdata. For personer i roller: navn, rolle og fødselsdato i søket mot sanksjons- og PEP-lister, og navn som flagg når søket gir et mulig treff.",
+          "Registrerte: brukere hos kunden, personer i styre, ledelse, signatur og prokura i de virksomhetene kunden kontrollerer, og personer kunden selv registrerer som deltakere i en anskaffelse.",
+          "Opplysninger: for brukere navn, e-postadresse, rolle og innloggingsdata. For personer i roller: navn, rolle og fødselsdato i søket mot sanksjons- og PEP-lister, og navn som flagg når søket gir et mulig treff. For deltakere i en anskaffelse: navn og rolle, som sammenlignes med styre og daglig leder hos leverandøren i habilitetskontrollen.",
           "Varighet: så lenge avtalen løper. Data slettes innen 90 dager etter avtaleslutt, med mindre kunden ber om sletting tidligere."
         ]
       },
@@ -266,6 +281,15 @@ export const JURIDISK: Seksjon[] = [
       {
         "t": "p",
         "v": "Kunden gir generelt samtykke til bruk av underleverandører. Endringer varsles med 30 dagers frist, og kunden kan innvende."
+      },
+      {
+        "t": "liste",
+        "v": [
+          "Supabase (database, innlogging og filer): Supabase Pte. Ltd., Singapore. Data lagres i Frankfurt.",
+          "Vercel (hosting av nettstedet og tjenesten): Vercel Inc., USA. Tjenesten kjøres i Frankfurt.",
+          "Resend (utsending av e-post som bekreftelser, kvitteringer og varsler): Plus Five Five, Inc., USA.",
+          "Stripe (kortbetaling): Stripe Payments Europe, Limited, Irland. Kortopplysningene behandles av Stripe, ikke av oss."
+        ]
       },
       {
         "t": "p",
@@ -307,23 +331,19 @@ export const JURIDISK: Seksjon[] = [
     "blokker": [
       {
         "t": "p",
-        "v": "Vi bruker informasjonskapsler som er nødvendige for at tjenesten skal fungere, og — med ditt samtykke — kapsler for analyse. Vi bruker ingen kapsler for markedsføring eller sporing mot tredjepart."
+        "v": "Vi bruker bare informasjonskapsler som er nødvendige for at tjenesten skal fungere: innloggingen din og språkvalget ditt. Vi bruker ingen kapsler for analyse, markedsføring eller sporing mot tredjepart, og har derfor ingen samtykkebanner."
       },
       {
         "t": "p",
-        "v": "Bruk av informasjonskapsler reguleres av ekomloven § 2-7 b. Nødvendige kapsler krever ikke samtykke. Alle andre gjør det, og samtykket kan trekkes tilbake når som helst."
+        "v": "Bruk av informasjonskapsler reguleres av ekomloven § 2-7 b. Nødvendige kapsler krever ikke samtykke. Skulle vi senere ta i bruk andre kapsler, ber vi om samtykke først."
       },
       {
         "t": "h3",
-        "v": "4.1 Endre samtykke"
+        "v": "4.1 Slette kapsler"
       },
       {
         "t": "p",
-        "v": "Du kan endre eller trekke tilbake samtykket ditt når som helst. Du kan også slette kapsler i nettleseren din — da mister du innloggingen, men ingenting annet går tapt."
-      },
-      {
-        "t": "p",
-        "v": "Endre samtykke til informasjonskapsler"
+        "v": "Du kan slette kapsler i nettleseren din når som helst. Da blir du logget ut og språkvalget nullstilles, men ingenting annet går tapt."
       }
     ]
   },

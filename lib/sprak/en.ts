@@ -476,7 +476,7 @@ export const en: Ordbok = {
       eyebrow: "Questions",
       tittel: "What people ask first.",
       sporsmal: [
-        { q: "Do you check whether someone has a criminal conviction?", a: "No, and no commercial provider can. Under personopplysningsloven § 11, processing data on criminal convictions is in practice reserved for public authorities, and Lovdata offers no machine access to court decisions. We check companies, not individuals. That part of the qualification assessment is covered by the supplier's ESPD self-declaration, which is stored as an attachment to the check." },
+        { q: "Do you check whether someone has a criminal conviction?", a: "No, and no commercial provider can. Under personopplysningsloven § 11, processing data on criminal convictions is in practice reserved for public authorities, and Lovdata offers no machine access to court decisions. We check companies. People on boards and in management are only screened against sanctions and PEP lists, and a hit is a name match, not a conclusion about the person. That part of the qualification assessment is covered by the supplier's ESPD self-declaration, which is stored as an attachment to the check." },
         { q: "Are there any charges beyond the subscription?", a: "No. The price is the same for the whole agreement, with nothing extra per user or per check. You buy the assessment and the documentation, not individual lookups. Municipalities are invoiced one year at a time, in advance." },
         { q: "Does the report hold up as evidence under § 5i?", a: "Every run is stored unchanged with the time, source and result on each line, and can be retrieved later. Sources we got no answer from are listed as not checked rather than left out — a report that stays quiet about its gaps is worse than no report." },
         { q: "We are based in Sweden. Does it work?", a: "Relavo is built for Norwegian organisation numbers and Norwegian rules. The core of the assessment follows the same EU directive across the EEA, but the data sources and the statutes are Norwegian." },
@@ -489,7 +489,7 @@ export const en: Ordbok = {
     },
     foot: {
       avdeling: "Norwegian branch of",
-      tekst: "Relavo checks companies, not individuals. Data on criminal convictions is not processed.",
+      tekst: "Relavo checks companies. People in roles are only screened against sanctions and PEP lists. Data on criminal convictions is not processed.",
       vilkar: "Terms",
       personvern: "Privacy",
       cookies: "Cookies",
@@ -1525,6 +1525,10 @@ export const en: Ordbok = {
     ingress: "Two minutes. You add the company in the next step.",
     opprett: "Create account",
     harKonto: "Already have an account?",
+    godtarFor: "By creating an account you accept the ",
+    godtarVilkar: "terms",
+    godtarOg: " and the ",
+    godtarPersonvern: "privacy policy",
     nyKunde: "New customer?",
     registrerDeg: "Create an account",
   },

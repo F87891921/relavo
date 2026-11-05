@@ -485,7 +485,7 @@ export const no = {
       eyebrow: "Spørsmål",
       tittel: "Det folk spør om først.",
       sporsmal: [
-        { q: "Sjekker dere om noen er straffedømt?", a: "Nei. Behandling av opplysninger om straffedommer er etter personopplysningsloven § 11 i praksis forbeholdt offentlige myndigheter, og Lovdata gir ikke maskinell tilgang til rettsavgjørelser. Vi kontrollerer selskaper, ikke enkeltpersoner. Den delen av kvalifikasjonsvurderingen dekkes av leverandørens ESPD-egenerklæring, som lagres som vedlegg til kontrollen." },
+        { q: "Sjekker dere om noen er straffedømt?", a: "Nei. Behandling av opplysninger om straffedommer er etter personopplysningsloven § 11 i praksis forbeholdt offentlige myndigheter, og Lovdata gir ikke maskinell tilgang til rettsavgjørelser. Vi kontrollerer selskaper. Personer i styre og ledelse søkes bare mot sanksjons- og PEP-lister, og et treff er navnelikhet, ikke en konklusjon om personen. Den delen av kvalifikasjonsvurderingen dekkes av leverandørens ESPD-egenerklæring, som lagres som vedlegg til kontrollen." },
         { q: "Kommer det tillegg utover abonnementet?", a: "Nei. Prisen er den samme gjennom hele avtalen, uten tillegg per bruker eller per kontroll. Du kjøper vurderingen og dokumentasjonen, ikke enkeltoppslag. Kommuner faktureres ett år av gangen i forskudd." },
         { q: "Holder rapporten som dokumentasjon etter § 5i?", a: "Hver kjøring lagres uendret med tidspunkt, kilde og resultat på hver enkelt linje, og kan hentes fram i ettertid. Kilder vi ikke har svar fra står oppført som ikke kontrollert i stedet for å utelates — en rapport som tier om hullene sine er verre enn ingen rapport." },
         { q: "Vi holder til i Sverige. Fungerer det?", a: "Relavo er bygget for norske organisasjonsnumre og norsk regelverk. Kjernen i vurderingen følger det samme EU-direktivet i hele EØS, men datakildene og paragrafene er norske." },
@@ -498,7 +498,7 @@ export const no = {
     },
     foot: {
       avdeling: "norsk filial av",
-      tekst: "Relavo kontrollerer selskaper, ikke enkeltpersoner. Opplysninger om straffedommer behandles ikke.",
+      tekst: "Relavo kontrollerer selskaper. Personer i roller søkes bare mot sanksjons- og PEP-lister. Opplysninger om straffedommer behandles ikke.",
       vilkar: "Vilkår",
       personvern: "Personvern",
       cookies: "Cookies",
@@ -1534,6 +1534,10 @@ export const no = {
     ingress: "To minutter. Selskapet legger du inn i neste steg.",
     opprett: "Opprett konto",
     harKonto: "Har dere allerede konto?",
+    godtarFor: "Ved å opprette konto godtar du ",
+    godtarVilkar: "vilkårene",
+    godtarOg: " og ",
+    godtarPersonvern: "personvernerklæringen",
     nyKunde: "Ny kunde?",
     registrerDeg: "Opprett konto",
   },

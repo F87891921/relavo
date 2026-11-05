@@ -476,7 +476,7 @@ export const sv: Ordbok = {
       eyebrow: "Frågor",
       tittel: "Det folk frågar om först.",
       sporsmal: [
-        { q: "Kollar ni om någon är dömd för brott?", a: "Nej, och ingen kommersiell aktör kan. Behandling av uppgifter om brottmålsdomar är enligt personopplysningsloven § 11 i praktiken förbehållen offentliga myndigheter, och Lovdata ger ingen maskinell åtkomst till rättsavgöranden. Vi kontrollerar bolag, inte enskilda personer. Den delen av kvalificeringen täcks av leverantörens ESPD-egenförsäkran, som sparas som bilaga till kontrollen." },
+        { q: "Kollar ni om någon är dömd för brott?", a: "Nej, och ingen kommersiell aktör kan. Behandling av uppgifter om brottmålsdomar är enligt personopplysningsloven § 11 i praktiken förbehållen offentliga myndigheter, och Lovdata ger ingen maskinell åtkomst till rättsavgöranden. Vi kontrollerar bolag. Personer i styrelse och ledning söks bara mot sanktions- och PEP-listor, och en träff är namnlikhet, inte en slutsats om personen. Den delen av kvalificeringen täcks av leverantörens ESPD-egenförsäkran, som sparas som bilaga till kontrollen." },
         { q: "Tillkommer det avgifter utöver abonnemanget?", a: "Nej. Priset är detsamma under hela avtalet, utan tillägg per användare eller per kontroll. Du köper bedömningen och dokumentationen, inte enskilda uppslag. Kommuner faktureras ett år i taget i förskott." },
         { q: "Håller rapporten som dokumentation enligt § 5i?", a: "Varje körning sparas oförändrad med tidpunkt, källa och resultat på varje enskild rad, och kan hämtas fram i efterhand. Källor vi inte fått svar från står som ej kontrollerade i stället för att utelämnas — en rapport som tiger om sina luckor är sämre än ingen rapport." },
         { q: "Vi finns i Sverige. Fungerar det?", a: "Relavo är byggt för norska organisationsnummer och norskt regelverk. Kärnan i bedömningen följer samma EU-direktiv i hela EES, men datakällorna och paragraferna är norska." },
@@ -489,7 +489,7 @@ export const sv: Ordbok = {
     },
     foot: {
       avdeling: "norsk filial av",
-      tekst: "Relavo kontrollerar bolag, inte enskilda personer. Uppgifter om brottmålsdomar behandlas inte.",
+      tekst: "Relavo kontrollerar bolag. Personer i roller söks bara mot sanktions- och PEP-listor. Uppgifter om brottmålsdomar behandlas inte.",
       vilkar: "Villkor",
       personvern: "Integritet",
       cookies: "Cookies",
@@ -1525,6 +1525,10 @@ export const sv: Ordbok = {
     ingress: "Två minuter. Bolaget lägger du in i nästa steg.",
     opprett: "Skapa konto",
     harKonto: "Har ni redan konto?",
+    godtarFor: "Genom att skapa kontot godkänner du ",
+    godtarVilkar: "villkoren",
+    godtarOg: " och ",
+    godtarPersonvern: "integritetspolicyn",
     nyKunde: "Ny kund?",
     registrerDeg: "Skapa konto",
   },

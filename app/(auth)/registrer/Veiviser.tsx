@@ -302,6 +302,12 @@ export function Veiviser({ forvalgt, avtalt, mnd }: { forvalgt?: string; avtalt?
                   {venter ? o.felles.sender : type === "kommune" ? v.knappKommune : type === "offert" ? v.knappOffert : v.knappSelskap}
                 </button>
               </div>
+              <p className="text-[11.5px] text-faint text-center mt-3 leading-relaxed">
+                {o.registrering.godtarFor}
+                <Link href="/juridisk#vilkar" target="_blank" className="text-accent hover:underline">{o.registrering.godtarVilkar}</Link>
+                {o.registrering.godtarOg}
+                <Link href="/juridisk#personvern" target="_blank" className="text-accent hover:underline">{o.registrering.godtarPersonvern}</Link>.
+              </p>
             </>
           )}
         </form>
