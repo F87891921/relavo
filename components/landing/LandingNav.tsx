@@ -20,10 +20,10 @@ export function LandingNav() {
           <RelavoLogo />
         </Link>
         <div className="nav-links">
-          <a href="#plattform">{t.nav.plattform}</a>
-          <a href="#regelverk">{t.nav.regelverk}</a>
-          <a href="#priser">{t.nav.priser}</a>
-          <a href="#faq">{t.nav.sporsmal}</a>
+          <a href="/#plattform">{t.nav.plattform}</a>
+          <a href="/#regelverk">{t.nav.regelverk}</a>
+          <a href="/#priser">{t.nav.priser}</a>
+          <a href="/#faq">{t.nav.sporsmal}</a>
         </div>
         <div className="nav-act">
           {/* Her møter den som ennå ikke har konto valget. Kapselen husker
@@ -43,10 +43,10 @@ export function LandingNav() {
             loggInn={t.nav.loggInn}
             merke={t.nav.meny}
             lenker={[
-              { href: "#plattform", tekst: t.nav.plattform },
-              { href: "#regelverk", tekst: t.nav.regelverk },
-              { href: "#priser", tekst: t.nav.priser },
-              { href: "#faq", tekst: t.nav.sporsmal },
+              { href: "/#plattform", tekst: t.nav.plattform },
+              { href: "/#regelverk", tekst: t.nav.regelverk },
+              { href: "/#priser", tekst: t.nav.priser },
+              { href: "/#faq", tekst: t.nav.sporsmal },
             ]}
           />
         </div>

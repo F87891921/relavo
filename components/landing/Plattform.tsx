@@ -5,11 +5,19 @@ import { Chain } from "./Chain";
  * Funksjonsrutene viser ekte UI-fragment, ikke ikoner. Fragmentene er de
  * samme komponentene dashbordet bruker, i miniatyr.
  */
+/**
+ * Hvert krav står med det svaret det faktisk har: oppslag i register,
+ * dokument mottatt fra leverandøren, eller leverandørens egen bekreftelse.
+ * En egenerklæring står som egenerklæring, ikke som «oppfylt».
+ * Henvisningene er de samme som i kontrollrapporten.
+ */
 const LOVKRAV = [
-  { ref: "§ 5e", tekst: "Skatt og merverdiavgift", status: "ok" as const },
-  { ref: "§ 5g", tekst: "Lønn via bank", status: "ok" as const },
-  { ref: "§ 5h", tekst: "Lærlingekrav", status: "ok" as const },
-  { ref: "§ 5k", tekst: "Høyst to ledd", status: "no" as const },
+  { ref: "§ 5g", tekst: "Lønn via bank", status: "eg" as const, merke: "Egenerklæring" },
+  { ref: "§ 5h", tekst: "Lærlingekrav", status: "eg" as const, merke: "Egenerklæring" },
+  { ref: "§ 5i", tekst: "Skatt og merverdiavgift", status: "ok" as const, merke: "Mottatt" },
+  { ref: "§ 5j", tekst: "Landsomfattende tariffavtale", status: "eg" as const, merke: "Egenerklæring" },
+  { ref: "§ 5k", tekst: "Høyst to ledd", status: "no" as const, merke: "Brudd" },
+  { ref: "§ 24-2", tekst: "Konkurs og avvikling", status: "ok" as const, merke: "Kontrollert" },
 ];
 
 export function Plattform() {
@@ -43,7 +51,7 @@ export function Plattform() {
             <p className="feat-d">
               {t.kravD}
             </p>
-            <div className="feat-ui">
+            <div className="feat-ui fyll">
               <div className="laws">
                 {LOVKRAV.map((krav) => (
                   <div
@@ -54,7 +62,7 @@ export function Plattform() {
                     <span className="law-t">{krav.tekst}</span>
                     <span className={`badge ${krav.status}`}>
                       <i />
-                      {krav.status === "ok" ? "Oppfylt" : "Brudd"}
+                      {krav.merke}
                     </span>
                   </div>
                 ))}

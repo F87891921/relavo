@@ -85,7 +85,11 @@ export function Veiviser({ forvalgt, avtalt, mnd }: { forvalgt?: string; avtalt?
           .replace("{navn}", /kommune/i.test(kommune.navn) ? kommune.navn : `${kommune.navn} kommune`)
           .replace("{niva}", niva.navn)
           .replace("{pris}", kr(kommunePris))
-          .replace("{mnd}", String(binding === 1 ? 12 : binding))
+          .replace("{aar}", kr(kommunePris * 12))
+          .replace("{mnd}", String(binding === 1 ? 12 : binding)) +
+        (binding > 12
+          ? " " + v.sammendragTotal.replace("{total}", kr(kommunePris * binding)).replace("{mnd}", String(binding))
+          : "")
       : type === "offert" && avtalt
         ? v.avtaleSammendrag
             .replace("{plan}", avtalt.planNavn)
@@ -209,7 +213,7 @@ export function Veiviser({ forvalgt, avtalt, mnd }: { forvalgt?: string; avtalt?
                   <b>{niva.navn}</b> · {niva.spenn}
                   {kommune.mnd !== null && (
                     <div className="mt-0.5 text-dim">
-                      {kr(kommune.mnd)} NOK {t.sok.perMnd}
+                      {kr(kommunePris ?? kommune.mnd)} NOK {t.sok.perMnd} · {kr((kommunePris ?? kommune.mnd) * 12)} NOK {t.sok.perAr}
                     </div>
                   )}
                 </div>

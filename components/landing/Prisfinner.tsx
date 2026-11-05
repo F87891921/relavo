@@ -121,6 +121,9 @@ export function Prisfinner() {
                           −{Math.round((1 - (m * 12) / (b.maks * ENKELTKONTROLL)) * 100)} %
                         </small>
                       )}
+                      {m !== null && lopB > 1 && (
+                        <small className="pf-sp">{kr(m * 12)} NOK {t.sok.perAr}</small>
+                      )}
                     </td>
                   </tr>
                 );
@@ -195,6 +198,10 @@ export function Prisfinner() {
               <div className="pf-pris">
                 {kr(pris)} <em>NOK {t.sok.perMnd}</em>
               </div>
+              <p className="pf-ar">
+                {kr(pris * 12)} NOK {t.sok.perAr}
+                {lop > 12 && <> · {t.sok.totalt.replace("{mnd}", String(lop)).replace("{sum}", kr(pris * lop))}</>}
+              </p>
               <p className="pf-m">
                 {t.sok.fakturering} {t.sok.tillegg}
               </p>

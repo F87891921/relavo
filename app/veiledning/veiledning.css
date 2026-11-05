@@ -1,0 +1,62 @@
+/* Veiledningssidene. Bruker paletten og variablene fra landing.css, som må
+   importeres på siden. Alt er scopet under .veil. */
+.veil{padding-top:56px;padding-bottom:24px}
+.veil .smul{font-size:12.5px;color:var(--text-dim);margin-bottom:26px;display:flex;flex-wrap:wrap;gap:6px}
+.veil .smul a:hover{color:var(--text)}
+.veil .smul span{color:var(--text-faint)}
+.veil .kicker{font-size:12px;font-weight:600;color:var(--accent);letter-spacing:0.02em;margin-bottom:14px}
+.veil h1{font-size:40px;letter-spacing:-0.04em;line-height:1.08;max-width:22ch}
+.veil .ingress{font-size:17px;line-height:1.6;color:var(--text-dim);margin-top:20px;max-width:62ch}
+.veil .meta{font-size:12px;color:var(--text-faint);margin-top:18px}
+.veil .innhold{max-width:720px;margin-top:44px}
+.veil h2{font-size:23px;letter-spacing:-0.03em;margin:44px 0 14px}
+.veil .innhold p{font-size:15px;line-height:1.72;color:var(--text);margin-bottom:14px;max-width:66ch}
+.veil ul.punkt{margin:8px 0 18px;padding:0;list-style:none}
+.veil ul.punkt li{position:relative;padding-left:22px;font-size:15px;line-height:1.65;margin-bottom:10px;max-width:66ch}
+.veil ul.punkt li::before{content:'';position:absolute;left:4px;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+.veil .tabellramme{margin:34px 0 8px;overflow-x:auto;border:1px solid var(--border);border-radius:14px}
+.veil table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:560px}
+.veil th{text-align:left;font-weight:600;font-size:12px;color:var(--text-dim);padding:12px 16px;background:var(--canvas);border-bottom:1px solid var(--border)}
+.veil td{padding:13px 16px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5}
+.veil tr:last-child td{border-bottom:0}
+.veil td.krav{font-weight:600;min-width:170px}
+.veil .merke{display:inline-block;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.veil .merke.reg{background:var(--green-bg);color:var(--green)}
+.veil .merke.lev{background:var(--accent-light);color:var(--accent)}
+.veil .merke.egen{background:var(--yellow-bg);color:var(--yellow)}
+.veil .merke.ikke{background:var(--red-bg);color:var(--red)}
+.veil .tabellnote{font-size:12.5px;color:var(--text-dim);margin:10px 0 0;max-width:66ch}
+
+.veil .spm{margin-top:12px;border-top:1px solid var(--border);max-width:720px}
+.veil .spm details{border-bottom:1px solid var(--border);padding:16px 0}
+.veil .spm summary{cursor:pointer;font-size:15px;font-weight:600;letter-spacing:-0.015em;list-style:none;display:flex;justify-content:space-between;gap:16px}
+.veil .spm summary::-webkit-details-marker{display:none}
+.veil .spm summary::after{content:'+';color:var(--text-faint);font-weight:400;font-size:20px;line-height:1}
+.veil .spm details[open] summary::after{content:'–'}
+.veil .spm details p{font-size:14.5px;line-height:1.68;color:var(--text-dim);margin-top:10px;max-width:64ch}
+
+.veil .ansvar{margin-top:40px;font-size:12.5px;line-height:1.65;color:var(--text-faint);max-width:66ch;padding:14px 16px;background:var(--canvas);border-radius:12px}
+.veil .cta{margin-top:48px;padding:30px;border:1px solid var(--border);border-radius:18px;background:var(--canvas);max-width:720px}
+.veil .cta h2{margin:0 0 8px;font-size:21px}
+.veil .cta p{font-size:14.5px;color:var(--text-dim);margin:0 0 18px;line-height:1.6}
+.veil .cta .rad{display:flex;gap:10px;flex-wrap:wrap}
+
+.veil .rel{margin-top:44px;max-width:720px}
+.veil .rel h2{margin:0 0 14px;font-size:17px}
+.veil .rel a{display:block;padding:13px 0;border-top:1px solid var(--border);font-size:14.5px;font-weight:600;letter-spacing:-0.01em}
+.veil .rel a:last-child{border-bottom:1px solid var(--border)}
+.veil .rel a:hover{color:var(--accent)}
+
+.veil .liste{display:grid;gap:0;max-width:720px;margin-top:38px;border-top:1px solid var(--border)}
+.veil .liste a{display:block;padding:20px 0;border-bottom:1px solid var(--border)}
+.veil .liste a strong{display:block;font-size:17px;letter-spacing:-0.02em;margin-bottom:5px}
+.veil .liste a span{font-size:14px;color:var(--text-dim);line-height:1.55}
+.veil .liste a:hover strong{color:var(--accent)}
+
+@media (max-width:640px){
+  .veil{padding-top:36px}
+  .veil h1{font-size:29px}
+  .veil .ingress{font-size:15.5px}
+  .veil h2{font-size:20px}
+}

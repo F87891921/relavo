@@ -330,12 +330,17 @@ html{scroll-behavior:smooth}
 .law{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border);font-size:12.5px}
 .law:last-child{border-bottom:0}
 .law.fail{border-left:3px solid var(--red);padding-left:9px}
-.law-ref{font-family:var(--font-mono);font-size:10.5px;color:var(--accent);width:34px;flex-shrink:0}
+.law-ref{font-family:var(--font-mono);font-size:10.5px;color:var(--accent);min-width:42px;white-space:nowrap;flex-shrink:0}
 .law-t{flex:1;min-width:0}
 .badge{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:100px;font-size:10.5px;font-weight:600;white-space:nowrap}
 .badge.ok{background:var(--green-bg);color:var(--green)}
 .badge.no{background:var(--red-bg);color:var(--red)}
 .badge.n{background:var(--surface-2);color:var(--accent)}
+.badge.eg{background:var(--yellow-bg);color:var(--yellow)}
+/* Kravkortet fyller høyden i stedet for å skyve listen til bunnen med tomrom over. */
+.feat-ui.fyll{align-items:stretch}
+.feat-ui.fyll .laws{display:flex;flex-direction:column}
+.feat-ui.fyll .law{flex:1}
 .badge i{width:4px;height:4px;border-radius:50%;background:currentColor}
 
 /* Tilbudsfragment */
@@ -549,7 +554,8 @@ html{scroll-behavior:smooth}
 .landing .pf-tabell td:last-child, .landing .pf-tabell th:last-child { text-align: right; }
 .landing .pf-tabell small { color: var(--text-faint, #8a8289); }
 .landing .pf-ingar ul { margin: 0; padding-left: 18px; columns: 2; column-gap: 28px; font-size: 14px; line-height: 1.7; }
-.landing .pf-under { max-width: 640px; margin: 36px auto 0; display: grid; gap: 10px; font-size: 14px; color: var(--text-dim, #4a4548); }
+.landing .pf-under { max-width: 640px; margin: 36px auto 0; display: grid; gap: 10px; font-size: 14px; color: var(--text-dim, #4a4548); text-align: center; }
+.landing .pf-ar { font-size: 14px; color: var(--text-dim, #4a4548); margin: 2px 0 10px; font-variant-numeric: tabular-nums; }
 .landing .pf-under a { color: var(--accent, #654b70); font-weight: 600; }
 @media (max-width: 600px) { .landing .pf-ingar ul { columns: 1; } .landing .pf-pris { font-size: 32px; } }
 .landing .pf-lop { display: inline-flex; gap: 4px; padding: 3px; margin: 14px 0 0; background: #f4f1f6; border-radius: 100px; }

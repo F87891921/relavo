@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useOrd } from "@/components/Sprakgiver";
 import { bestill } from "./handlinger";
-import { BEDRIFT, kr, mndBedrift } from "@/lib/priser";
+import { BEDRIFT, NIVAER, kr, mndBedrift, mndFor, type Lopetid } from "@/lib/priser";
 
 const PLANER = [
   { verdi: "liten", pris: "3 900", enhet: "NOK/mnd" },
@@ -60,10 +60,20 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
     if (fra && erSelskap(fra)) setMaltype("selskap");
   }, []);
   // Selskap som betaler med kort ser prisen for valgt trekkintervall.
-  const visPris = (rad: { verdi: string; pris: string; selskap?: boolean }) => {
+  // Kroner per måned for raden ved valgt avtaletid. Før viste kortene alltid
+  // 12-månedersprisen, også når kunden hadde valgt 24 eller 36 måneder.
+  const prisM = (rad: { verdi: string }): number | null => {
+    if (rad.verdi === "engangs") return null;
     const b = BEDRIFT.find((x) => x.id === rad.verdi);
-    if (!b || mate !== "kort") return rad.pris;
-    const m = mndBedrift(b, intervall === "month" ? 1 : 12);
+    if (b) {
+      if (mate === "kort") return mndBedrift(b, intervall === "month" ? 1 : 12);
+      return mndBedrift(b, binding as 1 | 12 | 24 | 36);
+    }
+    const n = NIVAER.find((x) => x.id === rad.verdi);
+    return n ? mndFor(n, (binding === 1 ? 12 : binding) as Lopetid) : null;
+  };
+  const visPris = (rad: { verdi: string; pris: string; selskap?: boolean }) => {
+    const m = prisM(rad);
     return m === null ? rad.pris : kr(m);
   };
 
@@ -123,6 +133,14 @@ export function Valg({ kortMulig }: { kortMulig: boolean }) {
               <div className="text-[10.5px] text-faint mt-0.5">
                 {o.internt.eksMva}
               </div>
+              {prisM(rad) !== null && (
+                <div className="text-[12px] text-dim mt-1">
+                  {kr(prisM(rad)! * 12)} NOK {t.sok.perAr}
+                  {binding > 12 && !(mate === "kort") && (
+                    <> · {t.sok.totalt.replace("{mnd}", String(binding)).replace("{sum}", kr(prisM(rad)! * binding))}</>
+                  )}
+                </div>
+              )}
               <p className="text-[12px] text-dim leading-snug mt-2">
                 {spenn(rad.verdi)}
               </p>

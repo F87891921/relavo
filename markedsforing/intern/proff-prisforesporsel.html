@@ -1,0 +1,64 @@
+<!doctype html><html lang="nb"><head><meta charset="utf-8"><title>Prisforespørsel – Proff API</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><style>
+@page{size:A4;margin:16mm 15mm}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;color:#1d1d1f;font-size:10.4px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #654b70;padding-bottom:10px;margin-bottom:14px}
+h1{font-size:22px;font-weight:800;letter-spacing:-.03em;color:#654b70}
+.sub{color:#86868b;margin-top:3px;font-size:11px}
+h2{font-size:13px;font-weight:700;margin:16px 0 6px;color:#654b70;letter-spacing:-.01em}
+p{margin-bottom:6px}
+table{width:100%;border-collapse:collapse;margin-bottom:8px}
+th{background:#f4f1f6;text-align:left;font-weight:700;padding:6px 7px;border:1px solid #e4d7ec;font-size:9.4px}
+td{padding:6px 7px;border:1px solid #e8e6ea;vertical-align:top}
+td.n{width:22px;color:#86868b;font-weight:700}
+td.p{width:92px;color:#654b70;font-weight:600}
+.k{font-family:ui-monospace,Menlo,monospace;font-size:9px;background:#f6f4f7;padding:1px 4px;border-radius:3px}
+.hv{width:140px;color:#86868b}
+ul{margin:2px 0 6px 16px}li{margin-bottom:2px}
+.box{background:#f4f1f6;border-radius:6px;padding:9px 11px;margin:8px 0}
+.pris{height:15px;border-bottom:1px dotted #bbb;min-width:56px}
+tr{break-inside:avoid}
+</style></head><body>
+<div class="top"><div><h1>Prisforespørsel – Proff API</h1><div class="sub">Lod Tech AB NUF · Relavo · org.nr 938 518 858</div></div><div class="sub" style="text-align:right">Til: Therese Eriksson, Proff AS<br>Kopi: Marit Foss</div></div>
+
+<p>Vi bygger <b>Relavo</b>, en tjeneste for leverandørkontroll i offentlige anskaffelser. Kundene er kommuner og selskaper i bygg, anlegg og renhold. Rapporten samler opplysninger om en leverandør, med kilde og dato på hver linje, og lagres som dokumentasjon. Relavo er et beslutningsstøtte; den endelige vurderingen gjøres av kunden.</p>
+<p>Vi har i dag testtilgang til <b>Proff Premium API</b> og <b>Proff Premium Credit API</b>. Under står nøyaktig hvilke data vi ønsker pris på. Vi ber om pris per datapunkt/endepunkt og om pakkeløsninger.</p>
+
+<h2>1. Data vi ønsker pris på</h2>
+<table><tr><th>#</th><th>API</th><th>Data / endepunkt</th><th>Bruk i Relavo</th><th style="width:74px">Pris (kr)</th></tr>
+<tr><td class="n">1</td><td class="p">Credit API</td><td><span class="k">CreditRating</span> – kredittrating, score, kredittgrense, konkurssannsynlighet</td><td>Én linje i leverandørrapporten med kilde og dato</td><td><div class="pris"></div></td></tr>
+<tr><td class="n">2</td><td class="p">Credit API</td><td><span class="k">PaymentRemarks</span> og <span class="k">PaymentRemarkDetails</span> – betalingsanmerkninger (beløp, kreditor, dato)</td><td>Varsel i rapporten når det finnes anmerkninger</td><td><div class="pris"></div></td></tr>
+<tr><td class="n">3</td><td class="p">Credit API</td><td>Pant (frivillig og tvangspant) i svaret fra <span class="k">CreditRating</span></td><td>Varsel ved tvangspant</td><td><div class="pris"></div></td></tr>
+<tr><td class="n">4</td><td class="p">Credit API</td><td><span class="k">CreditRatingHistory</span> og <span class="k">CreditRatingChanges</span> – historikk og endringer</td><td>Overvåking av leverandører som allerede er kontrollert</td><td><div class="pris"></div></td></tr>
+<tr><td class="n">5</td><td class="p">Credit API</td><td><span class="k">CompanyCreditReport</span> og <span class="k">CompanyReport</span> (JSON)</td><td>Utvidede nøkkeltall dersom de gir mer enn åpne regnskapsdata</td><td><div class="pris"></div></td></tr>
+<tr><td class="n">6</td><td class="p">Compliance API</td><td><span class="k">/sanctions</span> – sanksjonssøk på person og selskap</td><td>Sjekk av styre og eiere, ikke bare selskapsnavn</td><td><div class="pris"></div></td></tr>
+<tr><td class="n">7</td><td class="p">Compliance API</td><td><span class="k">/pep/nordic</span> og <span class="k">/pep/global</span> – PEP-treff på navngitt person</td><td>PEP-kontroll av roller og reelle rettighetshavere</td><td><div class="pris"></div></td></tr>
+<tr><td class="n">8</td><td class="p">Compliance API</td><td><span class="k">/soe</span> – statlig eide selskaper</td><td>Informasjon i rapporten</td><td><div class="pris"></div></td></tr>
+<tr><td class="n">9</td><td class="p">Compliance API</td><td><span class="k">ComplianceReport</span> – samlet rapport per organisasjonsnummer</td><td>Alternativ til punkt 6–8 samlet</td><td><div class="pris"></div></td></tr>
+<tr><td class="n">10</td><td class="p">Premium API</td><td>Reelle rettighetshavere (UBO)</td><td>Hvem som eier og kontrollerer leverandøren</td><td><div class="pris"></div></td></tr>
+<tr><td class="n">11</td><td class="p">Premium API</td><td>Roller (styre, daglig leder, signatur/prokura), aksjonærer og konsernstruktur</td><td>Grunnlag for punkt 6–7 og for egenerklæring</td><td><div class="pris"></div></td></tr>
+<tr><td class="n">12</td><td class="p">Premium API</td><td>Webhooks / <span class="k">Changes</span> – varsel når et overvåket selskap endres</td><td>Løpende overvåking mellom kontrollene</td><td><div class="pris"></div></td></tr>
+</table>
+<p style="color:#86868b">Vi har ikke sett feltene for punkt 10–12 i detalj; oversikten bygger på Proffs dokumentasjon. Si gjerne fra hvis noe ikke inngår i vår tilgang eller har andre navn.</p>
+
+<h2>2. Volum vi ber om pris for</h2>
+<p>Vi starter småskala. Vi ber om pris for tre nivåer av oppslag per måned (hvert oppslag = ett organisasjonsnummer eller én person):</p>
+<table><tr><th>Nivå</th><th>Oppslag per måned</th><th>Pris per måned (kr)</th><th>Pris per ekstra oppslag (kr)</th></tr>
+<tr><td>Liten</td><td>Opptil 200</td><td><div class="pris"></div></td><td><div class="pris"></div></td></tr>
+<tr><td>Middels</td><td>Opptil 2 000</td><td><div class="pris"></div></td><td><div class="pris"></div></td></tr>
+<tr><td>Stor</td><td>Opptil 20 000</td><td><div class="pris"></div></td><td><div class="pris"></div></td></tr></table>
+
+<h2>3. Vilkår vi trenger svar på</h2>
+<ul>
+<li><b>Visning:</b> Får vi vise opplysningene i en rapport til våre kunder (kommuner og selskaper)? Må Proff oppgis som kilde i rapporten, eller er det nok å oppgi det i våre vilkår?</li>
+<li><b>Lagring:</b> Får vi lagre svaret som dokumentasjon i kundens rapport, og hvor lenge? Databasen vår ligger i EU/EØS (Frankfurt).</li>
+<li><b>Videre bruk:</b> Gjelder lisensen at kunden kan eksportere rapporten som PDF?</li>
+<li><b>Personopplysninger:</b> Hva gjelder for PEP, roller og reelle rettighetshavere? Krever dere en databehandleravtale eller andre vilkår fra oss?</li>
+<li><b>Bindingstid og oppsigelse</b> samt hva som skjer ved overskridelse av avtalt volum.</li>
+<li><b>Tilgang:</b> Hvor finner vi token for hvert API (Credit er verifisert; Compliance mangler)?</li>
+<li><b>Testperiode:</b> Hvor lenge varer testtilgangen, og kan den utvides til Compliance API?</li>
+</ul>
+
+<div class="box"><b>Kontakt:</b> Fred Smith, Lod Tech AB NUF · fred@lodtech.se · relavo.no</div>
+</body></html>
