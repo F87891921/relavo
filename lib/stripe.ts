@@ -224,8 +224,10 @@ export async function lagKampanjekode(o: {
     return kall("promotion_codes", p);
   };
 
-  let svar = await lag(false);
-  if (!svar.ok && /promotion/i.test(svar.feil)) svar = await lag(true);
+  // Kontoens API-versjon er ny, og den vil ha promotion[coupon]. Prøver den
+  // nye måten først og faller tilbake på den gamle for eldre kontoer.
+  let svar = await lag(true);
+  if (!svar.ok && /unknown parameter|promotion|coupon/i.test(svar.feil)) svar = await lag(false);
   return svar.ok ? { ok: true } : svar;
 }
 
