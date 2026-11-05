@@ -25,6 +25,17 @@
   }
 }
 
+/* iOS Safari zoomer inn når et felt med skrift under 16 px får fokus, og
+   zoomen blir stående etter innlogging (særlig når nettleseren fyller ut det
+   lagrede passordet). 16 px på telefon hindrer det uten å sperre zoom. */
+@media (max-width: 639px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
 /* Utskrift. «Lagre som PDF» i nettleserens utskriftsdialog er hele
    pdf-støtten — et pdf-bibliotek ville vært en avhengighet til, en font å
    bygge inn, og et andre oppsett som før eller siden ser annerledes ut enn
