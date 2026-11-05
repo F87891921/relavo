@@ -64,6 +64,12 @@ export async function POST(req: NextRequest) {
         total_details?: { amount_discount?: number; amount_tax?: number } | null;
         customer_details?: { email?: string | null } | null;
         customer_email?: string | null;
+        // Fakturafeltene fornyelsen bruker (invoice.paid).
+        subtotal?: number | null;
+        total?: number | null;
+        number?: string | null;
+        total_discount_amounts?: { amount?: number }[] | null;
+        lines?: { data?: { description?: string | null }[] };
       };
     };
   };
@@ -131,9 +137,37 @@ export async function POST(req: NextRequest) {
       : { data: null };
     if (egenKunde && f.billing_reason === "subscription_cycle" && (f.currency ?? "nok").toLowerCase() === "nok") {
       const netto = f.total_excluding_tax ?? f.amount_paid ?? 0;
-      await admin()
+      const { data: ny } = await admin()
         .from("omsetning")
-        .upsert({ referanse: f.id, kilde: "stripe", belop_ore: netto }, { onConflict: "referanse", ignoreDuplicates: true });
+        .upsert({ referanse: f.id, kilde: "stripe", belop_ore: netto }, { onConflict: "referanse", ignoreDuplicates: true })
+        .select("referanse");
+
+      // Kvittering for fornyelsen. Første betaling har sitt eget over (økten);
+      // denne gjelder årsfornyelsen, som ellers bare ville fått Stripes
+      // kvittering i ISO-kollens utseende. Bare første gang vi ser fakturaen,
+      // siden Stripe sender samme hendelse flere ganger, og bare når noe er betalt.
+      const til = f.customer_email;
+      if (ny?.length && til && (f.amount_paid ?? 0) > 0) {
+        try {
+          const kr = (ore: number) => `${(ore / 100).toLocaleString("nb-NO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} kr`;
+          const rabatt = (f.total_discount_amounts ?? []).reduce((sum, d) => sum + (d.amount ?? 0), 0);
+          const mva = f.total_excluding_tax != null ? Math.max(0, (f.total ?? 0) - f.total_excluding_tax) : 0;
+          const brev = kvitteringBrev({
+            vare: f.lines?.data?.[0]?.description ?? "Relavo",
+            delsumma: kr(f.subtotal ?? f.total ?? 0),
+            rabatt: rabatt > 0 ? `\u2212${kr(rabatt)}` : null,
+            mva: mva > 0 ? kr(mva) : null,
+            betalt: kr(f.amount_paid ?? 0),
+            dato: new Date().toLocaleDateString("nb-NO", { day: "2-digit", month: "long", year: "numeric" }),
+            referanse: f.number ?? f.id.slice(-12),
+            avsender: avsenderlinje(),
+          });
+          const svar = await sendEpost({ til, ...brev });
+          if (!svar.ok) await meldFeil({ kilde: "server", melding: "Fornyelseskvittering kunne ikke sendes", detaljer: `${f.id}: ${svar.feil}` });
+        } catch (e) {
+          await meldFeil({ kilde: "server", melding: "Fornyelseskvittering feilet", detaljer: `${f.id}: ${String(e).slice(0, 200)}` });
+        }
+      }
     }
   }
 
