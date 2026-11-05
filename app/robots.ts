@@ -10,7 +10,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/juridisk", "/kontakt", "/veiledning"],
+        allow: ["/", "/juridisk", "/kontakt", "/veiledning", "/guide", "/video/"],
         disallow: [
           "/api/",
           "/internt",

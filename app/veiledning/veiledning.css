@@ -60,3 +60,10 @@
   .veil .ingress{font-size:15.5px}
   .veil h2{font-size:20px}
 }
+
+/* /guide: videospilleren */
+.veil .guide-video{display:block;width:100%;max-width:960px;aspect-ratio:16/9;border-radius:14px;background:#f4f3f6;margin:28px 0 10px;box-shadow:0 14px 44px rgba(40,31,42,.09)}
+.veil .guide-tekst{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:16px 0}
+.veil .guide-tekst summary{cursor:pointer;font-size:15px;font-weight:600;letter-spacing:-.015em}
+.veil .guide-tekst h2{font-size:16px;margin:22px 0 6px}
+.veil .guide-tekst p{font-size:14.5px;color:var(--text-dim);line-height:1.68;margin-bottom:4px}

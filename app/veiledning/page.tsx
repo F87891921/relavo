@@ -19,6 +19,10 @@ export default function VeiledningIndeks() {
         Korte veiledninger for innkjøpere i offentlige anskaffelser. Hver side sier hva som kan kontrolleres mot et register, hva leverandøren selv må levere, og hva som bare er en egenerklæring.
       </p>
 
+      <p className="meta">
+        Vil du heller se det? <Link href="/guide" style={{ color: "var(--accent)", fontWeight: 600 }}>Se videoguiden</Link> (to minutter).
+      </p>
+
       <div className="liste">
         {VEILEDNINGER.map((v) => (
           <Link key={v.slug} href={`/veiledning/${v.slug}`}>

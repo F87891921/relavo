@@ -126,6 +126,8 @@ export async function middleware(request: NextRequest) {
     "/kontakt",
     "/juridisk",
     "/veiledning",
+    "/guide",
+    "/video",
     "/robots.txt",
     "/sitemap.xml",
     "/api/kommune",

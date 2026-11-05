@@ -32,6 +32,7 @@ export function LandingFooter() {
           <div className="foot-l">
             <a href="/#plattform">{t.nav.plattform}</a>
             <a href="/#priser">{t.nav.priser}</a>
+            <Link href="/guide">Guide</Link>
             <Link href="/veiledning">Veiledning</Link>
             <Link href="/juridisk#vilkar">{t.foot.vilkar}</Link>
             <Link href="/juridisk#personvern">{t.foot.personvern}</Link>

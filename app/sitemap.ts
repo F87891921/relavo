@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: nå,
   }));
   const veiledning = [
+    { url: "https://relavo.no/guide", lastModified: new Date(OPPDATERT) },
     { url: "https://relavo.no/veiledning", lastModified: new Date(OPPDATERT) },
     ...VEILEDNINGER.map((v) => ({
       url: `https://relavo.no/veiledning/${v.slug}`,
