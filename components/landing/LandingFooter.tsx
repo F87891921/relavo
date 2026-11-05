@@ -1,4 +1,4 @@
-import { ord } from "@/lib/sprak";
+import { ord, ordbokFor, type Sprak } from "@/lib/sprak";
 import Link from "next/link";
 import { RelavoLogo } from "@/components/RelavoLogo";
 import { RELAVO, relavoOrgNr } from "@/lib/relavo";
@@ -12,8 +12,8 @@ import { RELAVO, relavoOrgNr } from "@/lib/relavo";
  * En offentlig innkjøper som skal føre oss opp i en protokoll trenger å
  * se hvem de faktisk inngår avtale med uten å måtte åpne vilkårene.
  */
-export function LandingFooter() {
-  const t = ord().landing;
+export function LandingFooter({ forsprak }: { forsprak?: Sprak } = {}) {
+  const t = (forsprak ? ordbokFor(forsprak) : ord()).landing;
 
   return (
     <footer className="foot">

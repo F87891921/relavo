@@ -1,15 +1,18 @@
 import Link from "next/link";
 import { RelavoLogo } from "@/components/RelavoLogo";
 import { LandingMeny } from "./LandingMeny";
-import { ord } from "@/lib/sprak";
+import { ord, ordbokFor, type Sprak } from "@/lib/sprak";
 
 /**
  * Toppnavigasjon. I prototypen åpnet «Logg inn» og «Kom i gang» en modal
  * med demokontoer — her peker begge på den ekte innloggingssiden, som går
  * mot Supabase Auth.
  */
-export function LandingNav() {
-  const t = ord().landing;
+export function LandingNav({ forsprak }: { forsprak?: Sprak } = {}) {
+  // Sider som er skrevet på ett språk (veiledning, videoguiden) låser
+  // navigasjonen til det språket, så ikke en ansatt med svensk valg får
+  // svensk meny over norsk tekst.
+  const t = (forsprak ? ordbokFor(forsprak) : ord()).landing;
 
   return (
     <nav className="nav">

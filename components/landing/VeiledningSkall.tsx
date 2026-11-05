@@ -10,11 +10,11 @@ import { LandingFooter } from "./LandingFooter";
 export function VeiledningSkall({ children }: { children: React.ReactNode }) {
   return (
     <div className="landing">
-      <LandingNav />
+      <LandingNav forsprak="no" />
       <main>
         <div className="wrap veil">{children}</div>
       </main>
-      <LandingFooter />
+      <LandingFooter forsprak="no" />
     </div>
   );
 }
