@@ -608,6 +608,7 @@ export const sv: Ordbok = {
     kunneIkkeHente: "Kunde inte hämta träffar:",
     funnet: "Hittad",
     ingenFunnet: "Inga möjliga intressekonflikter hittade.",
+    javIkkeKontrollert: "Inte kontrollerat: inga deltagare i upphandlingen är registrerade, så det finns inget att jämföra styrelsen mot.",
     identiskNavnMerke: "Identiskt namn",
     tegnsAvvik: "teckens avvikelse",
     fodt: "f.",

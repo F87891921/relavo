@@ -24,7 +24,7 @@ export function stripeModus(): "test" | "live" | null {
 
 type Svar<T> = { ok: true; data: T } | { ok: false; feil: string; mangler?: true };
 
-async function kall<T>(sti: string, kropp?: URLSearchParams, metode?: "DELETE"): Promise<Svar<T>> {
+async function kall<T>(sti: string, kropp?: URLSearchParams, metode?: "DELETE", versjon?: string): Promise<Svar<T>> {
   const nokkel = process.env.STRIPE_SECRET_KEY;
   if (!nokkel)
     return {
@@ -38,6 +38,7 @@ async function kall<T>(sti: string, kropp?: URLSearchParams, metode?: "DELETE"):
       method: metode ?? (kropp ? "POST" : "GET"),
       headers: {
         Authorization: `Bearer ${nokkel}`,
+        ...(versjon ? { "Stripe-Version": versjon } : {}),
         ...(kropp ? { "Content-Type": "application/x-www-form-urlencoded" } : {}),
       },
       ...(kropp ? { body: kropp } : {}),
@@ -108,7 +109,24 @@ export function opprettKasseokt(o: {
   // til det er avklart med revisor om og hvordan vi skal kreve inn den.
   if (process.env.STRIPE_MVA_ID) p.set("line_items[0][tax_rates][0]", process.env.STRIPE_MVA_ID);
 
-  return kall<Kasseokt>("checkout/sessions", p);
+  // Kontoen deles med ISO-kollen. Betalingssiden får Relavos navn, logo og farge, og
+  // kortutskriften står som RELAVO i stedet for kontoens felles tekst. Kvitteringen
+  // Stripe sender selv bruker fortsatt kontoens merkevare (den kan ikke settes per
+  // betaling). Feiler Stripe på noe av dette, tas vanlig betalingsside i stedet:
+  // en kunde skal aldri miste muligheten til å betale på grunn av pynt.
+  const pen = new URLSearchParams(p);
+  pen.set("branding_settings[display_name]", "Relavo");
+  pen.set("branding_settings[logo][type]", "url");
+  pen.set("branding_settings[logo][url]", "https://relavo.no/brand/relavo-logo.png");
+  pen.set("branding_settings[icon][type]", "url");
+  pen.set("branding_settings[icon][url]", "https://relavo.no/brand/relavo-ikon.png");
+  pen.set("branding_settings[button_color]", "#654b70");
+  pen.set("branding_settings[background_color]", "#ffffff");
+  pen.set("branding_settings[border_style]", "rounded");
+  if (!o.gjentakende) pen.set("payment_intent_data[statement_descriptor]", "RELAVO");
+  return kall<Kasseokt>("checkout/sessions", pen, undefined, "2025-09-30.clover").then((svar) =>
+    svar.ok ? svar : kall<Kasseokt>("checkout/sessions", p),
+  );
 }
 
 export const hentKasseokt = (id: string) =>

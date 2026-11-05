@@ -51,6 +51,8 @@ const KOBLING: Record<string, string> = {
 
 export function kontrollrapportPdf(r: Kontrollrapport): ArrayBuffer {
   const pdf = new Pdf(`${RELAVO.produkt} · ${r.leverandor.orgNr}`);
+  // nb-NO skriver minus som U+2212, som ikke finnes i WinAnsi og ble til «?» i PDF-en.
+  const minus = (t: string) => t.replace(/\u2212/g, "-");
 
   /* ------------------------------------------------------------ Hode */
   // Ordmerket som vektor, ikke ordet satt med Helvetica. Dokumentet går ut
@@ -138,8 +140,8 @@ export function kontrollrapportPdf(r: Kontrollrapport): ArrayBuffer {
       pdf.tekst("Ingen årsregnskap er levert. Det er vanlig for nye selskaper og mindre foretak, og er ikke i seg selv noe galt.", { storrelse: 9.5, farge: DIM, etter: 4 });
     } else {
       const kr = (v: number | null) =>
-        v == null ? "–" : Math.abs(v) >= 1_000_000 ? `${(v / 1_000_000).toLocaleString("nb-NO", { maximumFractionDigits: 1 })} mill. kr` : `${v.toLocaleString("nb-NO")} kr`;
-      const pst = (v: number | null) => (v == null ? "–" : `${v.toLocaleString("nb-NO", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %`);
+        v == null ? "–" : minus(Math.abs(v) >= 1_000_000 ? `${(v / 1_000_000).toLocaleString("nb-NO", { maximumFractionDigits: 1 })} mill. kr` : `${v.toLocaleString("nb-NO")} kr`);
+      const pst = (v: number | null) => (v == null ? "–" : minus(`${v.toLocaleString("nb-NO", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %`));
       for (const a of r.nokkeltall.ar)
         pdf.punkt(
           String(a.aar),
@@ -193,7 +195,12 @@ export function kontrollrapportPdf(r: Kontrollrapport): ArrayBuffer {
 
   /* --------------------------------------------------------------- Jav */
   pdf.overskrift("Interessekonflikt (forvaltningsloven § 6)");
-  if (!r.jav.length) {
+  if (!r.jav.length && !r.javKontrollert) {
+    pdf.tekst(
+      "Ikke kontrollert: ingen deltakere i anskaffelsen er registrert, så det finnes ingenting å sammenligne styret mot.",
+      { storrelse: 9.5, farge: DIM, etter: 6 },
+    );
+  } else if (!r.jav.length) {
     pdf.tekst(
       "Ingen mulige koblinger mellom leverandørens styre og registrerte deltakere i anskaffelsen.",
       { storrelse: 9.5, farge: DIM, etter: 6 },

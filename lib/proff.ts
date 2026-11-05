@@ -51,8 +51,8 @@ async function hent<T>(sti: string, nokkel: string): Promise<Svar<T>> {
       headers: { Authorization: `Token ${nokkel}`, Accept: "application/json" },
       cache: "no-store",
     });
-    // 204: Proff har ingen rating, eller selskapet finnes ikke hos dem.
-    if (r.status === 204) return { status: "ingen" };
+    // 204 og 404: Proff har ingen rating, eller selskapet finnes ikke hos dem.
+    if (r.status === 204 || r.status === 404) return { status: "ingen" };
     if (!r.ok) return { status: "feil" };
     return { status: "ok", data: (await r.json()) as T };
   } catch {

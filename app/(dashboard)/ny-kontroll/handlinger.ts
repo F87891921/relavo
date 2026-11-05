@@ -87,14 +87,25 @@ export async function kjorKontroll(svar: Svar): Promise<Resultat> {
     proffComplianceIndikatorer(enhet.orgnr, enhet.navn, bruk),
   ]);
   const indikatorer = [...lagIndikatorer(enhet, regnskap), ...kreditInd, ...complianceInd];
+  if (dibk.status === "ikke_registrert")
+    indikatorer.push({
+      id: "dibk-ikke-registrert",
+      niva: "info",
+      tittel: "Ikke registrert hos DiBK",
+      tekst: "Selskapet har ikke sentral godkjenning. Ordningen har vært frivillig siden 2016, så dette er ikke et avvik.",
+    });
   const proff = { kredit: kreditStatus(kreditInd), compliance: complianceStatus(complianceInd) };
   const nokkeltall = lagNokkeltall(regnskap, enhet.ansatte);
 
-  const { krav, kilder, risiko } = vurder(
+  const { krav, kilder, risiko: kravRisiko } = vurder(
     enhet, svar, renhold, dibk, sanksjoner,
     attest ? { utstedt: attest.utstedt as string } : null,
     { proff, harRegnskap: regnskap.length > 0 },
   );
+
+  // Risikoen bygger på kravene. Men en varsel-indikasjon (for eksempel omsetning
+  // uten ansatte, eller betalingsanmerkninger) skal ikke stå under «lav risiko».
+  const risiko = kravRisiko === "lav" && indikatorer.some((i) => i.niva === "varsel") ? "middels" : kravRisiko;
 
   // Leverandøren må finnes før kontrollen kan peke på den. Er selskapet
   // kontrollert før, gjenbrukes raden — ellers legges den inn nå.
@@ -380,14 +391,9 @@ function vurder(
       status: "na",
       tekst: `Sentral godkjenning er utløpt${dibk.gyldigTil ? ` (${dibk.gyldigTil})` : ""}. Ordningen er frivillig, så dette er ikke et avvik i seg selv.`,
     });
-  } else if (dibk.status === "ikke_registrert") {
-    krav.push({
-      ref: "DiBK",
-      status: "na",
-      tekst:
-        "Ikke registrert med sentral godkjenning. Ordningen har vært frivillig siden 2016, så dette er ikke et avvik.",
-    });
   }
+  // «Ikke registrert» er ikke et krav som er ubesvart: DiBK svarte, og ordningen er
+  // frivillig. Det står som en info-indikasjon, ikke som «ikke sjekket».
 
   if (svar.espd === "finnes") {
     krav.push({

@@ -58,6 +58,8 @@ export type Kontrollrapport = {
   indikatorer: IndikatorRad[];
   nokkeltall: Nokkeltall | null;
   jav: Javrad[];
+  /** Falsk når organisasjonen ikke har registrert noen deltakere: da er jav ikke kontrollert. */
+  javKontrollert: boolean;
 };
 
 /** Antall krav som ikke er oppfylt. Det er tallet som betyr noe. */
@@ -84,7 +86,7 @@ export async function hentKontrollrapport(
 
   if (!k) return null;
 
-  const [{ data: org }, { data: person }, { data: kjede }, { data: jav }] =
+  const [{ data: org }, { data: person }, { data: kjede }, { data: jav }, { count: antallDeltakere }] =
     await Promise.all([
       supabase
         .from("organisasjoner")
@@ -103,6 +105,10 @@ export async function hentKontrollrapport(
         .from("jav_treff")
         .select("type_kobling, detaljer")
         .eq("kontroll_id", id),
+      supabase
+        .from("prosjektdeltakere")
+        .select("id", { count: "exact", head: true })
+        .eq("organisasjon_id", k.organisasjon_id),
     ]);
 
   const lev = k.leverandorer as unknown as {
@@ -126,6 +132,7 @@ export async function hentKontrollrapport(
     kjede: (kjede ?? []) as Ledd[],
     indikatorer: (k.indikatorer ?? []) as IndikatorRad[],
     nokkeltall: (k.nokkeltall ?? null) as Nokkeltall | null,
+    javKontrollert: (antallDeltakere ?? 0) > 0,
     jav: (jav ?? []).map((r) => {
       const d = (r.detaljer ?? {}) as Record<string, unknown>;
       return {

@@ -608,6 +608,7 @@ export const en: Ordbok = {
     kunneIkkeHente: "Could not load matches:",
     funnet: "Found",
     ingenFunnet: "No possible conflicts of interest found.",
+    javIkkeKontrollert: "Not checked: no participants in the procurement are registered, so there is nothing to compare the board against.",
     identiskNavnMerke: "Identical name",
     tegnsAvvik: "characters apart",
     fodt: "b.",

@@ -617,6 +617,7 @@ export const no = {
     kunneIkkeHente: "Kunne ikke hente treff:",
     funnet: "Funnet",
     ingenFunnet: "Ingen mulige interessekonflikter funnet.",
+    javIkkeKontrollert: "Ikke kontrollert: ingen deltakere i anskaffelsen er registrert, så det finnes ingenting å sammenligne styret mot.",
     identiskNavnMerke: "Identisk navn",
     tegnsAvvik: "tegns avvik",
     fodt: "f.",

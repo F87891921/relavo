@@ -335,7 +335,7 @@ export default async function KontrollSide({
               ))
             ) : (
               <li className="px-5 py-8 text-center text-dim text-sm">
-                {t.jav.ingenFunnet}
+                {r.javKontrollert ? t.jav.ingenFunnet : t.jav.javIkkeKontrollert}
               </li>
             )}
           </ul>
