@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Sprakvelger } from "@/components/Sprakvelger";
-import type { Sprak } from "@/lib/sprak/felles";
 
 type Lenke = { href: string; tekst: string };
 
@@ -21,12 +19,10 @@ type Lenke = { href: string; tekst: string };
 export function LandingMeny({
   lenker,
   loggInn,
-  sprak,
   merke,
 }: {
   lenker: Lenke[];
   loggInn: string;
-  sprak: Sprak;
   merke: string;
 }) {
   const [apen, setApen] = useState(false);
@@ -76,7 +72,6 @@ export function LandingMeny({
             <Link href="/logg-inn" onClick={() => setApen(false)}>
               {loggInn}
             </Link>
-            <Sprakvelger na={sprak} variant="minimal" retning="opp" />
           </div>
         </div>
       )}

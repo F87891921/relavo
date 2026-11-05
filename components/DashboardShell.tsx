@@ -85,10 +85,13 @@ export async function DashboardShell({
         {t.meny.support}
       </Link>
 
-      <div className="flex items-center justify-between gap-2 px-3 py-0.5">
-        <span className="text-[13px] text-dim">{t.konto.sprakTittel}</span>
-        <Sprakvelger na={sprak} retning="opp" medSvensk={Boolean(ansatt)} />
-      </div>
+      {/* Kundene ser bare norsk. Språkvalget finnes for oss som eier siden. */}
+      {ansatt && (
+        <div className="flex items-center justify-between gap-2 px-3 py-0.5">
+          <span className="text-[13px] text-dim">{t.konto.sprakTittel}</span>
+          <Sprakvelger na={sprak} retning="opp" medSvensk />
+        </div>
+      )}
 
       {ansatt && (
         <Link

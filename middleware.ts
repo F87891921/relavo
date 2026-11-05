@@ -88,25 +88,42 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Språk. Kundene ser bare norsk, overalt: landingssiden, registreringen og
+  // appen. Svensk og engelsk finnes for oss som eier siden, og bare når vi er
+  // innlogget som ansatt. Én video, ett sett markedsmateriell.
+  //
   // Språket ligger i en kapsel, fordi rotoppsettet må vite det uten å slå
-  // opp i databasen på hver eneste sidevisning. Men valget er lagret på
-  // profilen, og på en ny maskin finnes ikke kapselen ennå. Da hentes den
-  // her, én gang, og settes — ellers ville rotoppsettet stått på norsk mens
-  // resten av siden var på svensk.
-  if (user && !erSprak(request.cookies.get(KAPSEL_SPRAK)?.value)) {
+  // opp i databasen på hver sidevisning. Kapselen er lett å endre for hvem
+  // som helst, så den gjelder bare når profilen sier ansatt. Det slås opp
+  // bare når kapselen peker på noe annet enn norsk, eller mangler for en
+  // innlogget bruker; vanlige kunder koster ingen ekstra spørring.
+  const kapsel = request.cookies.get(KAPSEL_SPRAK)?.value;
+  const settNorsk = () => {
+    request.cookies.set(KAPSEL_SPRAK, "no");
+    response = NextResponse.next({ request: { headers: videre } });
+    response.cookies.set(KAPSEL_SPRAK, "no", { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
+  };
+  if (erSprak(kapsel) && kapsel !== "no" && !user) {
+    settNorsk();
+  } else if (user && (!erSprak(kapsel) || kapsel !== "no")) {
     const { data } = await supabase
       .from("profiler")
-      .select("sprak")
+      .select("sprak, ansatt")
       .eq("id", user.id)
       .maybeSingle();
-    if (erSprak(data?.sprak)) {
-      request.cookies.set(KAPSEL_SPRAK, data.sprak);
-      response = NextResponse.next({ request: { headers: videre } });
-      response.cookies.set(KAPSEL_SPRAK, data.sprak, {
-        path: "/",
-        maxAge: 60 * 60 * 24 * 365,
-        sameSite: "lax",
-      });
+    if (data?.ansatt) {
+      // Ansatt: profilens valg gjelder når kapselen mangler på en ny maskin.
+      if (!erSprak(kapsel) && erSprak(data.sprak)) {
+        request.cookies.set(KAPSEL_SPRAK, data.sprak);
+        response = NextResponse.next({ request: { headers: videre } });
+        response.cookies.set(KAPSEL_SPRAK, data.sprak, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
+      }
+    } else {
+      settNorsk();
+      // Gammelt valg på profilen (fra da kundene kunne velge) ryddes bort.
+      if (data && data.sprak && data.sprak !== "no") {
+        await supabase.from("profiler").update({ sprak: "no" }).eq("id", user.id);
+      }
     }
   }
 

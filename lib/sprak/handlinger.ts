@@ -15,18 +15,26 @@ import { KAPSEL_SPRAK, erSprak, type Sprak } from "./felles";
 export async function settSprak(sprak: Sprak): Promise<void> {
   if (!erSprak(sprak)) return;
 
-  cookies().set(KAPSEL_SPRAK, sprak, {
-    path: "/",
-    maxAge: 60 * 60 * 24 * 365,
-    sameSite: "lax",
-  });
-
   const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) await supabase.from("profiler").update({ sprak }).eq("id", user.id);
+  // Kundene ser bare norsk. Svensk og engelsk kan velges av ansatte som er
+  // innlogget; alt annet blir norsk, også om noen kaller handlingen direkte.
+  let valgt: Sprak = "no";
+  if (sprak !== "no" && user) {
+    const { data } = await supabase.from("profiler").select("ansatt").eq("id", user.id).maybeSingle();
+    if (data?.ansatt) valgt = sprak;
+  }
+
+  cookies().set(KAPSEL_SPRAK, valgt, {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+    sameSite: "lax",
+  });
+
+  if (user) await supabase.from("profiler").update({ sprak: valgt }).eq("id", user.id);
 
   revalidatePath("/", "layout");
 }

@@ -88,16 +88,18 @@ export default async function KontoSide({
           </Kort>
         </div>
 
-        <Kort tittel={t.konto.sprakTittel} className="mb-4" meny>
-          <div className="px-5 py-5 flex items-start justify-between gap-5">
-            <p className="text-[12.5px] text-dim leading-relaxed max-w-[62ch]">
-              {t.konto.sprakTekst}
-            </p>
-            <span className="shrink-0 -mt-1">
-              <Sprakvelger na={sprak} retning="ned" medSvensk={Boolean(profil.ansatt)} />
-            </span>
-          </div>
-        </Kort>
+        {profil.ansatt && (
+          <Kort tittel={t.konto.sprakTittel} className="mb-4" meny>
+            <div className="px-5 py-5 flex items-start justify-between gap-5">
+              <p className="text-[12.5px] text-dim leading-relaxed max-w-[62ch]">
+                {t.konto.sprakTekst}
+              </p>
+              <span className="shrink-0 -mt-1">
+                <Sprakvelger na={sprak} retning="ned" medSvensk />
+              </span>
+            </div>
+          </Kort>
+        )}
 
         <Kort tittel={t.konto.kontoTofaktor} note={t.konto.engangskodeFraMobil} className="mb-4">
           <div className="px-5 py-5">

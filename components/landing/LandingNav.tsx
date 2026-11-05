@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { RelavoLogo } from "@/components/RelavoLogo";
-import { Sprakvelger } from "@/components/Sprakvelger";
 import { LandingMeny } from "./LandingMeny";
-import { aktivtSprak, ord } from "@/lib/sprak";
+import { ord } from "@/lib/sprak";
 
 /**
  * Toppnavigasjon. I prototypen åpnet «Logg inn» og «Kom i gang» en modal
@@ -10,7 +9,6 @@ import { aktivtSprak, ord } from "@/lib/sprak";
  * mot Supabase Auth.
  */
 export function LandingNav() {
-  const sprak = aktivtSprak();
   const t = ord().landing;
 
   return (
@@ -26,12 +24,8 @@ export function LandingNav() {
           <a href="/#faq">{t.nav.sporsmal}</a>
         </div>
         <div className="nav-act">
-          {/* Her møter den som ennå ikke har konto valget. Kapselen husker
-              det, og ved første innlogging følger det med på profilen.
-              På telefon ligger den inne i menyen i stedet. */}
-          <span className="nav-bred">
-            <Sprakvelger na={sprak} variant="minimal" retning="ned" />
-          </span>
+          {/* Ingen språkvelger her: kundene ser bare norsk. Svensk og engelsk
+              kan velges av ansatte, inne i kontoen. */}
           <Link href="/logg-inn" className="btn btn-quiet nav-bred">
             {t.nav.loggInn}
           </Link>
@@ -39,7 +33,6 @@ export function LandingNav() {
             {t.nav.komIGang}
           </Link>
           <LandingMeny
-            sprak={sprak}
             loggInn={t.nav.loggInn}
             merke={t.nav.meny}
             lenker={[
