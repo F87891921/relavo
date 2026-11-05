@@ -13,7 +13,7 @@ export default async function BekreftEpostSide() {
 
   // Bekreftet allerede (eller aldri krevd): da er det ingenting å vente på her.
   const { data: ok } = await supabase.rpc("epost_er_bekreftet");
-  if (ok !== false) redirect("/betaling");
+  if (ok !== false) redirect("/oversikt");
 
   const t = ord().bekreft;
 

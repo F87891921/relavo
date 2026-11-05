@@ -21,5 +21,5 @@ export async function GET(request: NextRequest) {
   const {
     data: { user },
   } = await createClient().auth.getUser();
-  return NextResponse.redirect(user?.id === u ? `${origin}/betaling` : `${origin}/logg-inn?bekreftet=1`);
+  return NextResponse.redirect(user?.id === u ? `${origin}/oversikt` : `${origin}/logg-inn?bekreftet=1`);
 }

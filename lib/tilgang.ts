@@ -23,12 +23,14 @@ export const krevProfil = cache(async () => {
   } = await supabase.auth.getUser();
   if (!user) redirect("/logg-inn");
 
-  // E-postadressen må være bekreftet før kontoen kan brukes, også for å bestille
-  // og betale. Brukere som fantes fra før og de som er invitert av en
-  // administrator er bekreftet. Siden som ber om bekreftelsen er den eneste
-  // som slipper gjennom.
+  // E-postadressen må være bekreftet før kontoen kan brukes. Brukere som
+  // fantes fra før og de som er invitert av en administrator er bekreftet.
+  // Unntaket er bestillingen: valg av plan og betaling hører til registreringen
+  // og skjer før kunden har åpnet mejlet. Kontoen gir fortsatt ingenting før
+  // adressen er bekreftet og vi har åpnet den, så alt annet krever bekreftelse.
   const sti0 = headers().get("x-sti") ?? "";
-  if (sti0 !== "/bekreft-epost") {
+  const bestillingssti = sti0 === "/betaling" || sti0.startsWith("/betaling/");
+  if (sti0 !== "/bekreft-epost" && !bestillingssti) {
     const { data: bekreftet } = await supabase.rpc("epost_er_bekreftet");
     if (bekreftet === false) redirect("/bekreft-epost");
   }
