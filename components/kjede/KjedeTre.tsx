@@ -17,6 +17,11 @@ export type Ledd = {
   kartlegging: "ukjent" | "venter" | "besvart" | "ingen" | "ikke_svart";
 };
 
+export type SanksjonVisning = {
+  treff: { sokt: string; kilde: "selskap" | "rolle"; rolle: string | null; treff: string; program: string | null; likhet: number; eksakt: boolean }[];
+  listeDato: string | null;
+};
+
 export type Kjede = { kontrollId: string; navn: string; org: string; ledd: Ledd[] };
 
 /** Dypeste gren, regnet fra hovedleverandøren (niva 0). */
@@ -28,7 +33,7 @@ export const dybde = (ledd: Ledd[]) => ledd.reduce((m, l) => Math.max(m, l.niva)
  * egen) gjelder dybden, ikke antallet selskaper, og leddene under grensen
  * tegnes røde.
  */
-export function KjedeTre({ kjede, grense }: { kjede: Kjede; grense: number | null }) {
+export function KjedeTre({ kjede, grense, sanksjon }: { kjede: Kjede; grense: number | null; sanksjon: Record<string, SanksjonVisning> }) {
   const k = useOrd().kjede;
   const d = dybde(kjede.ledd);
   const over = grense !== null && d > grense;
@@ -48,7 +53,7 @@ export function KjedeTre({ kjede, grense }: { kjede: Kjede; grense: number | nul
         </span>
       </div>
       <div className="px-4 sm:px-5 py-5 overflow-x-auto">
-        {rot ? <Node l={rot} kjede={kjede} grense={grense} barn={barn} /> : <Tom kontrollId={kjede.kontrollId} />}
+        {rot ? <Node l={rot} kjede={kjede} grense={grense} barn={barn} sanksjon={sanksjon} /> : <Tom kontrollId={kjede.kontrollId} />}
         {over && (
           <div className="bg-bad-bg text-bad rounded-xl px-3.5 py-3 text-[12.5px] leading-relaxed mt-5">
             <b>{k.bruddTittel}</b> {k.kjedenHar} {d} {k.grensenEr} {grense}. {k.bruddTekst}
@@ -63,7 +68,7 @@ function Tom({ kontrollId }: { kontrollId: string }) {
   return <div className="text-[13px] text-dim">—<LeggTil kontrollId={kontrollId} forelderId={null} /></div>;
 }
 
-function Node({ l, kjede, grense, barn }: { l: Ledd; kjede: Kjede; grense: number | null; barn: (id: string | null) => Ledd[] }) {
+function Node({ l, kjede, grense, barn, sanksjon }: { l: Ledd; kjede: Kjede; grense: number | null; barn: (id: string | null) => Ledd[]; sanksjon: Record<string, SanksjonVisning> }) {
   const k = useOrd().kjede;
   const router = useRouter();
   const [apen, setApen] = useState<"ingen" | "legg" | "be">("ingen");
@@ -101,6 +106,33 @@ function Node({ l, kjede, grense, barn }: { l: Ledd; kjede: Kjede; grense: numbe
             ))}
           {l.kartlegging !== "ukjent" || l.niva > 0 || barna.length === 0 ? <Merke tone={s.tone}>{s.tekst}</Merke> : null}
         </div>
+        {l.merknader.includes("mulig_sanksjon") && (
+          <div className="mt-2 max-w-[420px] rounded-lg bg-bad-bg px-3 py-2 text-[11.5px] leading-snug">
+            <div className="font-semibold text-bad mb-1">{k.sanksjonTittel}</div>
+            {(sanksjon[l.id]?.treff ?? []).length === 0 ? (
+              <p className="text-dim">{k.sanksjonIngenDetalj}</p>
+            ) : (
+              <ul className="space-y-1 text-dim">
+                {sanksjon[l.id].treff.map((t, i) => (
+                  <li key={i}>
+                    {(t.kilde === "selskap" ? k.sanksjonSelskap : k.sanksjonRolle)
+                      .replace("{rolle}", t.rolle ?? k.sanksjonStyre)
+                      .replace("{sokt}", t.sokt)
+                      .replace("{treff}", t.treff)}
+                    {" ("}
+                    {t.eksakt ? k.sanksjonEksakt : k.sanksjonLikhet.replace("{p}", String(Math.round(t.likhet * 100)))}
+                    {t.program ? `, ${k.sanksjonProgram.replace("{p}", t.program)}` : ""}
+                    {")."}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {sanksjon[l.id]?.listeDato && (
+              <p className="text-faint mt-1">{k.sanksjonListe.replace("{dato}", new Date(sanksjon[l.id].listeDato!).toLocaleDateString())}</p>
+            )}
+            <p className="text-dim mt-1">{k.sanksjonForbehold}</p>
+          </div>
+        )}
         <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 text-[11.5px]">
           <button type="button" onClick={() => setApen(apen === "legg" ? "ingen" : "legg")} className="text-accent font-semibold hover:underline">
             + {k.underleverandor}
@@ -158,7 +190,7 @@ function Node({ l, kjede, grense, barn }: { l: Ledd; kjede: Kjede; grense: numbe
       {barna.length > 0 && (
         <div className="ml-4 sm:ml-6 mt-2 pl-4 sm:pl-5 border-l-[1.5px] border-border-strong space-y-2.5">
           {barna.map((b) => (
-            <Node key={b.id} l={b} kjede={kjede} grense={grense} barn={barn} />
+            <Node key={b.id} l={b} kjede={kjede} grense={grense} barn={barn} sanksjon={sanksjon} />
           ))}
         </div>
       )}

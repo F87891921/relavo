@@ -3,8 +3,9 @@ import { DashboardShell } from "@/components/DashboardShell";
 import { Side, Sidehode } from "@/components/ui";
 import { Flikar } from "@/components/ui/Flikar";
 import { funnAntall } from "@/lib/funn";
-import { KjedeTre, NyKjede, dybde, type Kjede, type Ledd } from "@/components/kjede/KjedeTre";
+import { KjedeTre, NyKjede, dybde, type Kjede, type Ledd, type SanksjonVisning } from "@/components/kjede/KjedeTre";
 import { grenseFor } from "@/lib/kjede";
+import { screenSanksjoner } from "@/lib/screening";
 import { SettGrense } from "@/components/kjede/SettGrense";
 import { formaterOrgnr } from "@/lib/orgnr";
 
@@ -59,6 +60,19 @@ export default async function KjedeSide() {
     perKontroll.set(l.kontroll_id, liste);
   }
 
+  // Hva et flagg bygger på. Leddet lagrer bare koden «mulig_sanksjon»; selve
+  // treffet (hvem, mot hvilken post, hvor likt) hentes her, bare for leddene
+  // som er flagget, så siden ikke gjør oppslag for hvert ledd.
+  const sanksjon: Record<string, SanksjonVisning> = {};
+  await Promise.all(
+    (ledd ?? [])
+      .filter((l) => ((l.merknader as string[] | null) ?? []).includes("mulig_sanksjon"))
+      .map(async (l) => {
+        const r = await screenSanksjoner(supabase, { navn: l.navn ?? "", orgnr: l.org_nr }).catch(() => null);
+        if (r) sanksjon[l.id] = { treff: r.treff, listeDato: r.listeDato };
+      }),
+  );
+
   const leverandorerListe = [...siste.values()].map((v) => ({ kontrollId: v.id, navn: v.navn }));
   const kjeder: Kjede[] = [...siste.values()]
     .map((lev) => ({ kontrollId: lev.id, navn: lev.navn, org: lev.org, ledd: perKontroll.get(lev.id) ?? [] }))
@@ -96,7 +110,7 @@ export default async function KjedeSide() {
             <div className="bg-surface rounded-card shadow-card px-5 py-10 text-center text-dim text-sm">{t.kjede.ingenKjeder}</div>
           )}
           {kjeder.map((k) => (
-            <KjedeTre key={k.kontrollId} kjede={k} grense={grense} />
+            <KjedeTre key={k.kontrollId} kjede={k} grense={grense} sanksjon={sanksjon} />
           ))}
         </div>
       </Side>
