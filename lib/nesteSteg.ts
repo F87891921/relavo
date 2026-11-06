@@ -93,7 +93,7 @@ const grupper = cache(async (): Promise<Steg[][]> => {
       tittel: navn(k),
       detalj: t.endring[k.slag as keyof typeof t.endring] ?? t.endringAnnet,
       kriterium: t.endringKrav,
-      href: "/leverandorer",
+      href: "/avvik",
       knapp: t.seEndringen,
       tone: "brudd" as const,
       kø: i === 0 ? (kritiske?.length ?? 0) - 1 : undefined,

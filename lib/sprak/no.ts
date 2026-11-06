@@ -19,6 +19,7 @@ export const no = {
   sprak: { velg: "Språk", norsk: "Norsk", svensk: "Svensk", engelsk: "Engelsk" },
 
   meny: {
+    avvik: "Avvik",
     funn: "Kjede og habilitet",
     arkiv: "Arkiv",
     enKontroll: "Én leverandør",
@@ -205,7 +206,32 @@ export const no = {
     endreStatus: "Klikk for å endre status",
   },
 
+  avvik: {
+    ny: "Ny",
+    underBehandling: "Under behandling",
+    avklart: "Avklart",
+    status: "Status",
+    ansvarlig: "Ansvarlig",
+    ingenAnsvarlig: "Ingen valgt",
+    kommentar: "Kommentar",
+    kommentarHjelp: "Hva er gjort? Det som står her følger med som dokumentasjon.",
+    lagre: "Lagre",
+    lagret: "Lagret",
+    apne: "Åpne avvik",
+    avklarteTittel: "Avklarte",
+    ingenApne: "Ingen åpne avvik. Overvåkingen melder fra her når noe endrer seg hos leverandørene dere følger.",
+    oppdaget: "Oppdaget",
+    avklartAv: "Avklart {dato} av {navn}",
+    fraTil: "Fra «{fra}» til «{til}»",
+    feil: "Kunne ikke lagre. Prøv igjen.",
+    ugyldig: "Ugyldig valg.",
+  },
+
   sider: {
+    avvik: {
+      tittel: "Avvik",
+      tekst: "Endringer hos leverandørene dere følger. Sett status, velg ansvarlig og skriv hva som er gjort.",
+    },
     oversikt: {
       tittel: "Oversikt",
       tekst: "Status på kontrollplikten, og det som krever noe av deg i dag.",

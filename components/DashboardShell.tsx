@@ -19,6 +19,7 @@ export const KUNDEMENY = [
   { id: "oversikt", href: "/oversikt" },
   { id: "nyKontroll", href: "/ny-kontroll" },
   { id: "funn", href: "/kjede" },
+  { id: "avvik", href: "/avvik" },
   { id: "tilbud", href: "/tilbud" },
   { id: "leverandorer", href: "/leverandorer" },
 ] as const;

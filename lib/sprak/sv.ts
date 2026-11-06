@@ -10,6 +10,7 @@ export const sv: Ordbok = {
   sprak: { velg: "Språk", norsk: "Norska", svensk: "Svenska", engelsk: "Engelska" },
 
   meny: {
+    avvik: "Avvikelser",
     funn: "Kedja och jäv",
     arkiv: "Arkiv",
     enKontroll: "En leverantör",
@@ -196,7 +197,32 @@ export const sv: Ordbok = {
     endreStatus: "Klicka för att ändra status",
   },
 
+  avvik: {
+    ny: "Ny",
+    underBehandling: "Under behandling",
+    avklart: "Avklarad",
+    status: "Status",
+    ansvarlig: "Ansvarig",
+    ingenAnsvarlig: "Ingen vald",
+    kommentar: "Kommentar",
+    kommentarHjelp: "Vad är gjort? Det som står här följer med som dokumentation.",
+    lagre: "Spara",
+    lagret: "Sparat",
+    apne: "Öppna avvikelser",
+    avklarteTittel: "Avklarade",
+    ingenApne: "Inga öppna avvikelser. Bevakningen meddelar här när något ändras hos leverantörerna ni följer.",
+    oppdaget: "Upptäckt",
+    avklartAv: "Avklarad {dato} av {navn}",
+    fraTil: "Från «{fra}» till «{til}»",
+    feil: "Kunde inte spara. Försök igen.",
+    ugyldig: "Ogiltigt val.",
+  },
+
   sider: {
+    avvik: {
+      tittel: "Avvikelser",
+      tekst: "Ändringar hos leverantörerna ni följer. Sätt status, välj ansvarig och skriv vad som är gjort.",
+    },
     oversikt: {
       tittel: "Översikt",
       tekst: "Status på kontrollplikten, och det som kräver något av dig i dag.",

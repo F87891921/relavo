@@ -41,7 +41,7 @@ export type Veiledning = {
 };
 
 /** Dato for siste innholdsendring. Settes for hånd, ikke fra byggedatoen. */
-export const OPPDATERT = "2026-11-05";
+export const OPPDATERT = "2026-11-06";
 
 export const ANSVAR =
   "Dette er en veiledning, ikke juridisk rådgivning. Vurderingen av en leverandør, og ansvaret for den, ligger hos oppdragsgiver. Relavo er beslutningsstøtte.";
@@ -171,6 +171,65 @@ export const VEILEDNINGER: Veiledning[] = [
       "hms-kort-krav-leverandor",
       "tariffavtale-og-lonn-krav",
       "laerlingkrav-offentlig-anskaffelse",
+    ],
+  },
+
+  {
+    slug: "seriositetskontroll-byggeprosjekt",
+    tittel: "Seriøsitetskontroll i byggeprosjekt: slik gjør du det",
+    beskrivelse:
+      "Slik kontrollerer du leverandør og underleverandører i et bygge- og anleggsprosjekt: kjeden, kravene i §§ 5e–5k, egenerklæringer og oppfølging mens prosjektet pågår.",
+    kicker: "Veiledning",
+    ingress:
+      "I bygg og anlegg er det sjelden hovedleverandøren alene som utfører arbeidet. Kontrollen må derfor følge kjeden, og den må kunne vises i etterkant. Her er en praktisk rekkefølge, og hva Relavo gjør i hvert steg.",
+    seksjoner: [
+      {
+        h2: "Hva som er annerledes i byggeprosjekt",
+        avsnitt: [
+          "I bygg, anlegg og renhold er taket to ledd underleverandører (§ 5k). Registrene viser ikke hvem som er underleverandør, så kjeden må kartlegges. Seriøsitetskravene i §§ 5e–5k gjelder hele kjeden, og ikke alle kan slås opp i et register.",
+        ],
+      },
+      {
+        h2: "Slik kan kontrollen gå, steg for steg",
+        avsnitt: [],
+        liste: [
+          "Kjør kontrollen på hovedleverandørens organisasjonsnummer.",
+          "Be leverandøren oppgi underleverandørene via en lenke. Hvert ledd slås opp i Enhetsregisteret og kontrolleres, også mot sanksjonslisten.",
+          "Se kjeden ledd for ledd. Går den dypere enn taket, flagges det med en gang.",
+          "Skill mellom det som er kontrollert mot register, det leverandøren har levert og det som bare er egenerklæring. Relavo merker hver linje.",
+          "Last ned rapporten som PDF og legg den ved anskaffelsesprotokollen.",
+          "Følg leverandørene mens prosjektet pågår. Endringer, som konkurs eller tapt godkjenning, kommer som avvik. Hvert avvik kan få status, ansvarlig og kommentar, så du kan vise hva som ble gjort.",
+        ],
+      },
+      {
+        h2: "Det som ikke kan kontrolleres i et register",
+        avsnitt: [
+          "HMS-kort for alle ansatte og at lønn utbetales via bank bygger på leverandørens egen bekreftelse. De står som egenerklæring i rapporten, ikke som godkjent. Trenger du mer sikkerhet, må du be om dokumentasjon eller gjøre stikkprøver på byggeplassen.",
+        ],
+      },
+    ],
+    tabell: [
+      { krav: "Leverandør og underleverandører i Enhetsregisteret", vi: "Hvert ledd slås opp og kontrolleres", status: "Kontrollert mot register" },
+      { krav: "§ 5k Ledd underleverandører", vi: "Kjeden kartlegges og flagges ved overskridelse", status: "Mottatt fra leverandør" },
+      { krav: "Konkurs og avvikling", vi: "Kontrolleres, og følges videre mens prosjektet pågår", status: "Kontrollert mot register" },
+      { krav: "HMS-kort", vi: "Leverandørens bekreftelse lagres", status: "Egenerklæring" },
+      { krav: "§ 5g Lønn via bank", vi: "Leverandørens bekreftelse lagres", status: "Egenerklæring" },
+    ],
+    faq: [
+      {
+        q: "Kan Relavo kontrollere hva som skjer på byggeplassen?",
+        a: "Nei. Relavo kontrollerer selskapene og kjeden, og følger dem mot registre. Hvem som faktisk er på byggeplassen, og om HMS-kort og lønnsvilkår følges, må du følge opp med egne rutiner og stikkprøver.",
+      },
+      {
+        q: "Hva skjer hvis en underleverandør går konkurs midt i prosjektet?",
+        a: "Den daglige overvåkingen fanger det opp og varsler deg. Avviket får en status, og du kan sette en ansvarlig og skrive hva som ble gjort.",
+      },
+    ],
+    relaterte: [
+      "kjedeansvar-underleverandorer",
+      "seriositetskrav-leverandor",
+      "hms-kort-krav-leverandor",
+      "skatteattest-leverandor",
     ],
   },
 

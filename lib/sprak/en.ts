@@ -10,6 +10,7 @@ export const en: Ordbok = {
   sprak: { velg: "Language", norsk: "Norwegian", svensk: "Swedish", engelsk: "English" },
 
   meny: {
+    avvik: "Deviations",
     funn: "Chain and conflicts",
     arkiv: "Archive",
     enKontroll: "One supplier",
@@ -196,7 +197,32 @@ export const en: Ordbok = {
     endreStatus: "Click to change status",
   },
 
+  avvik: {
+    ny: "New",
+    underBehandling: "In progress",
+    avklart: "Resolved",
+    status: "Status",
+    ansvarlig: "Responsible",
+    ingenAnsvarlig: "None chosen",
+    kommentar: "Comment",
+    kommentarHjelp: "What was done? What you write here is kept as documentation.",
+    lagre: "Save",
+    lagret: "Saved",
+    apne: "Open deviations",
+    avklarteTittel: "Resolved",
+    ingenApne: "No open deviations. Monitoring reports here when something changes at the suppliers you follow.",
+    oppdaget: "Detected",
+    avklartAv: "Resolved {dato} by {navn}",
+    fraTil: "From “{fra}” to “{til}”",
+    feil: "Could not save. Try again.",
+    ugyldig: "Invalid choice.",
+  },
+
   sider: {
+    avvik: {
+      tittel: "Deviations",
+      tekst: "Changes at the suppliers you follow. Set a status, choose who is responsible and write what was done.",
+    },
     oversikt: {
       tittel: "Overview",
       tekst: "Where you stand on the duty to verify, and what needs you today.",
