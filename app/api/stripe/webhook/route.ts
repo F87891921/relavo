@@ -4,7 +4,7 @@ import { admin } from "@/lib/supabase/admin";
 import { meldFeil } from "@/lib/feil";
 import { sendEpost } from "@/lib/epost";
 import { kvitteringBrev } from "@/lib/epostbrev";
-import { avsenderlinje } from "@/lib/relavo";
+import { fakturalinje } from "@/lib/relavo";
 import { hentVarenavn } from "@/lib/stripe";
 
 export const runtime = "nodejs";
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
             betalt: kr(okt.amount_total ?? 0),
             dato: new Date().toLocaleDateString("nb-NO", { day: "2-digit", month: "long", year: "numeric" }),
             referanse: okt.id.slice(-12),
-            avsender: avsenderlinje(),
+            avsender: fakturalinje(),
           });
           const svar = await sendEpost({ til, ...brev });
           if (!svar.ok) await meldFeil({ kilde: "server", melding: "Kvittering kunne ikke sendes", detaljer: `${okt.id}: ${svar.feil}` });
@@ -160,7 +160,7 @@ export async function POST(req: NextRequest) {
             betalt: kr(f.amount_paid ?? 0),
             dato: new Date().toLocaleDateString("nb-NO", { day: "2-digit", month: "long", year: "numeric" }),
             referanse: f.number ?? f.id.slice(-12),
-            avsender: avsenderlinje(),
+            avsender: fakturalinje(),
           });
           const svar = await sendEpost({ til, ...brev });
           if (!svar.ok) await meldFeil({ kilde: "server", melding: "Fornyelseskvittering kunne ikke sendes", detaljer: `${f.id}: ${svar.feil}` });

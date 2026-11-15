@@ -25,6 +25,8 @@ export const RELAVO = {
   /** Rettssubjektet. Svensk aksjebolag, registrert hos Bolagsverket. */
   morNavn: "LOD TECH AB",
   morOrgNr: "559471-0419",
+  /** Momsregistreringsnummer for rettssubjektet. Står på fakturaer og kvitteringer. */
+  morMomsNr: "SE559471041901",
 
   adresse: "Tomtbergavägen 82, SE-145 75 Norsborg, Sverige",
   epost: process.env.NEXT_PUBLIC_RELAVO_EPOST?.trim() || "post@relavo.no",
@@ -53,3 +55,12 @@ export const avtalepart = () =>
  */
 export const avsenderlinje = () =>
   `${RELAVO.navn}, org.nr ${relavoOrgNr()} — norsk filial av ${RELAVO.morNavn}, org.nr ${RELAVO.morOrgNr}`;
+
+/**
+ * Selgerlinjen på kvitteringer og fakturaer: avsenderlinjen pluss det
+ * revisor krever på kundefakturaer fra Lod Tech AB, nemlig F-skatt og
+ * momsregistreringsnummer. Rettssubjektet er det svenske aksjebolaget, så
+ * begge opplysningene gjelder også for salg fra filialen.
+ */
+export const fakturalinje = () =>
+  `${avsenderlinje()}. Godkjent for F-skatt. Momsregistreringsnummer: ${RELAVO.morMomsNr}.`;
