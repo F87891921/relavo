@@ -8,7 +8,7 @@ import { Fragment } from "react";
 const KILDER = [
   "Brønnøysundregistrene",
   "Skatteetaten",
-  "Creditsafe",
+  "Proff",
   "Arbeidstilsynet",
   "StartBANK",
 ];

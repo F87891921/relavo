@@ -10,7 +10,7 @@ import { brregFeil } from "@/lib/orgnrtekst";
  * Dette er ikke en kredittscore fra et byrå. Det er en vurdering av
  * opplysninger hvem som helst kan slå opp, og den sier selv hva den ikke
  * vet — betalingsanmerkninger og skatterestanser krever avtale med
- * Creditsafe eller Skatteetaten, og finnes ikke her.
+ * Proff eller Skatteetaten, og finnes ikke her.
  */
 export type Punkt = {
   punkt: string;

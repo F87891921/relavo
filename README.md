@@ -70,7 +70,7 @@ steg 5, og du skal se de tre demoleverandørene fra migreringen.
 ## Neste steg, i rekkefølge
 
 1. **Ny kontroll-flyten** — koble kontrollguiden mot en ekte oppslags-API
-   (Brønnøysundregisteret sitt åpne API, eller Roaring/Creditsafe når
+   (Brønnøysundregisteret sitt åpne API, eller Proff når
    avtale er på plass), og skriv resultatet til `kontroller`-tabellen
 2. **§ 5k-kjeden** — `kjede_ledd`-tabellen er klar; bygg om
    leverandørkjede-siden til å lese og skrive dit i stedet for lokal state
